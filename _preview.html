@@ -89,6 +89,10 @@
 
         /* ─── CHART CONTAINER ──────────────────────────────────── */
         .echarts-container { width: 100%; }
+
+        /* ─── PREVIEW NAVIGATION ───────────────────────────────── */
+        .preview-page { display: none; }
+        .preview-page.is-active { display: block; }
     </style>
 </head>
 
@@ -152,7 +156,7 @@
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
-                <li><a href="#" class="is-active"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Dashboard</a></li>
+                <li><a href="#" class="is-active" onclick="showPage('dashboard'); return false;" data-page="dashboard"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Dashboard</a></li>
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Monitoring</a></li>
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Systemstatus</a></li>
             </ul>
@@ -176,12 +180,12 @@
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Domains</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> DNS-Editor</a></li>
+                <li><a href="#" onclick="showPage('domains'); return false;" data-page="domains"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Domains</a></li>
+                <li><a href="#" onclick="showPage('dns'); return false;" data-page="dns"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> DNS-Editor</a></li>
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> SSL-Zertifikate</a></li>
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datenbanken</a></li>
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> FTP</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail</a></li>
+                <li><a href="#" onclick="showPage('email'); return false;" data-page="email"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail</a></li>
             </ul>
         </div>
 
@@ -217,6 +221,7 @@
 <section id="content-wrapper">
 <div id="content">
 
+    <div class="preview-page is-active" id="page-dashboard">
     <nav class="breadcrumb has-margin-bottom-medium" aria-label="breadcrumbs">
         <ul><li><a href="#">Home</a></li><li class="is-active"><a href="#" aria-current="page">Dashboard</a></li></ul>
     </nav>
@@ -588,13 +593,9 @@
             </div>
         </div>
     </div>
+    </div><!-- /page-dashboard -->
 
-    <!-- ════ SUB-PAGE: Domains — Übersicht ══════════════════════ -->
-    <div style="margin:3rem 0 1.5rem;padding:.5rem 1.2rem;background:#0e1e30;border-top:2px solid #3273DC;border-bottom:1px solid #2c4060;display:flex;align-items:center;gap:.6rem">
-        <i class="fa-solid fa-globe" style="color:#5a90e8"></i>
-        <span style="color:#5a90e8;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em">Sub-Page</span>
-        <strong style="color:#c8d8f0">Hosting &rsaquo; Domains</strong>
-    </div>
+    <div class="preview-page" id="page-domains">
     <nav class="breadcrumb has-margin-bottom-medium"><ul>
         <li><a href="#">Home</a></li><li><a href="#">Hosting</a></li>
         <li class="is-active"><a href="#" aria-current="page">Domains</a></li>
@@ -692,13 +693,9 @@
             </div>
         </div>
     </div>
+    </div><!-- /page-domains -->
 
-    <!-- ════ SUB-PAGE: E-Mail Postfächer ════════════════════════ -->
-    <div style="margin:3rem 0 1.5rem;padding:.5rem 1.2rem;background:#0e1e30;border-top:2px solid #3273DC;border-bottom:1px solid #2c4060;display:flex;align-items:center;gap:.6rem">
-        <i class="fa-solid fa-envelope" style="color:#5a90e8"></i>
-        <span style="color:#5a90e8;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em">Sub-Page</span>
-        <strong style="color:#c8d8f0">Hosting &rsaquo; E-Mail</strong>
-    </div>
+    <div class="preview-page" id="page-email">
     <nav class="breadcrumb has-margin-bottom-medium"><ul>
         <li><a href="#">Home</a></li><li><a href="#">Hosting</a></li>
         <li class="is-active"><a href="#" aria-current="page">E-Mail — example.com</a></li>
@@ -792,13 +789,9 @@
             </div>
         </div>
     </div>
+    </div><!-- /page-email -->
 
-    <!-- ════ SUB-PAGE: DNS-Editor ════════════════════════════════ -->
-    <div style="margin:3rem 0 1.5rem;padding:.5rem 1.2rem;background:#0e1e30;border-top:2px solid #3273DC;border-bottom:1px solid #2c4060;display:flex;align-items:center;gap:.6rem">
-        <i class="fa-solid fa-earth-americas" style="color:#5a90e8"></i>
-        <span style="color:#5a90e8;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em">Sub-Page</span>
-        <strong style="color:#c8d8f0">Hosting &rsaquo; DNS-Editor</strong>
-    </div>
+    <div class="preview-page" id="page-dns">
     <nav class="breadcrumb has-margin-bottom-medium"><ul>
         <li><a href="#">Home</a></li><li><a href="#">Hosting</a></li>
         <li class="is-active"><a href="#" aria-current="page">DNS-Editor — example.com</a></li>
@@ -905,6 +898,7 @@
             </div>
         </div>
     </div>
+    </div><!-- /page-dns -->
 
 </div><!-- /content -->
 <footer id="footer">
@@ -948,6 +942,19 @@ function clock(selector, format) {
 <script src="assets/js/main.js"></script>
 <script src="assets/vendor/echarts/echarts.min.js"></script>
 <script>
+// Page Navigation
+function showPage(id) {
+    $('.preview-page').removeClass('is-active');
+    $('#page-'+id).addClass('is-active');
+    $('[data-page]').removeClass('is-active');
+    $('[data-page="'+id+'"]').addClass('is-active');
+    if (id === 'dashboard') {
+        setTimeout(function() {
+            [cDisk,cTraffic,cMonitor].forEach(function(c){if(c)c.resize();});
+        }, 50);
+    }
+}
+
 // Domain Tabs
 function switchDomainTab(t){
     ['general','ssl','php','redirect'].forEach(function(id){

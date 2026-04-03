@@ -1,3 +1,5 @@
+# Preview (local only)
+_preview.html
 # Preview server artifacts
 .DS_Store
 *.swp
