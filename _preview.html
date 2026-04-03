@@ -93,16 +93,38 @@
         /* ─── PREVIEW NAVIGATION ───────────────────────────────── */
         .preview-page { display: none; }
         .preview-page.is-active { display: block; }
+
+        /* ─── FOOTER ────────────────────────────────────────────── */
+        #footer {
+            background: #0a1928 !important;
+            border-top: 1px solid #2c4060 !important;
+            padding: 1.75rem 2rem !important;
+        }
+        #footer, #footer .content { color: rgba(192,216,240,.7) !important; }
+        #footer strong { color: #c8d8f0 !important; }
+        #footer a { color: #5a94e8 !important; }
+        #footer a:hover { color: #87b4f4 !important; text-decoration: underline; }
+
+        /* ─── ADMIN / CLIENT MODE ───────────────────────────────── */
+        #sidebar-client { display: none; }
+        body.preview-mode-client #sidebar-admin { display: none !important; }
+        body.preview-mode-client #sidebar-client { display: block !important; }
+        .mode-btn { cursor: pointer; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: rgba(255,255,255,.75); padding: .2rem .8rem; border-radius: 4px; font-size: .75rem; font-family: inherit; }
+        .mode-btn.is-active { background: #3273DC; border-color: #3273DC; color: #fff; font-weight: 600; }
     </style>
 </head>
 
 <body class="default-mode">
 
 <!-- Demo Banner -->
-<div style="background:#00305D;color:#fff;padding:.45rem 1.2rem;font-size:.8rem;display:flex;align-items:center;gap:.6rem">
+<div id="preview-mode-bar" style="background:#00305D;color:#fff;padding:.45rem 1.2rem;font-size:.8rem;display:flex;align-items:center;gap:.6rem">
     <i class="fa-solid fa-flask"></i>
-    <strong>Theme Preview</strong> &nbsp;—&nbsp; Corporate Blue &nbsp;|&nbsp;
-    ECharts &nbsp;+&nbsp; Tailwind &nbsp;+&nbsp; Bulma &nbsp;+&nbsp; Unified&nbsp;Dark&nbsp;Style
+    <strong>Theme Preview</strong> &nbsp;—&nbsp; Corporate Blue
+    <span style="margin-left:auto;display:flex;align-items:center;gap:.5rem">
+        <span style="opacity:.6;font-size:.72rem">Ansicht:</span>
+        <button class="mode-btn is-active" id="btn-mode-admin" onclick="switchMode('admin')"><i class="fa-solid fa-shield-halved" style="margin-right:.3rem"></i>Admin</button>
+        <button class="mode-btn" id="btn-mode-client" onclick="switchMode('client')"><i class="fa-solid fa-user" style="margin-right:.3rem"></i>Client (alex)</button>
+    </span>
 </div>
 
 <!-- HEADER -->
@@ -148,6 +170,7 @@
 
 <!-- SIDEBAR -->
 <section id="sidebar">
+    <div id="sidebar-admin">
     <nav id="sidebar-navigation" class="menu has-margin-left-xsmall">
 
         <div class="app-menu-category has-margin-bottom-medium">
@@ -214,6 +237,52 @@
         </div>
 
     </nav>
+    </div><!-- /sidebar-admin -->
+
+    <div id="sidebar-client">
+    <nav class="menu has-margin-left-xsmall">
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="overview">
+                <span class="icon is-medium"><i class="fa-solid fa-gauge"></i></span> Übersicht
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#" class="is-active" onclick="showPage('client-dashboard'); return false;" data-page="client-dashboard"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Dashboard</a></li>
+                <li><a href="#" onclick="showPage('client-stats'); return false;" data-page="client-stats"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Statistiken</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="hosting-client">
+                <span class="icon is-medium"><i class="fa-solid fa-globe"></i></span> Hosting
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#" onclick="showPage('client-domains'); return false;" data-page="client-domains"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Domains</a></li>
+                <li><a href="#" onclick="showPage('client-dns'); return false;" data-page="client-dns"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> DNS-Editor</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> SSL-Zertifikate</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datenbanken</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> FTP</a></li>
+                <li><a href="#" onclick="showPage('client-email'); return false;" data-page="client-email"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Anwendungen</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="files-client">
+                <span class="icon is-medium"><i class="fa-solid fa-folder-open"></i></span> Dateien
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Dateimanager</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Verzeichnisschutz</a></li>
+            </ul>
+        </div>
+
+    </nav>
+    </div><!-- /sidebar-client -->
+
 </section>
 <div id="sidebar-overlay"></div>
 
@@ -900,10 +969,452 @@
     </div>
     </div><!-- /page-dns -->
 
+    <!-- ════ CLIENT PAGES ══════════════════════════════════════════════════════════════════════════════ -->
+
+    <div class="preview-page" id="page-client-dashboard">
+    <nav class="breadcrumb has-margin-bottom-medium"><ul>
+        <li><a href="#">Home</a></li>
+        <li class="is-active"><a href="#" aria-current="page">Dashboard</a></li>
+    </ul></nav>
+    <div class="content-title"><h1 class="title is-4">Dashboard</h1></div>
+
+    <!-- KPI Strip -->
+    <div class="tw-grid tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4 tw-mb-6">
+        <div class="card">
+            <div class="card-content">
+                <div class="tw-flex tw-items-center tw-gap-4">
+                    <div style="width:44px;height:44px;border-radius:10px;background:#1a3060;display:flex;align-items:center;justify-content:center">
+                        <i class="fa-solid fa-globe fa-lg" style="color:#3273DC"></i>
+                    </div>
+                    <div>
+                        <p class="is-size-7 has-text-grey">Domains</p>
+                        <p class="is-size-3 has-text-weight-bold has-text-link">12</p>
+                        <p class="is-size-7 has-text-grey">von 20</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-content">
+                <div class="tw-flex tw-items-center tw-gap-4">
+                    <div style="width:44px;height:44px;border-radius:10px;background:#122a1e;display:flex;align-items:center;justify-content:center">
+                        <i class="fa-solid fa-envelope fa-lg" style="color:#23D160"></i>
+                    </div>
+                    <div>
+                        <p class="is-size-7 has-text-grey">E-Mail-Konten</p>
+                        <p class="is-size-3 has-text-weight-bold has-text-success">24</p>
+                        <p class="is-size-7 has-text-grey">von 50</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-content">
+                <div class="tw-flex tw-items-center tw-gap-4">
+                    <div style="width:44px;height:44px;border-radius:10px;background:#2a1010;display:flex;align-items:center;justify-content:center">
+                        <i class="fa-solid fa-database fa-lg" style="color:#dc2626"></i>
+                    </div>
+                    <div>
+                        <p class="is-size-7 has-text-grey">Datenbanken</p>
+                        <p class="is-size-3 has-text-weight-bold has-text-danger">7</p>
+                        <p class="is-size-7 has-text-grey">von 10</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-content">
+                <div class="tw-flex tw-items-center tw-gap-4">
+                    <div style="width:44px;height:44px;border-radius:10px;background:#2a2010;display:flex;align-items:center;justify-content:center">
+                        <i class="fa-solid fa-folder fa-lg" style="color:#ca8a04"></i>
+                    </div>
+                    <div>
+                        <p class="is-size-7 has-text-grey">FTP-Accounts</p>
+                        <p class="is-size-3 has-text-weight-bold" style="color:#ca8a04">3</p>
+                        <p class="is-size-7 has-text-grey">von 5</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <!-- Ressourcen -->
+        <div class="column is-5">
+            <div class="card" style="height:100%">
+                <div class="card-header is-collapsible" data-name="resources">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-gauge-high fa-lg"></i></span></div>
+                    <div class="card-header-title">Ressourcen</div>
+                    <div class="card-header-icon app-header-buttons"><span class="icon is-medium has-text-grey"><i class="fa-solid fa-angle-up"></i></span></div>
+                </div>
+                <div class="card-content">
+                    <div class="usage-indicator" data-load="low">
+                        <div class="level has-margin-bottom-xsmall is-mobile">
+                            <div class="level-left has-margin-right-large"><p class="level-item has-text-weight-bold">Webspace</p></div>
+                            <div class="level-right"><p class="level-item">4.2 / 20 GB</p></div>
+                        </div>
+                        <progress class="progress is-xsmall" data-load-level="low" value="21" max="100">21%</progress>
+                    </div>
+                    <div class="usage-indicator has-margin-top-medium" data-load="medium">
+                        <div class="level has-margin-bottom-xsmall is-mobile">
+                            <div class="level-left has-margin-right-large"><p class="level-item has-text-weight-bold">Traffic (Monat)</p></div>
+                            <div class="level-right"><p class="level-item">68 / 100 GB</p></div>
+                        </div>
+                        <progress class="progress is-xsmall" data-load-level="medium" value="68" max="100">68%</progress>
+                    </div>
+                    <div class="usage-indicator has-margin-top-medium" data-load="low">
+                        <div class="level has-margin-bottom-xsmall is-mobile">
+                            <div class="level-left has-margin-right-large"><p class="level-item has-text-weight-bold">E-Mail-Speicher</p></div>
+                            <div class="level-right"><p class="level-item">1.8 / 10 GB</p></div>
+                        </div>
+                        <progress class="progress is-xsmall" data-load-level="low" value="18" max="100">18%</progress>
+                    </div>
+                    <div class="usage-indicator has-margin-top-medium" data-load="high">
+                        <div class="level has-margin-bottom-xsmall is-mobile">
+                            <div class="level-left has-margin-right-large"><p class="level-item has-text-weight-bold">Datenbankgröße</p></div>
+                            <div class="level-right"><p class="level-item">4.7 / 5 GB</p></div>
+                        </div>
+                        <progress class="progress is-xsmall" data-load-level="high" value="94" max="100">94%</progress>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Domains -->
+        <div class="column is-7">
+            <div class="card" style="height:100%">
+                <div class="card-header">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-globe fa-lg"></i></span></div>
+                    <div class="card-header-title">Meine Domains</div>
+                    <div class="card-header-icon app-header-buttons">
+                        <button class="button is-small is-link"><span class="icon is-small"><i class="fa-solid fa-plus"></i></span><span>Anlegen</span></button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <thead><tr><th>Domain</th><th>SSL</th><th>PHP</th><th>Status</th><th></th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>example.com</strong></td>
+                                <td><span class="tag is-success is-small"><i class="fa-solid fa-lock has-margin-right-xsmall"></i>LE</span></td>
+                                <td><span class="tag is-info is-small">PHP 8.2</span></td>
+                                <td><span class="icon has-text-success"><i class="fa-solid fa-circle-check"></i></span></td>
+                                <td><a href="#" onclick="showPage('client-domains'); return false;" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>shop.example.com</strong></td>
+                                <td><span class="tag is-success is-small"><i class="fa-solid fa-lock has-margin-right-xsmall"></i>LE</span></td>
+                                <td><span class="tag is-info is-small">PHP 8.3</span></td>
+                                <td><span class="icon has-text-success"><i class="fa-solid fa-circle-check"></i></span></td>
+                                <td><a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>my-website.de</strong></td>
+                                <td><span class="tag is-warning is-small"><i class="fa-solid fa-triangle-exclamation has-margin-right-xsmall"></i>Abgelaufen</span></td>
+                                <td><span class="tag is-info is-small">PHP 7.4</span></td>
+                                <td><span class="icon has-text-success"><i class="fa-solid fa-circle-check"></i></span></td>
+                                <td><a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="is-size-7 has-text-grey">12 Domains gesamt &nbsp;—&nbsp; <a href="#" onclick="showPage('client-domains'); return false;">Alle anzeigen</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schnellzugriff -->
+    <div class="columns">
+        <div class="column">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-bolt fa-lg"></i></span></div>
+                    <div class="card-header-title">Schnellzugriff</div>
+                </div>
+                <div class="card-content">
+                    <div class="tw-grid tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-3">
+                        <a href="#" onclick="showPage('client-domains'); return false;" class="button is-link is-outlined is-fullwidth"><span class="icon is-medium"><i class="fa-solid fa-globe"></i></span><span>Domain anlegen</span></a>
+                        <a href="#" onclick="showPage('client-email'); return false;" class="button is-outlined is-fullwidth"><span class="icon is-medium"><i class="fa-solid fa-envelope"></i></span><span>E-Mail anlegen</span></a>
+                        <a href="#" class="button is-outlined is-fullwidth"><span class="icon is-medium"><i class="fa-solid fa-database"></i></span><span>Datenbank</span></a>
+                        <a href="#" onclick="showPage('client-dns'); return false;" class="button is-outlined is-fullwidth"><span class="icon is-medium"><i class="fa-solid fa-earth-americas"></i></span><span>DNS-Editor</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /page-client-dashboard -->
+
+    <div class="preview-page" id="page-client-domains">
+    <nav class="breadcrumb has-margin-bottom-medium"><ul>
+        <li><a href="#" onclick="showPage('client-dashboard'); return false;">Home</a></li>
+        <li><a href="#">Hosting</a></li>
+        <li class="is-active"><a href="#" aria-current="page">Domains</a></li>
+    </ul></nav>
+    <div class="content-title"><h1 class="title is-4">Domains</h1></div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-globe fa-lg"></i></span></div>
+            <div class="card-header-title">Meine Domains</div>
+            <div class="card-header-icon app-header-buttons">
+                <button class="button is-small is-link"><span class="icon is-small"><i class="fa-solid fa-plus"></i></span><span>Domain anlegen</span></button>
+            </div>
+        </div>
+        <div class="card-content">
+            <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead><tr>
+                    <th style="width:1%"><input type="checkbox"></th>
+                    <th>Domain</th><th>Typ</th><th>SSL</th><th>PHP</th><th>Traffic</th><th></th>
+                </tr></thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><strong>example.com</strong></td>
+                        <td><span class="tag is-dark is-small">Hauptdomain</span></td>
+                        <td><span class="tag is-success is-small"><i class="fa-solid fa-lock has-margin-right-xsmall"></i>Let's Encrypt</span></td>
+                        <td><span class="tag is-info is-small">PHP 8.2</span></td>
+                        <td style="min-width:120px"><progress class="progress is-xsmall" data-load-level="low" value="18" max="100">18%</progress></td>
+                        <td class="has-text-right" style="white-space:nowrap">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" onclick="showPage('client-dns'); return false;" class="app-tooltip" data-tippy-content="DNS-Editor"><span class="icon has-text-link"><i class="fa-solid fa-earth-americas"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><strong>shop.example.com</strong></td>
+                        <td><span class="tag is-dark is-small">Subdomain</span></td>
+                        <td><span class="tag is-success is-small"><i class="fa-solid fa-lock has-margin-right-xsmall"></i>Let's Encrypt</span></td>
+                        <td><span class="tag is-info is-small">PHP 8.3</span></td>
+                        <td style="min-width:120px"><progress class="progress is-xsmall" data-load-level="medium" value="52" max="100">52%</progress></td>
+                        <td class="has-text-right" style="white-space:nowrap">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="DNS-Editor"><span class="icon has-text-link"><i class="fa-solid fa-earth-americas"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><strong>my-website.de</strong></td>
+                        <td><span class="tag is-dark is-small">Hauptdomain</span></td>
+                        <td><span class="tag is-warning is-small"><i class="fa-solid fa-triangle-exclamation has-margin-right-xsmall"></i>Abgelaufen</span></td>
+                        <td><span class="tag is-info is-small">PHP 7.4</span></td>
+                        <td style="min-width:120px"><progress class="progress is-xsmall" data-load-level="high" value="88" max="100">88%</progress></td>
+                        <td class="has-text-right" style="white-space:nowrap">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="DNS-Editor"><span class="icon has-text-link"><i class="fa-solid fa-earth-americas"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <p class="is-size-7 has-text-grey">12 Domains (von 20 erlaubten)</p>
+        </div>
+    </div>
+    </div><!-- /page-client-domains -->
+
+    <div class="preview-page" id="page-client-email">
+    <nav class="breadcrumb has-margin-bottom-medium"><ul>
+        <li><a href="#" onclick="showPage('client-dashboard'); return false;">Home</a></li>
+        <li><a href="#">Hosting</a></li>
+        <li class="is-active"><a href="#" aria-current="page">E-Mail — example.com</a></li>
+    </ul></nav>
+    <div class="content-title"><h1 class="title is-4">E-Mail — example.com</h1></div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-envelope fa-lg"></i></span></div>
+            <div class="card-header-title">E-Mail Verwaltung</div>
+        </div>
+        <div class="card-content">
+            <div class="tabs is-boxed has-margin-bottom-medium">
+                <ul>
+                    <li class="is-active"><a href="javascript:void(0)"><span class="icon is-small"><i class="fa-solid fa-inbox"></i></span><span>Postfächer</span></a></li>
+                    <li><a href="javascript:void(0)"><span class="icon is-small"><i class="fa-solid fa-at"></i></span><span>Aliases</span></a></li>
+                    <li><a href="javascript:void(0)"><span class="icon is-small"><i class="fa-solid fa-forward"></i></span><span>Weiterleitungen</span></a></li>
+                    <li><a href="javascript:void(0)"><span class="icon is-small"><i class="fa-solid fa-filter"></i></span><span>Filter</span></a></li>
+                </ul>
+            </div>
+            <div class="level has-margin-bottom-medium">
+                <div class="level-left"><div class="level-item"><p class="is-size-7 has-text-grey">24 Postfächer (von 50)</p></div></div>
+                <div class="level-right"><div class="level-item">
+                    <button class="button is-small is-link"><span class="icon is-small"><i class="fa-solid fa-plus"></i></span><span>Postfach anlegen</span></button>
+                </div></div>
+            </div>
+            <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead><tr>
+                    <th>Adresse</th><th>Quota</th><th>Weiterleitung</th><th>Status</th><th></th>
+                </tr></thead>
+                <tbody>
+                    <tr>
+                        <td><strong>admin@example.com</strong></td>
+                        <td style="min-width:160px">
+                            <div class="usage-indicator has-ws-no-wrap" data-load="low">
+                                <div class="level has-margin-bottom-xsmall is-mobile">
+                                    <div class="level-left has-margin-right-large"><p class="level-item has-text-weight-bold">Quota</p></div>
+                                    <div class="level-right"><p class="level-item">120 / 500 MB</p></div>
+                                </div>
+                                <progress class="progress is-xsmall" data-load-level="low" value="24" max="100">24%</progress>
+                            </div>
+                        </td>
+                        <td><span class="has-text-grey is-size-7">—</span></td>
+                        <td><span class="icon has-text-success"><i class="fa-solid fa-circle-check"></i></span></td>
+                        <td class="has-text-right" style="white-space:nowrap">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Passwort ändern"><span class="icon has-text-link"><i class="fa-solid fa-key"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>info@example.com</strong></td>
+                        <td style="min-width:160px">
+                            <div class="usage-indicator has-ws-no-wrap" data-load="high">
+                                <div class="level has-margin-bottom-xsmall is-mobile">
+                                    <div class="level-left has-margin-right-large"><p class="level-item has-text-weight-bold">Quota</p></div>
+                                    <div class="level-right"><p class="level-item">480 / 500 MB</p></div>
+                                </div>
+                                <progress class="progress is-xsmall" data-load-level="high" value="96" max="100">96%</progress>
+                            </div>
+                        </td>
+                        <td><span class="has-text-grey is-size-7">→ backup@example.com</span></td>
+                        <td><span class="icon has-text-success"><i class="fa-solid fa-circle-check"></i></span></td>
+                        <td class="has-text-right" style="white-space:nowrap">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Passwort ändern"><span class="icon has-text-link"><i class="fa-solid fa-key"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    </div><!-- /page-client-email -->
+
+    <div class="preview-page" id="page-client-dns">
+    <nav class="breadcrumb has-margin-bottom-medium"><ul>
+        <li><a href="#" onclick="showPage('client-dashboard'); return false;">Home</a></li>
+        <li><a href="#">Hosting</a></li>
+        <li class="is-active"><a href="#" aria-current="page">DNS-Editor — example.com</a></li>
+    </ul></nav>
+    <div class="content-title"><h1 class="title is-4">DNS-Editor — example.com</h1></div>
+    <article class="message is-info has-margin-bottom-medium">
+        <div class="message-body"><i class="fa-solid fa-circle-info has-margin-right-small"></i>
+        Änderungen werden innerhalb von max. 24 Stunden weltweit propagiert.</div>
+    </article>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-list fa-lg"></i></span></div>
+            <div class="card-header-title">DNS-Einträge — example.com</div>
+            <div class="card-header-icon app-header-buttons">
+                <button class="button is-small is-link"><span class="icon is-small"><i class="fa-solid fa-plus"></i></span><span>Eintrag hinzufügen</span></button>
+            </div>
+        </div>
+        <div class="card-content">
+            <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead><tr>
+                    <th style="width:8%">Typ</th><th style="width:25%">Name</th><th>Wert</th><th style="width:8%">TTL</th><th style="width:6%"></th>
+                </tr></thead>
+                <tbody>
+                    <tr>
+                        <td><span class="tag is-info is-small">A</span></td>
+                        <td>@</td>
+                        <td><code style="background:#0e1e30;color:#80c8e8;padding:.2em .5em;border-radius:3px">5.9.123.45</code></td>
+                        <td class="has-text-grey is-size-7">3600</td>
+                        <td class="has-text-right">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="tag is-success is-small">MX</span></td>
+                        <td>@</td>
+                        <td><code style="background:#0e1e30;color:#80c8e8;padding:.2em .5em;border-radius:3px">10 mail.example.com.</code></td>
+                        <td class="has-text-grey is-size-7">3600</td>
+                        <td class="has-text-right">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="tag is-warning is-small">TXT</span></td>
+                        <td>@</td>
+                        <td><code style="background:#0e1e30;color:#80c8e8;padding:.2em .5em;border-radius:3px;font-size:.8em">v=spf1 a mx ip4:5.9.123.0/24 ~all</code></td>
+                        <td class="has-text-grey is-size-7">3600</td>
+                        <td class="has-text-right">
+                            <a href="#" class="app-tooltip" data-tippy-content="Bearbeiten"><span class="icon has-text-link"><i class="fa-solid fa-pen-to-square"></i></span></a>
+                            <a href="#" class="app-tooltip" data-tippy-content="Löschen"><span class="icon has-text-danger"><i class="fa-solid fa-trash"></i></span></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <hr>
+            <div class="field is-grouped">
+                <div class="control"><button class="button is-link"><span class="icon is-medium"><i class="fa-solid fa-floppy-disk"></i></span><span>Speichern</span></button></div>
+                <div class="control"><button class="button">Abbrechen</button></div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /page-client-dns -->
+
+    <div class="preview-page" id="page-client-stats">
+    <nav class="breadcrumb has-margin-bottom-medium"><ul>
+        <li><a href="#" onclick="showPage('client-dashboard'); return false;">Home</a></li>
+        <li class="is-active"><a href="#" aria-current="page">Statistiken</a></li>
+    </ul></nav>
+    <div class="content-title"><h1 class="title is-4">Statistiken</h1></div>
+    <div class="columns">
+        <div class="column is-half">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-chart-pie fa-lg"></i></span></div>
+                    <div class="card-header-title">Traffic-Verteilung (Monat)</div>
+                </div>
+                <div class="card-content">
+                    <div id="chart-client-traffic" style="height:240px;width:100%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="column is-half">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-hard-drive fa-lg"></i></span></div>
+                    <div class="card-header-title">Speichernutzung</div>
+                </div>
+                <div class="card-content">
+                    <table class="table is-fullwidth is-striped">
+                        <tbody>
+                            <tr><th>Webspace</th><td><progress class="progress is-xsmall" data-load-level="low" value="21" max="100">21%</progress></td><td style="white-space:nowrap">4.2 / 20 GB</td></tr>
+                            <tr><th>E-Mail</th><td><progress class="progress is-xsmall" data-load-level="low" value="18" max="100">18%</progress></td><td style="white-space:nowrap">1.8 / 10 GB</td></tr>
+                            <tr><th>Datenbanken</th><td><progress class="progress is-xsmall" data-load-level="high" value="94" max="100">94%</progress></td><td style="white-space:nowrap">4.7 / 5 GB</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /page-client-stats -->
+
 </div><!-- /content -->
 <footer id="footer">
-    <div class="content has-text-centered">
-        <span class="has-text-grey is-size-7">Powered by <strong>KeyHelp</strong> v25.3 &nbsp;&mdash;&nbsp; <a href="https://www.keyhelp.de" target="_blank" rel="noopener">keyhelp.de</a></span>
+    <div class="level is-mobile">
+        <div class="level-left">
+            <div class="level-item">
+                <span>Powered by <strong>KeyHelp</strong> v25.3</span>
+            </div>
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                <a href="https://www.keyhelp.de" target="_blank" rel="noopener">keyhelp.de</a>
+                <span class="has-margin-left-medium has-margin-right-small" style="opacity:.4">|</span>
+                <a href="#">Impressum</a>
+                <span class="has-margin-left-medium has-margin-right-small" style="opacity:.4">|</span>
+                <a href="#">Datenschutz</a>
+            </div>
+        </div>
     </div>
 </footer>
 </section>
@@ -943,15 +1454,32 @@ function clock(selector, format) {
 <script src="assets/vendor/echarts/echarts.min.js"></script>
 <script>
 // Page Navigation
+var previewMode = 'admin';
+
+function switchMode(mode) {
+    previewMode = mode;
+    $('body').removeClass('preview-mode-admin preview-mode-client').addClass('preview-mode-' + mode);
+    $('.mode-btn').removeClass('is-active');
+    $('#btn-mode-' + mode).addClass('is-active');
+    if (mode === 'admin') {
+        showPage('dashboard');
+    } else {
+        showPage('client-dashboard');
+    }
+}
+
 function showPage(id) {
     $('.preview-page').removeClass('is-active');
-    $('#page-'+id).addClass('is-active');
+    $('#page-' + id).addClass('is-active');
     $('[data-page]').removeClass('is-active');
-    $('[data-page="'+id+'"]').addClass('is-active');
+    $('[data-page="' + id + '"]').addClass('is-active');
     if (id === 'dashboard') {
         setTimeout(function() {
-            [cDisk,cTraffic,cMonitor].forEach(function(c){if(c)c.resize();});
+            [cDisk, cTraffic, cMonitor].forEach(function(c) { if (c) c.resize(); });
         }, 50);
+    }
+    if (id === 'client-stats') {
+        setTimeout(renderClientTraffic, 50);
     }
 }
 
@@ -1046,6 +1574,26 @@ function renderMonitoring(){
 function renderAllCharts(){
     renderDisk();renderTraffic();renderMonitoring();
     [cDisk,cTraffic,cMonitor].forEach(function(c){if(c)c.resize();});
+}
+
+var cClientTraffic;
+function renderClientTraffic(){
+    if(!cClientTraffic)cClientTraffic=echarts.init(document.getElementById('chart-client-traffic'));
+    cClientTraffic.setOption({
+        backgroundColor:'transparent',
+        tooltip:{trigger:'item',formatter:'{b}: {d}%'},
+        legend:{bottom:0,textStyle:{fontSize:11,color:gc('#555','#aaa')}},
+        series:[{type:'pie',radius:['35%','65%'],center:['50%','42%'],
+            itemStyle:{borderRadius:5,borderColor:gc('#fff','#222'),borderWidth:2},
+            label:{show:false},
+            data:[
+                {value:42,name:'example.com',itemStyle:{color:'#3273DC'}},
+                {value:31,name:'shop.example.com',itemStyle:{color:'#23D160'}},
+                {value:18,name:'my-website.de',itemStyle:{color:'#FFAA00'}},
+                {value:9,name:'Andere',itemStyle:{color:gc('#ccc','#555')}}
+            ]
+        }]
+    });
 }
 
 $(function(){
