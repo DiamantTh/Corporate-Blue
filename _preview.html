@@ -175,7 +175,7 @@
 
         <div class="app-menu-category has-margin-bottom-medium">
             <p class="menu-label has-margin-bottom-small" data-category="overview">
-                <span class="icon is-medium"><i class="fa-solid fa-gauge"></i></span> Übersicht
+                <span class="icon is-medium"><i class="fa-solid fa-gauge"></i></span> Allgemein
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
@@ -198,41 +198,97 @@
         </div>
 
         <div class="app-menu-category has-margin-bottom-medium">
-            <p class="menu-label has-margin-bottom-small" data-category="hosting">
-                <span class="icon is-medium"><i class="fa-solid fa-globe"></i></span> Hosting
+            <p class="menu-label has-margin-bottom-small" data-category="domains">
+                <span class="icon is-medium"><i class="fa-solid fa-globe"></i></span> Domains
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
                 <li><a href="#" onclick="showPage('domains'); return false;" data-page="domains"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Domains</a></li>
                 <li><a href="#" onclick="showPage('dns'); return false;" data-page="dns"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> DNS-Editor</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> SSL-Zertifikate</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datenbanken</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> FTP</a></li>
-                <li><a href="#" onclick="showPage('email'); return false;" data-page="email"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail</a></li>
             </ul>
         </div>
 
         <div class="app-menu-category has-margin-bottom-medium">
-            <p class="menu-label has-margin-bottom-small" data-category="server">
-                <span class="icon is-medium"><i class="fa-solid fa-server"></i></span> Server
+            <p class="menu-label has-margin-bottom-small" data-category="email-admin">
+                <span class="icon is-medium"><i class="fa-solid fa-envelope"></i></span> E-Mail
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#" onclick="showPage('email'); return false;" data-page="email"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail-Konten</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="einstellungen">
+                <span class="icon is-medium"><i class="fa-solid fa-sliders"></i></span> Einstellungen
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Konfiguration</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Wartungsintervalle</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Backup</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> White-Label</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="sicherheit">
+                <span class="icon is-medium"><i class="fa-solid fa-shield-halved"></i></span> Sicherheit
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Firewall</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Fail2Ban-Verwaltung</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> SSL/TLS-Zertifikate</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="systemverwaltung">
+                <span class="icon is-medium"><i class="fa-solid fa-server"></i></span> Systemverwaltung
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Dienstverwaltung</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Firewall</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Prozess-Manager</a></li>
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Logs</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Backup</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Mail-Log</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Mail-Queue</a></li>
             </ul>
         </div>
 
         <div class="app-menu-category has-margin-bottom-medium">
-            <p class="menu-label has-margin-bottom-small app-is-collapsed" data-category="config">
-                <span class="icon is-medium"><i class="fa-solid fa-gear"></i></span> Konfiguration
+            <p class="menu-label has-margin-bottom-small" data-category="tools-admin">
+                <span class="icon is-medium"><i class="fa-solid fa-toolbox"></i></span> Tools
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Webmail</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datenbank-Weboberfläche</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Whois IP-Abfrage</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> DNS-Abfrage</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="sonstiges">
+                <span class="icon is-medium"><i class="fa-solid fa-ellipsis"></i></span> Sonstiges
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Massenoperationen</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail an alle Benutzer</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small app-is-collapsed" data-category="hilfe">
+                <span class="icon is-medium"><i class="fa-solid fa-circle-question"></i></span> Hilfe / Links
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-right"></i></span>
             </p>
             <ul class="menu-list" style="display:none">
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Konfiguration</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> White-Label</a></li>
+                <li><a href="#" target="_blank" rel="noopener"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> KeyHelp-Dokumentation</a></li>
+                <li><a href="#" target="_blank" rel="noopener"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Support-Forum</a></li>
             </ul>
         </div>
 
@@ -243,40 +299,90 @@
     <nav class="menu has-margin-left-xsmall">
 
         <div class="app-menu-category has-margin-bottom-medium">
-            <p class="menu-label has-margin-bottom-small" data-category="overview">
-                <span class="icon is-medium"><i class="fa-solid fa-gauge"></i></span> Übersicht
+            <p class="menu-label has-margin-bottom-small" data-category="allgemein-client">
+                <span class="icon is-medium"><i class="fa-solid fa-gauge"></i></span> Allgemein
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
                 <li><a href="#" class="is-active" onclick="showPage('client-dashboard'); return false;" data-page="client-dashboard"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Dashboard</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datei-Manager</a></li>
                 <li><a href="#" onclick="showPage('client-stats'); return false;" data-page="client-stats"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Statistiken</a></li>
             </ul>
         </div>
 
         <div class="app-menu-category has-margin-bottom-medium">
-            <p class="menu-label has-margin-bottom-small" data-category="hosting-client">
-                <span class="icon is-medium"><i class="fa-solid fa-globe"></i></span> Hosting
+            <p class="menu-label has-margin-bottom-small" data-category="domains-client">
+                <span class="icon is-medium"><i class="fa-solid fa-globe"></i></span> Domains
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
                 <li><a href="#" onclick="showPage('client-domains'); return false;" data-page="client-domains"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Domains</a></li>
                 <li><a href="#" onclick="showPage('client-dns'); return false;" data-page="client-dns"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> DNS-Editor</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> SSL-Zertifikate</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datenbanken</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> FTP</a></li>
-                <li><a href="#" onclick="showPage('client-email'); return false;" data-page="client-email"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail</a></li>
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Anwendungen</a></li>
             </ul>
         </div>
 
         <div class="app-menu-category has-margin-bottom-medium">
-            <p class="menu-label has-margin-bottom-small" data-category="files-client">
-                <span class="icon is-medium"><i class="fa-solid fa-folder-open"></i></span> Dateien
+            <p class="menu-label has-margin-bottom-small" data-category="email-client">
+                <span class="icon is-medium"><i class="fa-solid fa-envelope"></i></span> E-Mail
                 <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
             </p>
             <ul class="menu-list">
-                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Dateimanager</a></li>
+                <li><a href="#" onclick="showPage('client-email'); return false;" data-page="client-email"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> E-Mail-Adressen</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="ressourcen-client">
+                <span class="icon is-medium"><i class="fa-solid fa-gauge-high"></i></span> Ressourcen
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datenbanken</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> FTP-Benutzer</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Geplante Aufgaben</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Festplatten-Auslastung</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="einstellungen-client">
+                <span class="icon is-medium"><i class="fa-solid fa-sliders"></i></span> Einstellungen
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Backup</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="sicherheit-client">
+                <span class="icon is-medium"><i class="fa-solid fa-shield-halved"></i></span> Sicherheit
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> SSL/TLS-Zertifikate</a></li>
                 <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Verzeichnisschutz</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="protokolle-client">
+                <span class="icon is-medium"><i class="fa-solid fa-scroll"></i></span> Protokolle
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Ereignis-Protokolle</a></li>
+            </ul>
+        </div>
+
+        <div class="app-menu-category has-margin-bottom-medium">
+            <p class="menu-label has-margin-bottom-small" data-category="tools-client">
+                <span class="icon is-medium"><i class="fa-solid fa-toolbox"></i></span> Tools
+                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium"><i class="fa-solid fa-angle-down"></i></span>
+            </p>
+            <ul class="menu-list">
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Webmail</a></li>
+                <li><a href="#"><small><span class="icon is-small"><i class="fa-solid fa-angle-right"></i></span></small> Datenbank-Weboberfläche</a></li>
             </ul>
         </div>
 
@@ -973,13 +1079,102 @@
 
     <div class="preview-page" id="page-client-dashboard">
     <nav class="breadcrumb has-margin-bottom-medium"><ul>
-        <li><a href="#">Home</a></li>
+        <li><a href="#">Allgemein</a></li>
         <li class="is-active"><a href="#" aria-current="page">Dashboard</a></li>
     </ul></nav>
     <div class="content-title"><h1 class="title is-4">Dashboard</h1></div>
 
-    <!-- KPI Strip -->
-    <div class="tw-grid tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4 tw-mb-6">
+    <div class="columns">
+        <!-- Speicherplatz Donut -->
+        <div class="column is-5">
+            <div class="card is-collapsible">
+                <div class="card-header" data-name="client-disk">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-hard-drive fa-lg"></i></span></div>
+                    <div class="card-header-title">Speicherplatz</div>
+                    <div class="card-header-icon app-header-buttons"><span class="icon is-medium has-text-grey"><i class="fa-solid fa-angle-up"></i></span></div>
+                </div>
+                <div class="card-content">
+                    <div class="columns is-vcentered">
+                        <div class="column is-narrow">
+                            <div id="chart-client-disk" style="width:150px;height:150px"></div>
+                        </div>
+                        <div class="column">
+                            <table class="table is-fullwidth is-striped">
+                                <tbody>
+                                    <tr><th><span class="icon is-small" style="color:#3273DC"><i class="fa-solid fa-square"></i></span> Webspace</th><td class="has-text-right">4,2 GB</td></tr>
+                                    <tr><th><span class="icon is-small" style="color:#23D160"><i class="fa-solid fa-square"></i></span> E-Mails</th><td class="has-text-right">1,8 GB</td></tr>
+                                    <tr><th><span class="icon is-small" style="color:#FF2B56"><i class="fa-solid fa-square"></i></span> Datenbanken</th><td class="has-text-right">4,7 GB</td></tr>
+                                </tbody>
+                                <tfoot class="is-summary">
+                                    <tr><th></th><th class="has-text-right">10,7 GB</th></tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ressourcen -->  
+        <div class="column is-7">
+            <div class="card">
+                <div class="card-header is-collapsible" data-name="client-res">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-gauge-high fa-lg"></i></span></div>
+                    <div class="card-header-title">Ressourcen</div>
+                    <div class="card-header-icon app-header-buttons"><span class="icon is-medium has-text-grey"><i class="fa-solid fa-angle-up"></i></span></div>
+                </div>
+                <div class="card-content">
+                    <table class="table is-fullwidth is-striped">
+                        <tbody>
+                            <tr><td style="width:45%">Speicherplatz</td><td><progress class="progress is-xsmall" data-load-level="low" value="21" max="100">21%</progress></td><td style="white-space:nowrap;width:30%">4,2 / 20 GB</td></tr>
+                            <tr><td>Dateianzahl</td><td><progress class="progress is-xsmall" data-load-level="low" value="34" max="100">34%</progress></td><td>34.200 / 100.000</td></tr>
+                            <tr><td>Traffic / April</td><td><progress class="progress is-xsmall" data-load-level="medium" value="68" max="100">68%</progress></td><td>68 / 100 GB</td></tr>
+                            <tr><td>Hauptdomains</td><td><progress class="progress is-xsmall" data-load-level="low" value="30" max="100">30%</progress></td><td>3 / 10</td></tr>
+                            <tr><td>Subdomains</td><td><progress class="progress is-xsmall" data-load-level="medium" value="60" max="100">60%</progress></td><td>9 / 15</td></tr>
+                            <tr><td>E-Mail-Konten</td><td><progress class="progress is-xsmall" data-load-level="low" value="24" max="100">24%</progress></td><td>12 / 50</td></tr>
+                            <tr><td>E-Mail-Aliases</td><td><progress class="progress is-xsmall" data-load-level="low" value="18" max="100">18%</progress></td><td>9 / 50</td></tr>
+                            <tr><td>E-Mail-Weiterleit.</td><td><progress class="progress is-xsmall" data-load-level="low" value="10" max="100">10%</progress></td><td>1 / 10</td></tr>
+                            <tr><td>Datenbanken</td><td><progress class="progress is-xsmall" data-load-level="high" value="70" max="100">70%</progress></td><td>7 / 10</td></tr>
+                            <tr><td>FTP-Benutzer</td><td><progress class="progress is-xsmall" data-load-level="medium" value="60" max="100">60%</progress></td><td>3 / 5</td></tr>
+                            <tr><td>Geplante Aufgaben</td><td><progress class="progress is-xsmall" data-load-level="low" value="20" max="100">20%</progress></td><td>1 / 5</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Konto-Optionen -->
+    <div class="columns">
+        <div class="column">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-icon"><span class="icon is-medium"><i class="fa-solid fa-gear fa-lg"></i></span></div>
+                    <div class="card-header-title">Konto-Optionen</div>
+                </div>
+                <div class="card-content">
+                    <div class="columns">
+                        <div class="column">
+                            <p class="has-text-weight-bold has-margin-bottom-xsmall">Directory-Listing</p>
+                            <p class="is-size-7 has-text-grey has-margin-bottom-small">Die Verzeichnisauflistung ist eine Funktion, die den Inhalt eines Website-Verzeichnisses anzeigt, wenn sich darin keine Standard-Indexdatei befindet. Es kann gefährlich sein, diese Funktion zu aktivieren, da sie zur Offenlegung sensibler Informationen führen kann.</p>
+                            <button class="button is-small is-dark">Deaktiviert</button>
+                        </div>
+                        <div class="column">
+                            <p class="has-text-weight-bold has-margin-bottom-xsmall">PHP-Fehleranzeige</p>
+                            <p class="is-size-7 has-text-grey has-margin-bottom-small">Legt fest, ob PHP-Fehlermeldungen direkt im Browser ausgegeben werden. Im Produktivbetrieb sollte diese Funktion deaktiviert sein.</p>
+                            <button class="button is-small is-dark">Deaktiviert</button>
+                        </div>
+                        <div class="column">
+                            <p class="has-text-weight-bold has-margin-bottom-xsmall">SSH-Zugang</p>
+                            <p class="is-size-7 has-text-grey has-margin-bottom-small">Ermöglicht den Zugang zum Server per SSH. Nur aktivieren wenn notwendig.</p>
+                            <button class="button is-small is-success">Aktiviert</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /page-client-dashboard -->
         <div class="card">
             <div class="card-content">
                 <div class="tw-flex tw-items-center tw-gap-4">
@@ -1465,6 +1660,7 @@ function switchMode(mode) {
         showPage('dashboard');
     } else {
         showPage('client-dashboard');
+        setTimeout(renderClientDisk, 100);
     }
 }
 
@@ -1477,6 +1673,9 @@ function showPage(id) {
         setTimeout(function() {
             [cDisk, cTraffic, cMonitor].forEach(function(c) { if (c) c.resize(); });
         }, 50);
+    }
+    if (id === 'client-dashboard') {
+        setTimeout(renderClientDisk, 50);
     }
     if (id === 'client-stats') {
         setTimeout(renderClientTraffic, 50);
@@ -1574,6 +1773,25 @@ function renderMonitoring(){
 function renderAllCharts(){
     renderDisk();renderTraffic();renderMonitoring();
     [cDisk,cTraffic,cMonitor].forEach(function(c){if(c)c.resize();});
+}
+
+var cClientDisk;
+function renderClientDisk(){
+    if(!cClientDisk)cClientDisk=echarts.init(document.getElementById('chart-client-disk'));
+    cClientDisk.setOption({
+        backgroundColor:'transparent',
+        tooltip:{trigger:'item',formatter:'{b}: {c} GB ({d}%)'},
+        series:[{type:'pie',radius:['45%','72%'],
+            itemStyle:{borderRadius:5,borderColor:gc('#fff','#222'),borderWidth:2},
+            label:{show:false},
+            emphasis:{label:{show:true,fontSize:12,fontWeight:'bold'}},
+            data:[
+                {value:4.2,name:'Webspace',itemStyle:{color:'#3273DC'}},
+                {value:1.8,name:'E-Mails',itemStyle:{color:'#23D160'}},
+                {value:4.7,name:'Datenbanken',itemStyle:{color:'#FF2B56'}}
+            ]
+        }]
+    });
 }
 
 var cClientTraffic;
