@@ -1,0 +1,53 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': ram_drive_directories,
+    'help': ram_drive_directories_help,
+    'options': [
+        {
+            'label': '/tmp',
+            'name': 'is_tmp',
+            'value': '1',
+            'is_checked': _is_tmp
+        },
+        {
+            'label': '/var/tmp',
+            'name': 'is_var_tmp',
+            'value': '1',
+            'is_checked': _is_var_tmp
+        },
+    ]
+}) }}
+
+<div id="app-show-with-enabled" style="display: none">
+    {{ forms.checkbox_wrapped({
+        'label': prevent_script_execution,
+        'help': prevent_script_execution_help,
+        'options': {
+            'label': enabled,
+            'name': 'is_noexec',
+            'value': '1',
+            'is_checked': _is_noexec
+        },
+    }) }}
+
+    {{ forms.input_wrapped({
+        'label': ram_drive_size,
+        'name': 'size',
+        'value': _size,
+        'type': 'number',
+        'min': 0,
+        'is_required': true,
+        'addons': {
+            'left': {
+                'type': 'select',
+                'select': {
+                    'name': 'unit',
+                    'options': _units,
+                    'selected': _units_selected
+                }
+            }
+        }
+    }) }}
+</div>

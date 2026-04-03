@@ -1,0 +1,50 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    <div class="has-text-centered has-margin-bottom-xlarge">
+        <h1 class="title">{{ select_backup_management }}</h1>
+        <p>{{ select_backup_management_help|raw }}</p>
+    </div>
+
+    <div class="columns">
+        <div class="column has-text-centered">
+            <div class="card has-equal-height">
+                <div class="card-content">
+                    <h4 class="title is-4">{{ new_backup }}</h4>
+                    <p class="has-margin-bottom-large">{{ new_backup_help|raw }}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="card-footer-item">
+                        {{ forms.button({
+                            'label': new_backup,
+                            'style': 'primary',
+                            'url': '?page=backup'
+                        }) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column has-text-centered">
+            <div class="card has-equal-height">
+                <div class="card-content">
+                    <h4 class="title is-4">{{ alternate_backup }}</h4>
+                    <p class="has-margin-bottom-large">{{ alternate_backup_help|raw }}</p>
+                    <p class="has-text-danger has-text-weight-bold">{{ alternate_backup_deprecated }}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="card-footer-item">
+                        {{ forms.button({
+                            'label': alternate_backup,
+                            'style': 'primary',
+                            'url': '?page=backup_deprecated'
+                        }) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_css %}
+    {% include 'components/vendor/codemirror_css_files.twig' %}
+{% endblock %}
+
+
+{% block page_scripts %}
+    {% include 'components/vendor/codemirror_js_files.twig' %}
+    <script>
+        var fileExtension = '{{ _extension }}'.toLowerCase();
+        var cacheBusting = '{{ _cache_control }}';
+    </script>
+    <script src="/theme/bulma/assets/js/page_file_manager_edit.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'components/file_manager_path.twig' %}
+
+    {% embed "components/card.twig" with { 'header': { 'is_hidden': true }, 'content': { 'is_centered': true, 'is_wide': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action=edit" method="post">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _name }}">
+                <input type="hidden" name="working_dir" value="{{ _working_dir }}">
+                {{ csrf_field() }}
+
+                {{ forms.textarea_wrapped({
+                    'name': 'content',
+                    'rows': 20,
+                    'value': _content,
+                    'is_auto_resize': false,
+                    'i18n': { 'search': search, 'replace': replace, 'full_screen': full_screen, 'exit_full_screen': exit_full_screen }
+                }) }}
+
+                {% include 'components/call_to_action.twig' with {
+                    '_back': { 'target': _app.page ~ '&change_dir=' ~ _working_dir|url_encode() },
+                    '_misc': { 'label': apply, 'id': 'app-ajax-save' },
+                    '_confirm': true
+                 } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="{{ _app.language }}" dir="{{ _app.text_direction }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# Stop microsoft edge to style numbers, which it assumes are telephone numbers #}
+    <meta name="format-detection" content="telephone=no">
+
+    {% if _white_label.favicon_url %}
+        <link type="image/x-icon" rel="shortcut icon" href="{{ _white_label.favicon_url }}&{{ _globals.cache_control }}">
+    {% else %}
+        <link rel="apple-touch-icon" sizes="180x180" href="/theme/bulma/assets/img/favicon/apple-touch-icon.png?v=ngk7O7gqB9">
+        <link rel="icon" type="image/png" sizes="32x32" href="/theme/bulma/assets/img/favicon/favicon-32x32.png?v=ngk7O7gqB9">
+        <link rel="icon" type="image/png" sizes="16x16" href="/theme/bulma/assets/img/favicon/favicon-16x16.png?v=ngk7O7gqB9">
+        <link rel="manifest" href="/theme/bulma/assets/img/favicon/site.webmanifest?v=ngk7O7gqB9">
+        <link rel="mask-icon" href="/theme/bulma/assets/img/favicon/safari-pinned-tab.svg?v=ngk7O7gqB9" color="#2b5797">
+        <link rel="shortcut icon" href="/theme/bulma/assets/img/favicon/favicon.ico?v=ngk7O7gqB9">
+        <meta name="apple-mobile-web-app-title" content="KeyHelp">
+        <meta name="application-name" content="KeyHelp">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="msapplication-config" content="/theme/bulma/assets/img/favicon/browserconfig.xml?v=ngk7O7gqB9">
+        <meta name="theme-color" content="#ffffff">
+    {% endif %}
+
+    <title>{{ _app.page_title }}</title>
+    <link rel="stylesheet" href="/theme/bulma/assets/css/style{{ _app.theme.is_dark_mode ? '-dark' }}{{ _app.text_direction == 'rtl' ? '-rtl' }}.css?{{ _globals.cache_control }}">
+
+    {# ─── Tailwind (prefix: tw-, no preflight to keep Bulma intact) ─── #}
+    <script src="/theme/bulma/assets/vendor/tailwind/tailwind.min.js"></script>
+    <script>
+        tailwind.config = {
+            prefix: 'tw-',
+            corePlugins: { preflight: false },
+            theme: {
+                extend: {
+                    colors: {
+                        'corp': {
+                            '500': '#3273DC',
+                            '700': '#0f3d6e',
+                            '800': '#00305D',
+                            '900': '#00182e'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    {# ─── Corporate Blue Overrides ─────────────────────────────────────── #}
+    <style>
+        /* Sidebar */
+        #sidebar { background: #0a1928 !important; }
+        #sidebar .menu-label { color: rgba(192,216,240,.55) !important; }
+        #sidebar .menu-list a { color: rgba(192,216,240,.85) !important; }
+        #sidebar .menu-list a:hover,
+        #sidebar .menu-list a.is-active { background: rgba(255,255,255,.10) !important; color: #fff !important; }
+        #sidebar .menu-list a small .icon { color: rgba(192,216,240,.4) !important; }
+
+        /* Header */
+        #header { background: #0e1e30 !important; border-bottom: 1px solid #2c4060 !important; }
+        #header .has-text-grey { color: rgba(192,216,240,.6) !important; }
+        #header #clock { color: rgba(192,216,240,.75) !important; }
+
+        /* Progress bars */
+        progress[data-load-level="low"]    { background-color: #1a3060 !important; }
+        progress[data-load-level="low"]::-webkit-progress-value    { background-color: #3273DC !important; }
+        progress[data-load-level="medium"] { background-color: #2a2010 !important; }
+        progress[data-load-level="medium"]::-webkit-progress-value { background-color: #FFAA00 !important; }
+        progress[data-load-level="high"]   { background-color: #2a1010 !important; }
+        progress[data-load-level="high"]::-webkit-progress-value   { background-color: #FF2B56 !important; }
+
+        /* Cards */
+        .card { border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+        .card-header { border-radius: 8px 8px 0 0; border-bottom: 1px solid #2c4060; }
+    </style>
+
+    {% block page_css %}{% endblock %}
+
+    {% if _white_label.css %}
+        <style>
+            {{ _white_label.css|raw }}
+        </style>
+    {% endif %}
+</head>
+<body class="default-mode">
+    {% block body_content %}{% endblock %}
+
+    <script>
+        var hash = {{ js_hash|raw }};
+        Object.freeze(hash);
+    </script>
+    <script src="/theme/bulma/assets/vendor/jquery/jquery.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/vendor/perfect-scrollbar/perfect-scrollbar.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/vendor/echarts/echarts.min.js"></script>
+    <script src="/theme/bulma/assets/vendor/handlebars/handlebars.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/vendor/tippy/popper.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/vendor/tippy/tippy.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/vendor/select2/select2.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/vendor/select2/i18n/{{ _app.language }}.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/js/functions.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/js/main.js?{{ _globals.cache_control }}"></script>
+
+    {% block page_scripts %}{% endblock %}
+
+    {% if _white_label.javascript %}
+        <script type="text/javascript">
+            {{ _white_label.javascript|raw }}
+        </script>
+    {% endif %}
+</body>
+</html>

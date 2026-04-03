@@ -1,0 +1,59 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _id }}">
+                {{ csrf_field() }}
+
+                {% include 'components/form_browse_directory.twig' with {
+                    '_help': help_path,
+                    '_append_directory': '/www',
+                    '_value': _path,
+                    '_purpose': 'www'
+                } %}
+
+                {% embed 'components/additional_content.twig' with {
+                    'label': define_exceptions
+                } %}
+                    {% block content %}
+                        {% import "macros/forms.twig" as forms %}
+
+                        {{ forms.textarea_wrapped({
+                            'label': exceptions,
+                            'help': exceptions_help,
+                            'name': 'exceptions',
+                            'value': _exceptions|join("\n")
+                        }) }}
+                    {% endblock %}
+                {% endembed %}
+
+                {{ forms.input_wrapped({
+                    'label': area_title,
+                    'type': 'text',
+                    'name': 'area_title',
+                    'value': _area_title,
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'label': username,
+                    'type': 'text',
+                    'name': 'username',
+                    'value': _username,
+                    'is_required': true,
+                }) }}
+
+                {% include 'components/form_password.twig' with { '_leave_empty': _action == 'edit' } %}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

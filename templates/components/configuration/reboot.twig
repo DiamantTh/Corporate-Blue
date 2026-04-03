@@ -1,0 +1,12 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': perform_reboot,
+    'help': confirm_reboot,
+    'options': {
+        'label': confirmation,
+        'name': 'is_reboot',
+        'value': '1'
+    }
+}) }}

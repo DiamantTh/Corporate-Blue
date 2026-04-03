@@ -1,0 +1,76 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+
+{% if _applications is empty %}
+    <p class="has-text-centered has-text-grey">
+        {{ loading_application_list }}
+    </p>
+
+    <div class="has-padding-y-large">
+
+        {{ macros.loading_container() }}
+
+        <div id="app-loading-error" class="has-text-centered" style="display: none">
+            <p class="has-text-danger has-text-weight-bold">
+                {{ an_error_occurred }}
+            </p>
+            <p id="app-loading-error-message" class="has-margin-y-small is-italic"></p>
+            <p>
+                {{ try_again_later }}
+            </p>
+        </div>
+
+        <div id="app-loading-success" class="has-text-centered has-text-grey" style="display: none">
+            {{ auto_redirect|raw }}
+        </div>
+    </div>
+{% else %}
+    {{ forms.radio_wrapped({
+        'label': application_filter,
+        'help': application_filter_help,
+        'options': [
+            {
+                'label': allow_all_apps,
+                'name': 'is_filter_enabled',
+                'value': '0',
+                'is_checked': not _is_filter_enabled,
+            },
+            {
+                'label': allow_only_selected_apps,
+                'name': 'is_filter_enabled',
+                'value': '1',
+                'is_checked': _is_filter_enabled,
+            },
+        ]
+    }) }}
+
+    <div id="app-application-container" class="columns is-multiline" style="display: none;">
+        {% for _category in _applications %}
+            <div class="column is-6-tablet is-6-desktop is-6-widescreen is-4-fullhd">
+                {% embed "components/card.twig" with {
+                    'has_equal_height': true,
+                    'is_card_on_card': true,
+                    'header': {
+                        'icon': '',
+                        'title': _category.label,
+                    },
+                } %}
+                    {% block content %}
+                        {% import "macros/macros.twig" as macros %}
+                        {% import "macros/forms.twig" as forms %}
+
+                        {% for _item in _category.items %}
+                            {{ forms.checkbox({
+                                'name': 'app_ids[]',
+                                'label': _item.name,
+                                'value': _item.id,
+                                'is_checked': _item.selected
+                            }) }}
+                        {% endfor %}
+                    {% endblock %}
+                {% endembed %}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

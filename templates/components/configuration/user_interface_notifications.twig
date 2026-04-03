@@ -1,0 +1,82 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': is_enabled,
+    'options': {
+        'label': yes,
+        'name': 'is_enabled',
+        'value': '1',
+        'is_checked': _is_enabled
+    }
+}) }}
+
+{{ forms.radio_wrapped({
+    'label': area,
+    'options': [{
+        'label': all_areas,
+        'name': 'area',
+        'value': 'all',
+        'is_checked': _area == 'all'
+    },{
+        'label': admin_area,
+        'name': 'area',
+        'value': 'admin',
+        'is_checked': _area == 'admin'
+    },{
+        'label':  client_area,
+        'name': 'area',
+        'value': 'client',
+        'is_checked': _area == 'client'
+    }]
+}) }}
+
+{{ forms.radio_wrapped({
+    'label': message_display,
+    'options': [{
+        'label': on_every_page,
+        'name': 'location',
+        'value': 'all',
+        'is_checked': _location == 'all'
+    },{
+        'label': on_dashboard,
+        'name': 'location',
+        'value': 'dashboard',
+        'is_checked': _location == 'dashboard'
+    }]
+}) }}
+
+{{ forms.radio_wrapped({
+    'label': appearance,
+    'options': [{
+        'label': info,
+        'name': 'appearance',
+        'value': 'info',
+        'is_checked': _appearance == 'info'
+    },{
+        'label': success,
+        'name': 'appearance',
+        'value': 'success',
+        'is_checked': _appearance == 'success'
+    },{
+        'label': warning,
+        'name': 'appearance',
+        'value': 'warning',
+        'is_checked': _appearance == 'warning'
+    },{
+        'label': error,
+        'name': 'appearance',
+        'value': 'error',
+        'is_checked': _appearance == 'error'
+    }]
+}) }}
+
+{# When using WYSIWYG. we need 'is_required_fake' instead of 'is_required' #}
+{{ forms.textarea_wrapped({
+    'label': message,
+    'name': 'message',
+    'value': _message,
+    'is_required_fake': true,
+    'rows': 15,
+}) }}
+

@@ -1,0 +1,114 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': new_backup,
+    }) }}
+</div>
+
+{{ forms.checkbox_wrapped({
+    'label': enable_local_repos,
+    'help': enable_local_repos_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_local_repos_enabled',
+        'value': '1',
+        'is_checked': _is_local_repos_enabled
+    }
+}) }}
+
+{{ forms.label_wrapped({
+    'label': dropbox_app,
+    'help': dropbox_app_help,
+}) }}
+
+{{ forms.input_wrapped({
+    'help': dropbox_app_key,
+    'name': 'dropbox_client_id',
+    'type': 'text',
+    'value': _dropbox_client_id,
+}) }}
+
+{{ forms.input_wrapped({
+    'help': dropbox_app_secret,
+    'name': 'dropbox_client_secret',
+    'type': 'password',
+    'value': _dropbox_client_secret,
+    'autocomplete': 'new-password',
+    'addons': {
+        'right': {
+            'type': 'action',
+            'label': show,
+            'action': 'app-show-password'
+        }
+    },
+}) }}
+
+{{ forms.select_wrapped({
+    'label': cpu_core_limit,
+    'help': cpu_core_limit_help,
+    'name': 'cpu_core_limit',
+    'options': _cpu_core_limit_options,
+    'selected': _cpu_core_limit_options_selected,
+}) }}
+
+<hr class="has-margin-large">
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': old_backup,
+    }) }}
+</div>
+
+{{ forms.checkbox_wrapped({
+    'label': show_old_backup,
+    'help': show_old_backup_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_show_select_page',
+        'value': '1',
+        'is_checked': _is_show_select_page
+    }
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': enable_local_repo,
+    'help': enable_local_repo_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_local_repo_enabled',
+        'value': '1',
+        'is_checked': _is_local_repo_enabled
+    }
+}) }}
+
+<div class="app-show-with-local-repo" style="display: none">
+    {{ forms.input_wrapped({
+        'label': max_files_local_repo,
+        'help': max_files_local_repo_help,
+        'name': 'max_files_local_repo',
+        'type': 'number',
+        'min': 0,
+        'value': _max_files_local_repo,
+    }) }}
+</div>
+
+{{ forms.select_wrapped({
+    'label': compression_rate,
+    'help': compression_rate_help,
+    'name': 'compression_rate',
+    'options': _compression_rates,
+    'selected': _compression_rates_selected,
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': multithreading,
+    'help': multithreading_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_multithreading',
+        'value': '1',
+        'is_checked': _is_multithreading
+    }
+}) }}

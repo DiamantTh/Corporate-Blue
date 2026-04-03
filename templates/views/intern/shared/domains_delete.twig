@@ -1,0 +1,27 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% set _config = { 'domain': { 'label': domain } } %}
+
+    {% if _app.area == 'admin' %}
+        {% set _config = _config|merge({ 'owner': { 'label': owner } }) %}
+    {% endif %}
+
+    {% set _config = _config|merge({ 'target': { 'label': domain_target } }) %}
+
+    {% set _config = _config|merge({ 'email_accounts_count': { 'label': email_accounts_count } }) %}
+
+    {% set _config = _config|merge({ 'subdomain_count': { 'label': subdomain_count } }) %}
+
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_additional_info': delete_additional_info,
+        '_config': _config,
+        '_items': _domains
+    } %}
+{% endblock %}

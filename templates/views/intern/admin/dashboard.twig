@@ -1,0 +1,677 @@
+{% extends 'layout/intern.twig' %}
+
+{% block page_scripts %}
+    <script>
+        clock('#app-server-time', CLOCK_FORMAT_DATE_TIME_FULL);
+    </script>
+
+    <script src="/theme/bulma/assets/js/page_admin_dashboard.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/js/dashboard_notes.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+<div class="columns">
+
+    <div class="column is-7-tablet is-7-desktop is-7-widescreen is-6-fullhd">
+
+        {###############################################################################################################
+            Left | 1st
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'server',
+            },
+            'header': {
+                'icon': 'fa-solid fa-server',
+                'title': server_information,
+                'loading_spinner_class': 'app-server-utilization-loading',
+            },
+        } %}
+            {% block content %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <tbody>
+                            <tr>
+                                <th style="width: 30%">{{ hostname }}</th>
+                                <td>{{ _hostname }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ ip_addresses }}</th>
+                                <td>
+                                    <ul class="horizontal-separated-list">
+                                        {% for ip_address in _ip_addresses %}
+                                            <li>{{ ip_address }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>{{ processor }}</th>
+                                <td>
+                                    {% if _cpu_info.vendor_id %}
+                                        <img class="svg-vendor-logo has-margin-right-small" src="/theme/bulma/assets/img/vendor/{{ _cpu_info.vendor_id }}.svg?{{ _globals.cache_control }}" alt="">
+                                    {% endif %}
+                                    {{ _cpu_info.processor_label }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>{{ cpu_cores }}</th>
+                                <td>
+                                    {{ _cpu_info.core_label }}
+                                </td>
+                            </tr>
+                            {%  if _is_virtualized %}
+                                <tr>
+                                    <th>{{ system_virtualization }}</th>
+                                    <td>
+                                        {{ _virtualization_label }}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <th>{{ server_time }}</th>
+                                <td>
+                                    <span id="app-server-time">
+                                        {{ _server_time }}
+                                    </span>
+                                    ({{ _time_zone }})
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>{{ uptime }}</th>
+                                <td>
+                                    <ul class="horizontal-separated-list">
+                                        <li><span id="app-uptime-days">?</span> {{ days }}</li>
+                                        <li><span id="app-uptime-hours">?</span> {{ hours }}</li>
+                                        <li><span id="app-uptime-minutes">?</span> {{ minutes }}</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% if _ssh_fingerprint %}
+                                <tr>
+                                    <th>{{ ssh_fingerprint }}</th>
+                                    <td>
+                                        <ul class="horizontal-separated-list">
+                                        {% for _algorithm, _formats in _ssh_fingerprint %}
+                                            {% set _tippy_content %}
+                                                <table class="table is-narrow">
+                                                {% for _format, _key in _formats %}
+                                                    <tr>
+                                                        <th>{{ _format }}</th>
+                                                        <td class="is-family-monospace">{{ _key }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </table>
+                                            {% endset %}
+                                            <li>
+                                                <a href="javascript:void(0)" class="app-tooltip-click" data-tippy-maxWidth="500px" data-tippy-content="{{ _tippy_content|escape('html') }}">{{ _algorithm }}</a>
+                                            </li>
+                                        {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if _dkim_record %}
+                                <tr>
+                                    <th>{{ dkim_dns_record }}</th>
+                                    <td>
+                                        <a class="has-text-link" data-open-modal="app-modal-dkim">
+                                            {{ show }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endblock %}
+        {% endembed %}
+
+        {###############################################################################################################
+            Left | 2nd
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'margin': 'large',
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'server_load',
+            },
+            'header': {
+                'icon': 'fa-solid fa-bolt',
+                'title': server_utilization,
+                'loading_spinner_class': 'app-server-utilization-loading',
+            },
+        } %}
+            {% block content %}
+                {% import "macros/macros.twig" as macros %}
+                {% import "macros/forms.twig" as forms %}
+
+                <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                    <tbody>
+                        <tr>
+                            <th style="width: 30%">{{ cpu_load }}</th>
+                            <td>
+                                {% include 'components/cpu_load.twig' %}
+
+                                {% if _is_load_incorrect %}
+                                    <div class="has-text-grey">
+                                        <small>
+                                            {{ load_incorrect }}
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ process_count }}</th>
+                            <td>
+                                <ul class="horizontal-separated-list">
+                                    <li><span id="app-process-count">?</span></li>
+                                    <li><a href="?page=admin_process_manager">{{ manage }}</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ emails_in_queue }}</th>
+                            <td>
+                                <ul class="horizontal-separated-list">
+                                    <li><span id="app-emails-in-queue">?</span></li>
+                                    <li><a href="?page=admin_mail_queue">{{ manage }}</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        {% for key,item in _memory_usage %}
+                            <tr>
+                                <th>{{ item.label }}</th>
+                                <td>
+                                    <ul class="horizontal-separated-list">
+                                        <li><b>{{ free }}:</b> <span id="app-{{ key }}-free">{{ item.free }}</span></li>
+                                        <li><b>{{ used }}:</b> <span id="app-{{ key }}-used">{{ item.used }}</span></li>
+                                        <li><b>{{ total }}:</b> <span id="app-{{ key }}-total">{{ item.total }}</span></li>
+                                    </ul>
+                                    {{ macros.usage_indicator({
+                                        'percent': item.percent,
+                                    }) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        {% for item in _disk_usage %}
+                            <tr data-mount="{{ item.mount }}">
+                                <th>
+                                    {{ disk_space }}
+                                    <p class="has-text-weight-normal">
+                                        {{ mount_point }}
+
+                                        {% if item.mount|length > 12 %}
+                                            <span class="app-tooltip" data-tippy-maxWidth="700px" data-tippy-content="{{ item.mount }}">
+                                                <code class="has-margin-left-xsmall has-ws-no-wrap">{{ item.mount|slice(0, 12) ~ '...' }}</code>
+                                            </span>
+                                        {% else %}
+                                            <code class="has-margin-left-xsmall has-ws-no-wrap">{{ item.mount }}</code>
+                                        {% endif %}
+                                    </p>
+                                </th>
+                                <td>
+                                    <ul class="horizontal-separated-list">
+                                        <li><b>{{ free }}:</b> <span class="app-disk-free">{{ item.free }}</span></li>
+                                        <li><b>{{ used }}:</b> <span class="app-disk-used">{{ item.used }}</span></li>
+                                        <li><b>{{ reserve }}:</b> <span class="app-disk-reserve">{{ item.reserve }}</span></li>
+                                        <li><b>{{ total }}:</b> <span class="app-disk-total">{{ item.total }}</span></li>
+                                    </ul>
+                                    {{ macros.usage_indicator({
+                                        'percent': item.percent,
+                                    }) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endblock %}
+        {% endembed %}
+
+        {###############################################################################################################
+            Left | 3rd
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'margin': 'large',
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'applications',
+            },
+            'header': {
+                'icon': 'fa-solid fa-tv',
+                'title': applications,
+            },
+        } %}
+            {% block content %}
+                {% import "macros/macros.twig" as macros %}
+                {% import "macros/forms.twig" as forms %}
+
+                <div class="has-margin-bottom-medium" style="display: none">
+                    <div id="app-software-updates-available" class="has-text-centered" style="display: none">
+
+                        <!-- Content added by JavaScript -->
+
+                        <div id="app-dist-upgrade-note" class="has-text-centered" style="display: none">
+                            (<a href="javascript:void(0)" class="app-tooltip-click" data-tippy-content="{{ update_note_help }}">{{ why_do_i_see_this_hint }}</a>)
+                        </div>
+
+                        {% if _is_package_update_disabled %}
+                            <div class="has-text-danger has-text-weight-bold">
+                                {{ auto_update_disabled }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="app-reboot-required" class="has-text-centered has-margin-top-medium" style="display: none">
+                        <div class="has-text-danger has-text-weight-bold">
+                            {{ reboot_required }}
+                        </div>
+                        <div class="has-margin-top-xsmall">
+                            {{ forms.button({
+                                'label': reboot_server,
+                                'style': 'primary',
+                                'url': '?page=admin_configuration&configure=reboot'
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <tbody>
+                            {% for key, item in _applications %}
+                                <tr>
+                                    {% if key == 'keyhelp' %}
+                                        <th>
+                                            {{ _white_label.is_control_panel ? control_panel : 'KeyHelp' }}
+                                        </th>
+                                        <td class="has-text-centered">
+                                            {% if _white_label.is_control_panel and _white_label.favicon_url %}
+                                                <img class="svg-vendor-logo" src="{{ _white_label.favicon_url }}&{{ _globals.cache_control }}">
+                                            {% else %}
+                                                <img class="svg-vendor-logo" src="/theme/bulma/assets/img/{{ _app.theme.is_dark_mode ? 'dark/' }}keyhelp-logo.svg?{{ _globals.cache_control }}" alt="">
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <ul class="horizontal-separated-list">
+                                                <li>
+                                                    {{ item.version }}
+                                                    <span class="has-text-grey">
+                                                        <small>
+                                                            (Build {{ item.build }})
+                                                        </small>
+                                                    </span>
+                                                </li>
+                                                {% if not _white_label.is_hide_changelog %}
+                                                    <li><a href="https://changelog.keyhelp.de" target="_blank" rel="nofollow noopener noreferrer">{{ changelog }}</a></li>
+                                                {% endif %}
+                                            </ul>
+
+                                            <div id="app-keyhelp-update-available" class="has-text-success has-text-weight-bold" style="display: none">
+                                                {{ update_available }}
+                                            </div>
+
+                                            <div id="app-keyhelp-update-info-error" class="has-text-danger has-text-weight-bold" style="display: none">
+                                                {{ update_info_error }}
+                                            </div>
+
+                                            {% if _is_panel_update_disabled %}
+                                                <div class="has-text-danger has-text-weight-bold">
+                                                    {{ auto_update_disabled }}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    {% else %}
+                                        <th>{{ item.label }}</th>
+                                        <td class="has-text-centered">
+                                            <img class="svg-vendor-logo" src="/theme/bulma/assets/img/vendor/{{ item.img }}.svg?{{ _globals.cache_control }}" alt="">
+                                        </td>
+                                        <td>
+                                            {% if item.ajax %}
+                                                <span class="app-applications-loading">
+                                                    {# Only used on initial page load. #}
+                                                    <span class="icon is-small has-text-grey-light">
+                                                        <i class="fa-solid fa-rotate fa-spin"></i>
+                                                    </span>
+                                                </span>
+                                                <span id="app-application-version-{{ key }}"></span>
+                                            {% else %}
+                                                {{ item.version }}
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endblock %}
+
+            {% block footer %}
+                <div class="card-footer-item has-text-right">
+                    <a href="?page=admin_installed_packages">
+                        {{ show_details }}
+                    </a>
+                </div>
+            {% endblock %}
+        {% endembed %}
+
+    </div>
+
+    <div class="column">
+
+        {###############################################################################################################
+            Right | 1st
+        ###############################################################################################################}
+
+        {% include 'components/dashboard_notes.twig' %}
+
+        {###############################################################################################################
+            Right | 2nd
+        ###############################################################################################################}
+
+        {% if _service_config %}
+
+            {% embed "components/card.twig" with {
+                'margin': 'large',
+                'collapse': {
+                    'is_enabled': true,
+                    'cookie_name': 'service_status',
+                },
+                'header': {
+                    'icon': 'fa-solid fa-heart-pulse',
+                    'title': service_status,
+                    'loading_spinner_class': 'app-service-status-loading',
+                },
+            } %}
+                {% block content %}
+                    <div id="app-service-status-error" class="has-text-danger" style="display: none">
+                        AJAX_ERROR
+                    </div>
+
+                    <div id="app-service-status-content" class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    <th>{{ service }}</th>
+                                    <th>
+                                        {{ status }}
+                                    </th>
+                                    <th colspan="2" class="has-text-centered">{{ port }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _service_config %}
+                                    <tr class="app-service-status-item" data-port="{{ item.port }}" data-protocol="{{ item.protocol }}">
+                                        <th>
+                                            {{ item.name }}
+                                        </th>
+
+                                        <td>
+                                            <span class="app-service-status-item-loading">
+                                                {# Only used on initial page load. #}
+                                                <span class="icon is-small has-text-grey-light">
+                                                    <i class="fa-solid fa-rotate fa-spin"></i>
+                                                </span>
+                                            </span>
+                                            <div class="has-text-weight-bold">
+                                                <span class="has-text-success app-service-status-item-online" style="display: none">{{ online }}</span>
+                                                <span class="has-text-danger app-service-status-item-offline" style="display: none">{{ offline }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="is-narrow has-text-right">
+                                            {{ item.port }}
+                                        </td>
+                                        <td class="is-narrow has-text-grey-light">
+                                            {{ item.protocol|upper }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                {% endblock %}
+
+                {% block footer %}
+                    <div class="card-footer-item has-text-right">
+                        <a href="?page=admin_configuration&configure=service_status">
+                            {{ configure }}
+                        </a>
+                    </div>
+                {% endblock %}
+            {% endembed %}
+
+        {% endif %}
+
+        {###############################################################################################################
+            Right | 3rd
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'margin': 'large',
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'resources',
+            },
+            'header': {
+                'icon': 'fa-solid fa-gauge-high',
+                'title': resources,
+            },
+        } %}
+            {% block content %}
+                {% import "macros/macros.twig" as macros %}
+                {% import "macros/forms.twig" as forms %}
+
+                <div>
+                    {% if _is_show_disk_space_chart %}
+                        <div class="columns is-desktop">
+                            <div class="column is-narrow">
+                                <div style="width: 125px; height: 125px; margin: auto auto;">
+                                    <canvas class="app-chart" data-chart="{{ _consumed_disk_space_chart|json_encode }}"></canvas>
+                                </div>
+                            </div>
+                            <div class="column table-container">
+                                <table class="table is-fullwidth is-striped is-hoverable is-fullwidth has-ws-no-wrap">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                {{ consumed_disk_space }}
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                {{ macros.icon({text: webspace, color: '#3273DC'}) }}
+                                            </td>
+                                            <td class="has-text-right">{{ _consumed_disk_space.web }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="is-narrow">
+                                                {{ macros.icon({text: emails, color: '#23D160'}) }}
+                                            </td>
+                                            <td class="has-text-right">{{ _consumed_disk_space.email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="is-narrow">
+                                                {{ macros.icon({text: databases, color: '#FF2B56'}) }}
+                                            </td>
+                                            <td class="has-text-right">{{ _consumed_disk_space.db }}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="is-summary">
+                                        <tr>
+                                            <td></td>
+                                            <th class="has-text-right">
+                                                {{ _consumed_disk_space.total }}
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if _is_show_traffic_chart %}
+                        <div class="columns is-desktop">
+                            <div class="column is-narrow">
+                                <div style="width: 125px; height: 125px; margin: auto auto;">
+                                    <canvas class="app-chart" data-chart="{{ _consumed_traffic_chart|json_encode }}"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="column table-container">
+                                <table class="table is-fullwidth is-striped is-hoverable is-fullwidth has-ws-no-wrap">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                {{ traffic }} / {{ _traffic_month }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="is-narrow">
+                                                {{ macros.icon({text: 'HTTP', color: '#3273DC'}) }}
+                                            </td>
+                                            <td class="has-text-right">{{ _consumed_traffic.http }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="is-narrow">
+                                                {{ macros.icon({text: 'FTP', color: '#23D160'}) }}
+                                            </td>
+                                            <td class="has-text-right">{{ _consumed_traffic.ftp }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="is-narrow">
+                                                {{ macros.icon({text: 'POP3/IMAP', color: '#FF2B56'}) }}
+                                            </td>
+                                            <td class="has-text-right">{{ _consumed_traffic.pop3_imap }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="is-narrow">
+                                                {{ macros.icon({text: 'SMTP', color: '#FFAA00'}) }}
+                                            </td>
+                                            <td class="has-text-right">{{ _consumed_traffic.smtp }}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="is-summary">
+                                        <tr>
+                                            <td></td>
+                                            <th class="has-text-right">{{ _consumed_traffic.total }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable">
+                            <tbody>
+                                {% for item in _resources %}
+                                    <tr>
+                                        <th>
+                                            {{ item.label }}
+                                        </th>
+                                        <td class="has-text-right">
+                                            {{ item.amount }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endblock %}
+        {% endembed %}
+
+        {###############################################################################################################
+            Right | 4rd
+        ###############################################################################################################}
+
+        {% if not _white_label.is_hide_news %}
+
+            {% embed "components/card.twig" with {
+                'margin': 'large',
+                'collapse': {
+                    'is_enabled': true,
+                    'cookie_name': 'news',
+                },
+                'header': {
+                    'icon': 'fa-solid fa-rss',
+                    'title': news,
+                },
+            } %}
+                {% block content %}
+                    {% import "macros/macros.twig" as macros %}
+                    {% import "macros/forms.twig" as forms %}
+
+                    <div id="app-news-container">
+                        <!-- Content added by JavaScript -->
+
+                        <div class="has-margin-large has-padding-small">
+                            <!--
+                                Only to have some content, so that loading animation can be displayed.
+                                Will be overriden, when ajax call was finished.
+                            -->
+                            <script id="app-news-template" type="text/x-handlebars-template">
+                                {% verbatim %}
+                                <div>
+                                    <p class="title is-6">
+                                        <a href="{{ url }}" target="_blank" rel="nofollow noopener noreferrer">
+                                            {{ title }}
+                                        </a>
+                                    </p>
+                                    <p class="subtitle is-7 has-text-grey">
+                                        {{ date }}
+                                    </p>
+                                    <p>
+                                        {{ excerpt }}
+                                        <a href="{{ url }}" target="_blank" rel="nofollow noopener noreferrer">[&hellip;]</a>
+                                    </p>
+                                </div>
+                                {{# if has_spacer }}
+                                    <hr class="has-margin-x-large">
+                                {{/ if }}
+                                {% endverbatim %}
+                            </script>
+                        </div>
+                    </div>
+                {% endblock %}
+
+                {% block footer %}
+                    <div class="card-footer-item has-text-right">
+                        <a href="https://www.keyhelp.de/{{ _app.language == 'de' ? 'de' : 'en' }}/news" rel="nofollow noopener noreferrer" target="_blank">
+                            {{ more_news }}
+                        </a>
+                    </div>
+                {% endblock %}
+            {% endembed %}
+
+        {% endif %}
+    </div>
+</div>
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% include 'components/modal/dkim.twig' %}
+
+{% endblock %}

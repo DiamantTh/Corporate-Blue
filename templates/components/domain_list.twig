@@ -1,0 +1,369 @@
+{% import "macros/macros.twig" as macros %}
+
+{% set _has_owner_column = _app.area == 'admin' and not _group_by_clients %}
+{% set _has_php_column = _show_php_version and (_app.area == 'admin' or _user.has_php) %}
+{% set _has_client_edit_button = _app.area == 'admin' and not _group_by_clients %}
+
+{% include 'components/table_scroll_container.twig' %}
+<div class="table-container">
+    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+        <thead>
+            <tr>
+                {{ macros.header_checkbox() }}
+
+                <th {{ macros.header_sorting('status') }} class="is-narrow">
+                    S
+                </th>
+
+                <th {{ macros.header_sorting('domain_utf8') }} colspan="2" style="width: 30%">
+                    {{ domain }}
+                </th>
+
+                {% if _has_owner_column %}
+                    <th {{ macros.header_sorting('owner') }} colspan="2">
+                        {{ owner }}
+                    </th>
+                {% endif %}
+
+                {% if _show_domain_target %}
+                    <th {{ macros.header_sorting('target') }}>
+                        {{ domain_target }}
+                    </th>
+                {% endif %}
+
+                {% if _show_email_sending_receiving %}
+                    <th {{ macros.header_sorting('email_sending_receiving') }} class="is-narrow">
+                        {{ email_sending_receiving }}
+                    </th>
+                {% endif %}
+
+                {% if _show_traffic %}
+                    <th {{ macros.header_sorting('traffic') }} class="is-narrow">
+                        {{ traffic }} / {{ month }}
+                    </th>
+                {% endif %}
+
+                {% if _show_security %}
+                    <th {{ macros.header_sorting('security') }} class="is-narrow">
+                        {{ security }}
+                    </th>
+                {% endif %}
+
+                {% if _has_php_column %}
+                    <th {{ macros.header_sorting('php_version') }} class="is-narrow">
+                        {{ php_version }}
+                    </th>
+                {% endif %}
+
+                <th class="is-narrow">
+                    {{ actions }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in _domains %}
+                <tr>
+                    {{ item.is_deletable ? macros.row_checkbox(item.id) : '<td></td>' }}
+
+                    <td style="display: none">
+                        <input type="text" name="dkim_record" value="{{ item.dkim_record }}">
+                        <input type="text" name="dkim_host" value="{{ item.dkim_host }}">
+                        <input type="text" name="dkim_record_value_quotes" value="{{ item.dkim_record_value_quotes }}">
+                        <input type="text" name="dkim_record_value_no_quotes" value="{{ item.dkim_record_value_no_quotes }}">
+                    </td>
+
+                    <td class="has-padding-x-xsmall">
+                        {% include 'components/icon.twig' with { '_type': item.status } %}
+                    </td>
+
+                    <td class="has-ws-no-wrap">
+                        <a href="{{ item.url }}" {% if not item.is_search_result %}class="has-text-grey"{% endif %} target="_blank" rel="nofollow noopener noreferrer">
+                            {% if _is_indented %}
+                                {% if item.is_subdomain %}
+
+                                    {% for i in 1..item.hierarchy_level %}
+                                        <small>
+                                            <span class="icon is-medium has-text-grey-light">
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </span>
+                                        </small>
+                                    {% endfor %}
+
+                                    {{ item.domain_utf8 }}
+                                {% else %}
+                                    <b>{{ item.domain_utf8 }}</b>
+                                {% endif %}
+                            {% else %}
+                                {{ item.domain_utf8 }}
+                            {% endif %}
+                        </a>
+                    </td>
+
+                    <td class="is-narrow">
+                        {% if item.delete_on %}
+                            <span class="app-tooltip-mandatory" data-tippy-content="<b>{{ will_be_deleted_on }}</b> {{ item.delete_on }}">
+                                <span class="icon is-medium has-text-grey-light">
+                                    <i class="fa-solid fa-trash"></i>
+                                </span>
+                            </span>
+                        {% else %}
+                            {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                        {% endif %}
+
+                        {% if item.is_disabled %}
+                            <span class="app-tooltip" data-tippy-content="{{ disabled }}">
+                                <span class="icon is-medium has-text-danger">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                            </span>
+                        {% else %}
+                            {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                        {% endif %}
+
+                        {% if item.has_custom_vhost %}
+                            <span class="app-tooltip" data-tippy-content="{{ has_custom_vhost }}">
+                                <span class="icon is-medium has-text-success">
+                                    <i class="fa-solid fa-feather-pointed"></i>
+                                </span>
+                            </span>
+                        {% else %}
+                            {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                        {% endif %}
+
+                        {% set additional_domain_info %}
+                            <table class="table is-narrow is-nested-table">
+                                <tr>
+                                    <th>{{ created_at }}</th>
+                                    <td>{{ item.created_at }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ email_sending_receiving }}</th>
+                                    <td>
+                                        {% if item.is_email_domain %}
+                                            {{ item.is_email_sending_only ? sending_only : yes }}
+                                        {% else %}
+                                            {{ no }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if not item.is_subdomain %}
+                                    <tr>
+                                        <th>{{ subdomain_count }}</th>
+                                        <td>{{ item.subdomain_count }}</td>
+                                    </tr>
+                                    {% if not item.dkim_record is empty %}
+                                        <tr>
+                                            <th>{{ dkim_dns_record }}</th>
+                                            <td>
+                                                <a class="has-text-link app-open-dkim-modal">
+                                                    {{ show }}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endif %}
+                            </table>
+                        {% endset %}
+                        <span class="app-tooltip-mandatory" data-tippy-content="{{ additional_domain_info|escape('html') }}">
+                            {% include 'components/icon.twig' with {
+                                '_type': 'info'
+                            } %}
+                        </span>
+                    </td>
+
+                    {% if _has_owner_column %}
+                        <td class="has-ws-no-wrap is-narrow">
+                            {{ macros.link_to_switch_to_client(item.id_user, item.username, _app.page) }}
+                        </td>
+                        <td class="is-narrow">
+                            {% if item.notes %}
+                                <div class="app-tooltip-mandatory" data-tippy-content="{{ item.notes|nl2br }}">
+                                    <span class="icon is-medium has-text-grey-light">
+                                        <i class="fa-solid fa-message"></i>
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
+                    {% if _show_domain_target %}
+                        <td class="has-ws-no-wrap">
+                            {# Watch out for white-spaces, we do not want any white space between /www/ and the rest of the path #}
+                            {% apply spaceless %}
+                                {% if item.is_redirect %}
+                                    <span class="has-margin-right-xsmall">
+                                        {{ item.target_auxiliary }}
+                                        &#10132;
+                                    </span>
+                                {% else %}
+                                    {% if _has_file_manager %}
+                                        {% include 'components/icon.twig' with {
+                                            '_type': 'file_manager',
+                                            '_url': '?page=client_file_manager&change_dir=' ~ (item.target_auxiliary ~ item.target)|url_encode()
+                                        } %}
+                                    {% endif %}
+
+                                    <span class="has-text-grey-light">
+                                        {{ item.target_auxiliary -}}
+                                    </span>
+                                {% endif %}
+
+                                {% if item.target|length > 60 %}
+                                    <span class="app-tooltip-mandatory" data-tippy-maxWidth="700px" data-tippy-content="{{ item.target }}">
+                                        {{- item.target|slice(0, 60) ~ '...' }}
+                                    </span>
+                                {% else %}
+                                    <span>
+                                        {{- item.target }}
+                                    </span>
+                                {% endif %}
+                            {% endapply %}
+                        </td>
+                    {% endif %}
+
+                    {% if _show_email_sending_receiving %}
+                        <td class="has-text-right">
+                            {% if item.is_email_domain %}
+                                {{ item.is_email_sending_only ? sending_only : yes }}
+                            {% else %}
+                                {{ no }}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
+                    {% if _show_traffic %}
+                        <td class="has-text-right">
+                            {{ item.traffic > 0 ? item.traffic|bytes }}
+                        </td>
+                    {% endif %}
+
+                    {% if _show_security %}
+                        <td class="has-ws-no-wrap">
+                            {% if item.is_certificate or item.is_lets_encrypt %}
+                                {% if item.is_certificate %}
+                                    <span class="icon is-medium has-text-warning app-tooltip-mandatory" data-tippy-content="{{ ssl_certificate }}">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </span>
+                                {% elseif item.is_lets_encrypt %}
+                                    <span class="icon is-medium has-text-info app-tooltip-mandatory" data-tippy-content="{{ lets_encrypt }}">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </span>
+                                {% endif %}
+
+                                {% if item.is_prefer_https %}
+                                    {{ macros.tag('HTTPS', 'is-success', 'fa-solid fa-up-right-from-square', http_to_https) }}
+                                {% endif %}
+
+                                {% if item.is_hsts %}
+                                    {{ macros.tag('HSTS', 'is-success', '', 'HTTP Strict Transport Security') }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
+                    {% if _has_php_column %}
+                        <td class="has-ws-no-wrap">
+                            {% if item.php_version %}
+                                {% if item.is_php_info %}
+                                    <a href="?page={{ _app.page }}&action=phpinfo&id={{ item.id }}" target="_blank" rel="nofollow noopener noreferrer">
+                                {% endif %}
+                                {{ item.php_version }}
+                                {{ item.is_php_info ? '</a>'}}
+                            {% else %}
+                                <span class="has-text-grey-light">
+                                    {% if item.is_php_info %}
+                                        <a href="?page={{ _app.page }}&action=phpinfo&id={{ item.id }}" target="_blank" rel="nofollow noopener noreferrer">
+                                    {% endif %}
+                                    {{ _php_default_version }}
+                                    {{ item.is_php_info ? '</a>'}}
+                                    | {{ default }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
+                    <td class="is-narrow">
+                        {% include 'components/icon.twig' with {
+                            '_type': 'edit',
+                            '_url': '?page=domains&action=edit&id=' ~ item.id
+                        } %}
+
+                        {% if _has_client_edit_button %}
+                            {% include 'components/icon.twig' with {
+                                '_type': 'user_edit',
+                                '_url': '?page=admin_accounts_client&action=edit&id=' ~ item.id_user
+                            } %}
+                        {% endif %}
+
+                        {% if _app.area == 'admin' or _user.has_dns_editor %}
+                            {% if item.is_subdomain %}
+                                {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                            {% elseif item.has_dns_disabled %}
+                                {% include 'components/icon.twig' with {
+                                    '_type': 'dns_disabled',
+                                    '_url': '?page=dns_editor&action=edit&id=' ~ item.id
+                                } %}
+                            {% elseif item.has_dns_modified %}
+                                {% include 'components/icon.twig' with {
+                                    '_type': 'dns_active',
+                                    '_url': '?page=dns_editor&action=edit&id=' ~ item.id
+                                } %}
+                            {% else %}
+                                {% include 'components/icon.twig' with {
+                                    '_type': 'dns',
+                                    '_url': '?page=dns_editor&action=edit&id=' ~ item.id
+                                } %}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if item.is_redirect or item.is_disabled %}
+                            {% include 'components/icon.twig' with {
+                                '_type': 'spacer'
+                            } %}
+                        {% else %}
+                            {% include 'components/icon.twig' with {
+                                '_type': 'logs',
+                                '_url': '?page=domains_logs&id=' ~ item.id
+                            } %}
+                        {% endif %}
+
+                        {% if item.is_deletable %}
+                            {% include 'components/icon.twig' with {
+                                '_type': 'delete',
+                                '_url': '?page=domains&action=delete&id=' ~ item.id
+                            } %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    {{ _domains|length|i18n_format }} {{ items_total }}
+                </td>
+
+                {% if _has_owner_column %}
+                    <td colspan="2">
+                    </td>
+                {% endif %}
+
+                {% if _show_domain_target %}
+                    <td></td>
+                {% endif %}
+
+                {% if _show_email_sending_receiving %}
+                    <td></td>
+                {% endif %}
+
+                {% if _show_traffic %}
+                    <td class="has-text-right">
+                        {{ _total_traffic|bytes }}
+                    </td>
+                {% endif %}
+
+                <td colspan="42">
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

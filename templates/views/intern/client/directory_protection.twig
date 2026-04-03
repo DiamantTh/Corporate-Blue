@@ -1,0 +1,133 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': add_directory_protection,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-protected-dir-index'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _protected_dir_items is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-protected-dir-index" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('status') }} class="is-narrow">
+                                        S
+                                    </th>
+                                    <th {{ macros.header_sorting('username') }}>
+                                        {{ username }}
+                                    </th>
+                                    <th {{ macros.header_sorting('path') }} colspan="2">
+                                        {{ directory }}
+                                    </th>
+                                    <th {{ macros.header_sorting('area_title') }} colspan="2">
+                                        {{ area_title }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _protected_dir_items %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td class="has-padding-x-xsmall">
+                                            {% include 'components/icon.twig' with { '_type': item.status } %}
+                                        </td>
+                                        <td>
+                                            {{ item.username }}
+                                        </td>
+                                        <td>
+                                            {% if _has_file_manager %}
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'file_manager',
+                                                    '_url': '?page=client_file_manager&change_dir=' ~ ('/www/' ~ item.path)|url_encode()
+                                                } %}
+                                            {% endif %}
+
+                                            <span class="has-text-grey-light">/www/</span>
+                                            {{- item.path }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% if item.has_exceptions %}
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'attention',
+                                                    '_color': 'has-text-grey',
+                                                    '_tooltip': has_exceptions
+                                                } %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ item.area_title }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% if item.is_indistinct %}
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'attention',
+                                                    '_tooltip': not_unique
+                                                } %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _protected_dir_items|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

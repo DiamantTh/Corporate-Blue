@@ -1,0 +1,343 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_email.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+        <br><br>
+        {{ _total_size_text|raw }}
+    </p>
+
+    {# Button line #}
+    {% set _usage = [ _usage[0]|merge({'label': email_accounts}), _usage[1]|merge({'label': email_addresses}), _usage[2]|merge({'label': email_forwardings}) ] %}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_usage': _usage,
+        '_buttons': [
+            forms.button({
+                'label': add_email_account,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-email-index'
+    }) %}
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_search_options': _search_options,
+    }) %}
+
+    {# Item table #}
+    {% if _email_accounts is empty %}
+        <div class="card">
+            <div class="card-content">
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <form id="form-email-index" action="?page={{ _app.page }}" method="post">
+            {{ csrf_field() }}
+
+            {% for main_domain in _email_accounts %}
+
+                {% embed "components/card.twig" with {
+                    'margin': 'large',
+                    'collapse': {
+                        'is_enabled': true,
+                        'cookie_name': main_domain.ascii,
+                    },
+                    'header': {
+                        'icon': 'fa-solid fa-envelopes-bulk',
+                        'title': main_domain.label,
+                    },
+                } %}
+                    {% block content %}
+                        {% import "macros/macros.twig" as macros %}
+                        {% import "macros/forms.twig" as forms %}
+
+                        {% include 'components/table_scroll_container.twig' %}
+
+                        <div class="table-container">
+                            <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                                <thead>
+                                    <tr>
+                                        {{ macros.header_checkbox() }}
+
+                                        <th {{ macros.header_sorting('status', main_domain.ascii) }} class="is-narrow">
+                                            S
+                                        </th>
+                                        <th {{ macros.header_sorting('email_utf8', main_domain.ascii) }} colspan="2">
+                                            {{ email_account }}
+                                        </th>
+                                        <th {{ macros.header_sorting('mailbox_size', main_domain.ascii) }} style="width:300px;">
+                                            {{ mailbox_size }}
+                                        </th>
+                                        {% if _catch_all_enabled %}
+                                            <th {{ macros.header_sorting('is_catch_all', main_domain.ascii) }} class="is-narrow">
+                                                {{ catch_all }}
+                                            </th>
+                                        {% endif %}
+                                        <th class="is-narrow">
+                                            {{ advanced_settings }}
+                                        </th>
+                                        <th class="is-narrow">
+                                            {{ connection_data }}
+                                        </th>
+                                        <th class="is-narrow">
+                                            {{ actions }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in main_domain.items %}
+                                        <tr>
+                                            {{ macros.row_checkbox(item.id) }}
+
+                                            <td class="has-padding-x-xsmall">
+                                                {% include 'components/icon.twig' with { '_type': item.status } %}
+                                            </td>
+                                            <td class="has-ws-no-wrap">
+                                                <span class="has-text-weight-bold">{{ item.email_utf8 }}</span>
+
+                                                {% if item.aliases is not empty %}
+                                                    {% set _alias_items_to_show = 10 %}
+
+                                                    <ul>
+                                                    {% for alias in item.aliases %}
+                                                        <li class="{{ loop.index > _alias_items_to_show ? 'is-hidden'}}">
+                                                            <small>
+                                                                <span class="icon is-medium has-text-grey-light">
+                                                                    <i class="fa-solid fa-angle-right"></i>
+                                                                </span>
+                                                            </small>
+                                                            {{ alias }}
+                                                        </li>
+                                                    {% endfor %}
+
+                                                    {% if item.aliases|length > _alias_items_to_show %}
+                                                        <li class="app-show-more-items">
+                                                            <small>
+                                                                <span class="icon is-medium has-text-grey-light">
+                                                                    <i class="fa-solid fa-angle-right"></i>
+                                                                </span>
+                                                            </small>
+                                                            <a href="javascript:void(0)">{{ show_more }} ({{ (item.aliases|length) - _alias_items_to_show }})</a>
+                                                        </li>
+                                                    {% endif %}
+                                                    </ul>
+                                                {% endif %}
+
+                                                {% if item.description %}
+                                                    <p class="has-text-grey has-margin-top-xsmall">
+                                                        {{ item.description }}
+                                                    </p>
+                                                {% endif %}
+                                            </td>
+                                            <td class="has-ws-no-wrap">
+                                                {% if item.forwardings is not empty %}
+                                                    {% set _forwarding_items_to_show = 5 %}
+
+                                                    <span class="has-text-grey">{{ forward_to }}</span>
+                                                    <ul>
+                                                        {% for forwarding in item.forwardings %}
+                                                            <li class="{{ loop.index > _forwarding_items_to_show ? 'is-hidden'}}">
+                                                                <small>
+                                                                    <span class="icon is-medium has-text-grey-light">
+                                                                        <i class="fa-solid fa-angle-right"></i>
+                                                                    </span>
+                                                                </small>
+                                                                {{ forwarding }}
+                                                            </li>
+                                                        {% endfor %}
+
+                                                        {% if item.forwardings|length > _forwarding_items_to_show %}
+                                                            <li class="app-show-more-items">
+                                                                <small>
+                                                                    <span class="icon is-medium has-text-grey-light">
+                                                                        <i class="fa-solid fa-angle-right"></i>
+                                                                    </span>
+                                                                </small>
+                                                                <a href="javascript:void(0)">{{ show_more }} ({{ (item.forwardings|length) - _forwarding_items_to_show }})</a>
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                {% endif %}
+                                            </td>
+                                            <td class="has-ws-no-wrap">
+                                                {% if item.is_forwarding_account %}
+                                                    <strong>{{ forwarding_account }}</strong>
+                                                    {% if item.has_significant_mailbox_size %}
+                                                        <div class="has-text-grey-light">
+                                                            ({{ item.usage.current }})
+                                                        </div>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ macros.usage_indicator(item.usage) }}
+                                                {% endif %}
+                                            </td>
+                                            {% if _catch_all_enabled %}
+                                                <td>
+                                                    {{ macros.status_icon(item.is_catch_all, [active, inactive], true) }}
+                                                </td>
+                                            {% endif %}
+                                            <td class="has-ws-no-wrap">
+                                                {% if not item.is_forwarding_account %}
+                                                    {% if item.has_spam_check %}
+                                                        {{ macros.tag(spam, 'is-info', '') }}
+                                                    {% endif %}
+
+                                                    {% if item.has_virus_check %}
+                                                        {{ macros.tag(virus, 'is-success', '') }}
+                                                    {% endif %}
+
+                                                    {% if item.has_auto_expunge %}
+                                                        {{ macros.tag(auto_expunge, 'is-warning', '') }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if not item.is_forwarding_account %}
+                                                    <a data-open-modal="app-modal-connection-data-{{ item.id }}">
+                                                        {{ show }}
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="has-ws-no-wrap">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'edit',
+                                                    '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                                } %}
+
+                                                {% if item.is_forwarding_account %}
+                                                    {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                                                {% else %}
+                                                    {% include 'components/icon.twig' with {
+                                                        '_type': 'webmail',
+                                                        '_url': _is_roundcube ? _webmail_url|trim('/', 'right') ~ '/?_user=' ~ item.email_utf8 :  _webmail_url
+                                                    } %}
+                                                {% endif %}
+
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'delete',
+                                                    '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                                } %}
+
+                                                {% if item.is_forwarding_account and item.has_significant_mailbox_size %}
+                                                    <a class="app-modal-delete-contents-trigger" data-id="{{ item.id }}" data-name="{{ item.email_utf8 }}">
+                                                        {% include 'components/icon.twig' with {
+                                                            '_type': 'delete_contents',
+                                                        } %}
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4">
+                                            {{ main_domain.items|length|i18n_format }} {{ items_total }}
+                                        </td>
+                                        <td class="has-text-right">
+                                            {{ main_domain.total_size }} / {{ main_domain.total_size_max }}
+                                        </td>
+                                        <td colspan="42">
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    {% endblock %}
+                {% endembed %}
+            {% endfor %}
+        </form>
+    {% endif %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Connection data #}
+    {% for main_domain in _email_accounts %}
+        {% for item in main_domain.items %}
+            {% include 'components/modal/connection_data_email.twig' with {
+                '_id': item.id,
+                '_main_domain': main_domain.ascii,
+                '_email_ascii': item.email_ascii,
+                '_email_utf8': item.email_utf8,
+                '_email_server_domain': item.email_server_domain,
+                '_email_server_alternative_domains': item.email_server_alternative_domains
+            } %}
+        {% endfor %}
+    {% endfor %}
+
+
+    {# QR Code #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-scan-qr',
+            '_title': '...',
+            '_buttons': {
+                'cancel': { 'label': close },
+            } } %}
+        {% block body %}
+            {% import "macros/macros.twig" as macros %}
+
+            <div class="app-qr-container has-text-centered">
+                {{ macros.loading_container() }}
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Delete Email contents #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-contents',
+            '_title': delete_email_account_contents,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=delete_contents',
+                'hidden': { 'id': '___unset___' },
+            },
+            '_buttons': {
+                'submit': { 'label': delete },
+                'cancel': { 'label': close },
+            } } %}
+        {% block body %}
+            <article class="message is-danger">
+                <div class="message-body">
+                    {{ important_note_read_carefully }}
+                </div>
+            </article>
+            <div class="content">
+                <p class="has-text-centered">
+                    {{ email_account }}<br>
+                    <span class="app-account-name has-text-weight-bold">...</span>
+                </p>
+                <p>
+                    {{ reset_email_account }}
+                </p>
+                <ul>
+                    <li>{{ delete_all_received_emails }}</li>
+                    <li>{{ delete_all_sent_emails }}</li>
+                    <li>{{ delete_all_filters }}</li>
+                    <li>{{ delete_all_folders }}</li>
+                </ul>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+
+{% endblock %}

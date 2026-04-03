@@ -1,0 +1,26 @@
+<p>
+    {{ _is_eol ? eol_warning|raw : eol_info|raw }}
+    <br>
+    {{ upgrade_recommended }}
+</p>
+
+<p class="has-margin-y-medium has-text-weight-bold">
+    {{ end_of_support }} {{ _eol_date }}
+    {{ not _is_eol ? '(' ~ _eol_days_left ~ ')' }}
+</p>
+
+{% if _has_extended_support %}
+    <p>
+        {{ extended_support|raw }}
+    </p>
+    <p class="has-margin-y-medium has-text-weight-bold">
+        {{ end_of_extended_support }} {{ _extended_support_date }}
+        {{ _is_extended_support_period ? '(' ~ _extended_support_days_left ~ ')' }}
+    </p>
+{% endif %}
+
+<p>
+    {{ upgrade_intro|raw }}
+    <br>
+    {{ _hide_guide ? upgrade_ask_support|raw : upgrade_guide|raw }}
+</p>

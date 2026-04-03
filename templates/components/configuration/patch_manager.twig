@@ -1,0 +1,113 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.label_wrapped({
+    'label': available_patches,
+    'help': available_patches_help
+}) }}
+
+<div id="app-no-patches-available" class="has-text-centered has-text-grey" style="display: none">
+    - {{ no_items_available }} -
+</div>
+
+<div id="app-patch-manager-error" class="has-text-centered" style="display: none">
+    <span class="has-text-danger has-text-weight-bold">
+        {{ an_error_occurred }}
+    </span>
+    <br>
+    <span id="app-patch-manager-error-message"></span>
+</div>
+
+<script id="app-patch-template" type="text/x-handlebars-template">
+    {% verbatim %}
+        <tr>
+            <td class="is-narrow">
+                {{# if is_installed }}
+                    {% endverbatim %}
+                        {% include 'components/icon.twig' with { '_type': 'status_okay', '_tooltip': installed } %}
+                    {% verbatim %}
+                {{/ if }}
+
+                {{# if is_pending }}
+                    {% endverbatim %}
+                        {% include 'components/icon.twig' with { '_type': 'status_processing', '_tooltip': pending } %}
+                    {% verbatim %}
+                {{/ if }}
+
+                {{# if is_installable }}
+                    <label>
+                        <input type="checkbox" name="patch_ids[]" value="{{ id }}" {{# if is_scheduled }}checked{{/ if }}>
+                        <span class="has-margin-left-small">
+                            {% endverbatim %}{{ install }}{% verbatim %}
+                        </span>
+                    </label>
+                {{/ if }}
+            </td>
+            <td class="has-ws-no-wrap">
+                {{ release_date }}
+            </td>
+            <td>
+                <!-- no escaping -->
+                {{{ description }}}
+            </td>
+            <td>
+                {{ patch_files.length }}
+                |
+                <a href="javascript:void(0)" class="app-tooltip" data-tippy-maxwidth="800px" data-tippy-content="
+                    <ul class=&quot;is-family-monospace&quot;>
+                        {{# each patch_files }}
+                            <li>{{ this }}</li>
+                        {{/ each }}
+                    </ul>" aria-expanded="true">
+                    Details
+                </a>
+            </td>
+        </tr>
+    {% endverbatim %}
+</script>
+
+<div id="app-patch-table" style="display: none">
+    {% include 'components/table_scroll_container.twig' %}
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable is-striped has-valigned-cells">
+            <thead>
+                <tr>
+                    {{ macros.header_checkbox() }}
+
+                    <th class="is-narrow">
+                        {{ release_date }}
+                    </th>
+                    <th>
+                        {{ description }}
+                    </th>
+                    <th>
+                        {{ patched_files }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="app-patch-list">
+
+                <!-- will be replaced with JS -->
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="42">
+                        <span id="app-patch-count"></span> {{ items_total }}
+                    </td>
+                <tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="has-text-centered has-margin-y-medium">
+
+    {{ forms.button({
+        'label': refresh,
+        'style': 'primary',
+        'icon': 'fa-solid fa-rotate',
+        'id': 'app-refresh-patch-list',
+        'type': 'button'
+    }) }}
+</div>

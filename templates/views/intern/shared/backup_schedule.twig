@@ -1,0 +1,132 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ backup_schedule_help|raw }}
+    </p>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': add_backup_schedule,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-backup-schedules-index'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _backup_schedules is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-backup-schedules-index" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th>
+                                        {{ operation }}
+                                    </th>
+                                    <th {{ macros.header_sorting('is_enabled') }}>
+                                        {{ is_enabled }}
+                                    </th>
+                                    <th {{ macros.header_sorting('launch_interval_sort') }}>
+                                        {{ launch_interval }}
+                                    </th>
+                                    <th {{ macros.header_sorting('repo') }}>
+                                        {{ repository }}
+                                    </th>
+                                    <th {{ macros.header_sorting('description') }}>
+                                        {{ description }}
+                                    </th>
+                                    <th {{ macros.header_sorting('last_run_sort') }}>
+                                        {{ last_run }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _backup_schedules %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td>
+                                            {{ create_backup }}
+                                            {% if item.is_forced %}
+                                                {{ macros.tag(launches_shortly, 'is-info') }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ macros.status_icon(item.is_enabled, [enabled, disabled], true) }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.launch_interval }}
+                                        </td>
+                                        <td>
+                                            <a href="?page=backup_repository&action=edit&id={{ item.id_repo }}">{{ item.repo }}</a>
+                                        </td>
+                                        <td>
+                                            {{ item.description }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.last_run_at|default('—') }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'run',
+                                                '_url': '?page=' ~ _app.page ~ '&action=run&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _backup_schedules|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'components/call_to_action.twig' with { '_back': { 'target': 'backup' } } %}
+
+{% endblock %}

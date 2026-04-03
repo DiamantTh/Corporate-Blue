@@ -1,0 +1,151 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+<script src="/theme/bulma/assets/js/page_disk_overview.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help_overview|raw }}
+    </p>
+
+    {# Main content #}
+    {% for key, items in _disks %}
+        <h2 class="title is-5 has-margin-bottom-medium {{ not loop.first ? 'has-margin-top-large' }}">
+            {% if key == 'tmpfs' %}
+                {{ temporary_file_systems }}
+            {% elseif key == 'remote' %}
+                {{ remote_file_systems }}
+            {% else %}
+                {{ regular_file_systems }}
+            {% endif %}
+        </h2>
+
+        {% if items is empty %}
+            <div class="has-text-grey has-margin-y-large"> {# << this element uses other styling than similar elements #}
+                - {{ no_items_available }} -
+            </div>
+        {% else %}
+            <div class="columns is-multiline">
+                {% for item in items %}
+                    <div class="column is-6-tablet is-6-desktop is-6-widescreen is-4-fullhd">
+                        {% embed "components/card.twig" with {
+                            'header': {
+                                'icon': 'fa-solid fa-hard-drive',
+                                'title': item.name,
+                            },
+                        } %}
+                            {% block content %}
+                                <div class="columns is-vcentered">
+                                    <div class="column">
+                                        <table class="table is-fullwidth is-striped is-hoverable has-ws-no-wrap">
+                                            <tbody>
+                                                <tr>
+                                                    <th style="width: 50%">{{ mounted_on }}</th>
+                                                    <td>{{ item.mount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ file_system }}</th>
+                                                    <td>{{ item.file_system }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="column is-narrow">
+                                       <div style="width: 125px;">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="columns is-vcentered">
+                                    <div class="column">
+                                        <table class="table is-fullwidth is-striped is-hoverable has-ws-no-wrap">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="2">{{ disk_space }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th style="width: 50%">{{ size }}</th>
+                                                    <td>{{ item.size }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ reserve }}</th>
+                                                    <td>{{ item.reserve }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ max_available }}</th>
+                                                    <td>{{ item.max_available }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ free }}</th>
+                                                    <td>{{ item.free }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ used }}</th>
+                                                    <td>{{ item.used }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ usage }}</th>
+                                                    <td>{{ item.usage }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="column is-narrow">
+                                       <div style="width: 125px; height: 125px; margin: auto auto;">
+                                            <canvas class="app-chart" data-chart="{{ item.json }}"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="columns is-vcentered">
+                                    <div class="column">
+                                        <table class="table is-fullwidth is-striped is-hoverable has-ws-no-wrap">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="2">{{ inodes }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th style="width: 50%">{{ total }}</th>
+                                                    <td>{{ item.inodes }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ free }}</th>
+                                                    <td>{{ item.inodes_free }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ used }}</th>
+                                                    <td>{{ item.inodes_used }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{{ usage }}</th>
+                                                    <td>{{ item.inodes_usage }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="column is-narrow">
+                                       <div style="width: 125px; height: 125px; margin: auto auto;">
+                                            <canvas class="app-chart" data-chart="{{ item.inodes_json }}"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endblock %}
+                        {% endembed %}   
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

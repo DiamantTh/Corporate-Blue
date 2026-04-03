@@ -1,0 +1,17 @@
+<script src="/theme/bulma/assets/vendor/codemirror/codemirror.min.js?{{ _globals.cache_control }}"></script>
+
+<!-- Fullscreen -->
+<script src="/theme/bulma/assets/vendor/codemirror/addon/display/fullscreen.js?{{ _globals.cache_control }}"></script>
+
+<!-- Search -->
+<script src="/theme/bulma/assets/vendor/codemirror/addon/search/search.js?{{ _globals.cache_control }}"></script>
+<script src="/theme/bulma/assets/vendor/codemirror/addon/search/searchcursor.js?{{ _globals.cache_control }}"></script>
+<script src="/theme/bulma/assets/vendor/codemirror/addon/scroll/annotatescrollbar.js?{{ _globals.cache_control }}"></script>
+<script src="/theme/bulma/assets/vendor/codemirror/addon/scroll/simplescrollbars.js?{{ _globals.cache_control }}"></script>
+<script src="/theme/bulma/assets/vendor/codemirror/addon/search/matchesonscrollbar.js?{{ _globals.cache_control }}"></script>
+<script src="/theme/bulma/assets/vendor/codemirror/addon/dialog/dialog.js?{{ _globals.cache_control }}"></script>
+
+<!-- Modes -->
+{% for mode in _modes %}
+<script src="/theme/bulma/assets/vendor/codemirror/mode/{{ mode }}.js?{{ _globals.cache_control }}"></script>
+{% endfor %}

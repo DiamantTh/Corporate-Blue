@@ -1,0 +1,26 @@
+{% embed "components/card.twig" with {
+    'collapse': {
+        'is_enabled': true,
+        'cookie_name': 'notes',
+    },
+    'header': {
+        'icon': 'fa-solid fa-pen-to-square',
+        'title': notes,
+    },
+} %}
+    {% block content %}
+        <div id="app-notes" class="has-ws-pre-wrap">{{ _notes }}</div>
+        <textarea id="app-notes-textarea" class="textarea app-auto-resize is-hidden"></textarea>
+    {% endblock %}
+
+    {% block footer %}
+        <div class="card-footer-item has-text-right">
+            <a href="javascript:void(0)" id="app-edit-notes">
+                {{ edit }}
+            </a>
+            <a href="javascript:void(0)" id="app-save-notes" style="display: none">
+                {{ save }}
+            </a>
+        </div>
+    {% endblock %}
+{% endembed %}

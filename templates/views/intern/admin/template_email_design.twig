@@ -1,0 +1,75 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_css %}
+    {% include 'components/vendor/codemirror_css_files.twig' %}
+{% endblock %}
+
+
+{% block page_scripts %}
+    {% include 'components/vendor/codemirror_js_files.twig' with { '_modes': ['xml', 'htmlmixed', 'css'] } %}
+
+    <script>
+        var editor = initCodemirror($('textarea[name="code"]')[0], '50em', 'text/html');
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Settings #}
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true, 'is_wide': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action=update" method="post">
+                {{ csrf_field() }}
+
+                {{ forms.textarea_wrapped({
+                    'name': 'code',
+                    'label': code,
+                    'help': code_help,
+                    'rows': 20,
+                    'value': _code,
+                    'is_auto_resize': false,
+                    'i18n': { 'search': search, 'replace': replace, 'full_screen': full_screen, 'exit_full_screen': exit_full_screen }
+                }) }}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': 'admin_configuration' }, '_reset': _has_custom_settings, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% if _has_custom_settings %}
+        {% embed "components/modal/modal.twig" with {
+                '_id': 'app-modal-reset-settings',
+                '_title': reset_settings,
+                '_form': {
+                    'action': '?page=' ~ _app.page ~ '&action=reset_settings',
+                },
+                '_buttons': {
+                    'submit': { 'label': yes },
+                    'cancel': {},
+                }
+        } %}
+            {% block body %}
+                <p class="has-text-centered">
+                    {{ are_you_sure_reset_settings }}
+                </p>
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,340 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_backup_create.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form id="form-repository-settings" action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {% if _is_backup_schedule %}
+
+                    <input type="hidden" name="id" value="{{ _id }}">
+
+                    {# Schedule enabled #}
+
+                    {{ forms.checkbox_wrapped({
+                        'label': is_enabled,
+                        'options': {
+                            'label': yes,
+                            'name': 'is_enabled',
+                            'value': '1',
+                            'is_checked': _is_enabled
+                        }
+                    }) }}
+
+                    <hr class="has-margin-large">
+
+                    {# Schedule interval #}
+
+                    {{ forms.label_wrapped({
+                        'label': backup_schedule,
+                        'help': server_timezone,
+                        'is_required': true,
+                    }) }}
+
+                    {{ forms.select_wrapped({
+                        'help': select_interval,
+                        'name': 'interval',
+                        'options': _intervals,
+                        'selected': _intervals_selected,
+                    }) }}
+
+                    <div id="app-weekdays">
+                        {{ forms.select_wrapped({
+                            'help': day_of_week,
+                            'name': 'day_of_week',
+                            'options': _days_of_week,
+                            'selected': _days_of_week_selected,
+                        }) }}
+                    </div>
+
+                    <div id="app-days-of-month">
+                        {{ forms.select_wrapped({
+                            'help': day_of_month ~ '<br>' ~ days_not_work_every_month,
+                            'name': 'day_of_month',
+                            'options': _days_of_month,
+                            'selected': _days_of_month_selected,
+                        }) }}
+                    </div>
+
+                    <div id="app-minutes">
+                        {{ forms.input_wrapped({
+                            'help': at_minute,
+                            'name': 'minutes',
+                            'type': 'text',
+                            'value': _minutes,
+                            'max_length': 2,
+                            'is_required': true,
+                        }) }}
+                    </div>
+
+                    <div id="app-time">
+                        {{ forms.input_wrapped({
+                            'help': time_format,
+                            'name': 'time',
+                            'type': 'time',
+                            'value': _time,
+                            'is_required': true,
+                        }) }}
+                    </div>
+
+                    <hr class="has-margin-large">
+
+                {% endif %}
+
+                {{ forms.radio_wrapped({
+                    'label': backup_scope,
+                    'options': [
+                        {
+                            'label': complete,
+                            'help': _app.area == 'admin' ? complete_help_admin : complete_help_client,
+                            'name': 'scope',
+                            'value': 'complete',
+                            'is_checked': _scope == 'complete',
+                        },
+                        {
+                            'label': custom,
+                            'name': 'scope',
+                            'value': 'custom',
+                            'is_checked': _scope == 'custom',
+                        }
+                    ]
+                }) }}
+
+                <div class="app-show-with-custom-scope has-padding-left-medium" style="display: none">
+
+                    {% if _app.area == 'client' %}
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': email_accounts,
+                                'name': 'is_email_accounts',
+                                'value': '1',
+                                'is_checked': _is_email_accounts
+                            }]
+                        }) }}
+
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': databases,
+                                'name': 'is_databases',
+                                'value': '1',
+                                'is_checked': _is_databases
+                            }]
+                        }) }}
+
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': files_and_directories,
+                                'name': 'is_paths',
+                                'value': '1',
+                                'is_checked': _is_paths
+                            }]
+                        }) }}
+
+                        <div class="app-show-with-paths">
+                            {{ forms.textarea_wrapped({
+                                'help': paths_help_user,
+                                'name': 'paths',
+                                'value': _paths,
+                                'rows': 5,
+                                'has_ws_pre': true
+                            }) }}
+
+                            {{ forms.checkbox_wrapped({
+                                'options': [{
+                                    'label': exclude_files_and_directories,
+                                    'name': 'is_exclude_paths',
+                                    'value': '1',
+                                    'is_checked': _is_exclude_paths
+                                }]
+                            }) }}
+
+                            <div class="app-show-with-exclude-paths">
+                                {{ forms.textarea_wrapped({
+                                    'help': exclude_help,
+                                    'name': 'exclude_paths',
+                                    'value': _exclude_paths,
+                                    'rows': 5,
+                                    'has_ws_pre': true
+                                }) }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if _app.area == 'admin' %}
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': control_panel,
+                                'name': 'is_control_panel',
+                                'value': '1',
+                                'is_checked': _is_control_panel,
+                            }]
+                        }) }}
+
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': system_config,
+                                'name': 'is_system',
+                                'value': '1',
+                                'is_checked': _is_system,
+                            }]
+                        }) }}
+
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': client_accounts,
+                                'name': 'is_user_accounts',
+                                'value': '1',
+                                'is_checked': _is_user_accounts,
+                            }]
+                        }) }}
+
+                        <div class="app-show-with-user-accounts has-padding-left-medium">
+                            {{ forms.select_wrapped({
+                                'name': 'user_scope',
+                                'options': _user_scope_options,
+                                'selected': _user_scope,
+                            }) }}
+
+                            <div class="app-show-with-user-accounts-list">
+                                {{ forms.textarea_wrapped({
+                                    'help': client_accounts_help,
+                                    'name': 'usernames',
+                                    'value': _usernames,
+                                    'rows': 5,
+                                }) }}
+                            </div>
+
+                            {{ forms.checkbox_wrapped({
+                                'options': [{
+                                    'label': email_accounts,
+                                    'name': 'is_email_accounts',
+                                    'value': '1',
+                                    'is_checked': _is_email_accounts
+                                }]
+                            }) }}
+
+                            {{ forms.checkbox_wrapped({
+                                'options': [{
+                                    'label': databases,
+                                    'name': 'is_databases',
+                                    'value': '1',
+                                    'is_checked': _is_databases
+                                }]
+                            }) }}
+
+                            {{ forms.checkbox_wrapped({
+                                'options': [{
+                                    'label': home_directories,
+                                    'name': 'is_home_directories',
+                                    'value': '1',
+                                    'is_checked': _is_home_directories
+                                }]
+                            }) }}
+                        </div>
+
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': files_and_directories,
+                                'name': 'is_paths',
+                                'value': '1',
+                                'is_checked': _is_paths
+                            }]
+                        }) }}
+
+                        <div class="app-show-with-paths">
+                            {{ forms.textarea_wrapped({
+                                'help': paths_help_admin,
+                                'name': 'paths',
+                                'value': _paths,
+                                'rows': 5,
+                                'has_ws_pre': true
+                            }) }}
+                        </div>
+
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': exclude_files_and_directories,
+                                'name': 'is_exclude_paths',
+                                'value': '1',
+                                'is_checked': _is_exclude_paths
+                            }]
+                        }) }}
+
+                        <div class="app-show-with-exclude-paths">
+                            {{ forms.textarea_wrapped({
+                                'help': exclude_help,
+                                'name': 'exclude_paths',
+                                'value': _exclude_paths,
+                                'rows': 5,
+                                'has_ws_pre': true
+                            }) }}
+                        </div>
+
+                        {{ forms.checkbox_wrapped({
+                            'options': [{
+                                'label': all_other_databases,
+                                'help': all_other_databases_help,
+                                'name': 'is_other_databases',
+                                'value': '1',
+                                'is_checked': _is_other_databases
+                            }]
+                        }) }}
+                    {% endif %}
+                </div>
+
+                <hr class="has-margin-large">
+
+                {{ forms.select_wrapped({
+                    'label': repository,
+                    'help': specify_destination,
+                    'name': 'repository',
+                    'options': _repositories,
+                    'selected': _id_repository,
+                    'is_required': true
+                }) }}
+
+                <hr class="has-margin-large">
+
+                {{ forms.input_wrapped({
+                    'label': description,
+                    'name': 'description',
+                    'type': 'text',
+                    'value': _description
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'label': notification,
+                    'help': notification_help,
+                    'name': 'notification_email',
+                    'type': 'email',
+                    'value': _notification_email
+                }) }}
+
+                {{ forms.checkbox_wrapped({
+                    'help': notification_on_success,
+                    'options': {
+                        'label': yes,
+                        'name': 'notification_on_success',
+                        'value': '1',
+                        'is_checked': _notification_on_success
+                    }
+                }) }}
+
+               {% include 'components/call_to_action.twig' with { '_back': { 'target': (_action == 'create' ? 'backup' : 'backup_schedule') }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

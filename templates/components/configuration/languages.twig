@@ -1,0 +1,91 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.select_wrapped({
+    'label': default_language,
+    'name': 'default_language',
+    'options': _languages,
+    'selected': _default_language,
+}) }}
+
+{% include 'components/table_scroll_container.twig' %}
+<div class="table-container">
+    <table class="table is-fullwidth is-hoverable is-striped has-valigned-cells">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    {{ language }}
+                </th>
+                <th>
+                    {{ enabled }}
+                </th>
+                <th>
+                    {{ usage }}
+                </th>
+                <th>
+                    {{ translator }}
+                </th>
+        </thead>
+        <tbody>
+            {% for item in _language_details %}
+                <tr>
+                    <td class="has-ws-no-wrap">
+                        {{ item.label }}
+                    </td>
+                    <td class="is-narrow">
+                        {{ macros.tag(
+                                item.translated_share_formatted,
+                                item.translated_share > 90 ? 'is-success' : (item.translated_share > 70 ? 'is-warning' : 'is-danger'),
+                                '',
+                                translation_coverage|format(item.translated_share_formatted)
+                        ) }}
+                    </td>
+                    <td>
+                        {% if item.code != 'en' %}
+                            <input type="checkbox" name="enabled[]" value="{{ item.code }}" {{ item.is_enabled ? 'checked' }}>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ item.used }}
+                    </td>
+                    <td>
+                        {% if item.translation_info.is_official %}
+                            <span class="has-text-grey-light">
+                                {{ official_translation }}
+                            </span>
+                        {% elseif item.translation_info.is_abandoned %}
+                            <span class="has-text-grey-light">
+                                Abandoned / Looking for translator
+                            </span>
+                        {% elseif item.translation_info.translators %}
+                            <ul>
+                                {% for translator in item.translation_info.translators %}
+                                    <li>
+                                        {% if translator.url %}
+                                            <a href="{{ translator.url }}" rel="nofollow noopener noreferrer" target="_blank">
+                                                {{ translator.name }}
+                                            </a>
+                                        {% else %}
+                                            {{ translator.name }}
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="42">
+                    {{ _language_details|length }} {{ items_total }}
+                </td>
+            <tr>
+        </tfoot>
+    </table>
+</div>
+
+<p class="has-text-centered has-text-grey">
+    {{ language_help }}
+</p>

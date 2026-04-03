@@ -1,0 +1,196 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_disk_usage.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    <input type="hidden" name="working_dir" value="{{ _working_dir }}">
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {% if _app.area == 'admin' %}
+            {{ help_usage_admin|raw }}
+        {% else %}
+            {{ help_usage_client|raw }}
+        {% endif %}
+    </p>
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_customize_view_form_add_action': '&path=' ~ _working_dir|url_encode(),
+        '_customize_view_elements': [
+            forms.checkbox_wrapped({
+                'label': auto_collection,
+                'help': auto_collection_help,
+                'options': [
+                    {
+                        'label': collect_size,
+                        'name': 'gather_size',
+                        'value': '1',
+                        'is_checked': _gather_size
+                    }, {
+                        'label': collect_inodes,
+                        'name': 'gather_inodes',
+                        'value': '1',
+                        'is_checked': _gather_inodes
+                    }
+                ]
+            })
+        ],
+    }) %}
+
+    <input type="hidden" name="gather_size" value="{{ _gather_size }}">
+    <input type="hidden" name="gather_inodes" value="{{ _gather_inodes }}">
+
+
+    {# Path navigation #}
+    <div class="card has-margin-bottom-medium">
+        <div class="card-content">
+            <a href="?page={{ _app.page }}&path=/">
+                <span class="icon is-medium">
+                    {% if _app.area == 'admin' %}
+                        <i class="fa-solid fa-hard-drive"></i>
+                    {% else %}
+                        <i class="fa-solid fa-house"></i>
+                    {% endif %}
+                </span>
+            </a>
+            <ul class="horizontal-separated-list">
+                <li></li>
+                {% for item in _nav_items %}
+                    <li>
+                        {% if loop.last %}
+                            {{ item.name }}
+                        {% else %}
+                            <a href="?page={{ _app.page }}&path={{ item.path|url_encode() }}">
+                                {{ item.name }}
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-content">
+            {% if _usage_items is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th>
+                                    {{ name }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ size }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ utilization_share }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ inodes }}
+                                </th>
+                                <th class="has-text-right">
+                                    {{ utilization_share }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="app-container-content">
+                            {% for item in _usage_items %}
+                                {% if loop.first %}
+                                    {# Move one folder up #}
+                                    <tr>
+                                        <td>
+                                            <a href="?page={{ _app.page }}&path={{ _parent_dir|url_encode() }}">
+                                                {% include 'components/icon_files.twig' with { _type: 'folder_up' } %}
+                                                ..
+                                            </a>
+                                        </td>
+                                        <td colspan="42"></td>
+                                    </tr>
+                                {% else %}
+                                    <tr data-path="{{ item.path }}">
+                                        <td>
+                                            {% if item.is_dir %}
+                                                <a href="?page={{ _app.page }}&path={{ item.path|url_encode() }}">
+                                                    {% include 'components/icon_files.twig' with { _type: 'dir' } %}
+                                                    {{ item.name }}
+                                                </a>
+                                            {% else %}
+                                                {% include 'components/icon_files.twig' with { _type: 'file' } %}
+                                                {{ item.name }}
+                                            {% endif %}
+                                        </td>
+                                        {% for column_name in ['size', 'inodes'] %}
+                                            <td data-column="{{ column_name }}" class="has-text-right has-ws-no-wrap">
+                                                <a class="app-gather-data" href="javascript:void(0)">
+                                                    {{ refresh }}
+                                                </a>
+
+                                                <div class="app-loading" style="display: none">
+                                                    <span class="icon is-small has-text-grey-light">
+                                                        <i class="fa-solid fa-rotate fa-spin"></i>
+                                                    </span>
+                                                </div>
+
+                                                <div class="app-value">
+                                                    <!-- filled by JS -->
+                                                </div>
+                                            </td>
+
+                                            <td data-column="{{ column_name }}">
+                                                {{ macros.usage_indicator({
+                                                    'percent': 0,
+                                                }) }}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr data-path="{{ _usage_items[0].path }}">
+                                <td>
+                                    {{ _usage_items|length|i18n_format }} {{ items_total }}
+                                </td>
+
+                                {% for column_name in ['size', 'inodes'] %}
+                                    <td data-column="{{ column_name }}" class="has-text-right">
+                                        <a class="app-gather-data" href="javascript:void(0)">
+                                            {{ refresh }}
+                                        </a>
+
+                                        <div class="app-loading" style="display: none">
+                                            <span class="icon is-small has-text-grey-light">
+                                                <i class="fa-solid fa-rotate fa-spin"></i>
+                                            </span>
+                                        </div>
+
+                                        <div class="app-value">
+                                            <!-- filled by JS -->
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                {% endfor %}
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

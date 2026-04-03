@@ -1,0 +1,76 @@
+{% embed "components/modal/modal.twig" with {
+        '_id': 'app-modal-dkim',
+        '_title': dkim_dns_record,
+        '_buttons': {
+            'cancel': { 'label': close },
+        } } %}
+    {% block body %}
+        {% import "macros/forms.twig" as forms %}
+
+        {{ forms.input_wrapped({
+            'label': dkim_record_complete,
+            'name': 'dkim_record',
+            'type': 'text',
+            'is_readonly': true,
+            'value': _dkim_record,
+            'addons': {
+                'right': {
+                    'type': 'action',
+                    'label': copy,
+                    'action': 'app-copy-to-clipboard'
+                }
+            }
+        }) }}
+
+        {{ forms.label_wrapped({
+            'help': copy_only_value
+        }) }}
+
+        {{ forms.input_wrapped({
+            'label': dkim_host,
+            'name': 'dkim_host',
+            'value': _dkim_host,
+            'type': 'text',
+            'is_readonly': true,
+            'addons': {
+                'right': {
+                    'type': 'action',
+                    'label': copy,
+                    'action': 'app-copy-to-clipboard'
+                }
+            }
+        }) }}
+
+        {{ forms.input_wrapped({
+            'label': dkim_value_quotes,
+            'help': dkim_value_quotes_help,
+            'name': 'dkim_record_value_quotes',
+            'value': _dkim_record_value_quotes,
+            'type': 'text',
+            'is_readonly': true,
+            'addons': {
+                'right': {
+                    'type': 'action',
+                    'label': copy,
+                    'action': 'app-copy-to-clipboard'
+                }
+            }
+        }) }}
+
+        {{ forms.input_wrapped({
+            'label': dkim_value_no_quotes,
+            'help': dkim_value_no_quotes_help,
+            'name': 'dkim_record_value_no_quotes',
+            'value': _dkim_record_value_no_quotes,
+            'type': 'text',
+            'is_readonly': true,
+            'addons': {
+                'right': {
+                    'type': 'action',
+                    'label': copy,
+                    'action': 'app-copy-to-clipboard'
+                }
+            }
+        }) }}
+    {% endblock %}
+{% endembed %}

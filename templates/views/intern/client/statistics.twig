@@ -1,0 +1,184 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_client_statistics.js?{{ _globals.cache_control }}"></script>
+    <script>
+        select2_prepareSelect('select[name="domain"]');
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    <div class="columns">
+
+        <div class="column is-half">
+            {% embed "components/card.twig" with {
+                'header': {
+                    'icon': 'fa-solid fa-chart-simple',
+                    'title': web_statistic,
+                },
+            } %}
+                {% block content %}
+                    {% import "macros/macros.twig" as macros %}
+                    {% import "macros/forms.twig" as forms %}
+
+                    <p class="has-text-centered">{{ web_statistic_help|raw }}</p>
+
+                    <div class="has-text-centered has-margin-top-large">
+                        <p class="has-margin-bottom-medium has-text-weight-bold">{{ domain_statistics }}</p>
+
+                        {{ forms.select_wrapped({
+                            'name': 'domain',
+                            'options': _domain_options,
+                        }) }}
+
+                        {{ forms.button({
+                            'id': 'app-open-domain-statistics',
+                            'label': show_statistic,
+                            'style': 'primary',
+                            'class': 'is-outlined',
+                            'url': '/webstats/' ~ _user.username,
+                            'is_new_tab': true,
+                        }) }}
+                    </div>
+
+                    {% if _deprecated_has_statistics %}
+                        <hr>
+                        <div class="has-text-centered has-margin-top-large">
+                            <p class="has-margin-bottom-medium">{{ _deprecated_text|raw }}</p>
+
+                            {{ forms.button({
+                                'label': show_statistic,
+                                'style': 'secondary',
+                                'class': 'is-outlined',
+                                'url': '/webstats/' ~ _user.username ~ '/deprecated/',
+                                'is_new_tab': true,
+                            }) }}
+                        </div>
+                    {% endif %}
+                {% endblock %}
+            {% endembed %}
+
+           {% embed "components/card.twig" with {
+                'margin': 'large',
+                'header': {
+                    'icon': 'fa-solid fa-key',
+                    'title': access_password,
+                },
+            } %}
+                {% block content %}
+                    {% import "macros/macros.twig" as macros %}
+                    {% import "macros/forms.twig" as forms %}
+
+                    <form action="?page=client_statistics&action=update_password" method="post">
+                        {{ csrf_field() }}
+                        {% include 'components/form_password.twig' with { '_leave_empty' : true } %}
+                        {% include 'components/call_to_action.twig' with { '_confirm': true } %}
+                    </form>
+                {% endblock %}
+            {% endembed %}
+        </div>
+
+        <div class="column is-half">
+            {% embed "components/card.twig" with {
+                'header': {
+                    'icon': 'fa-solid fa-chart-simple',
+                    'title': traffic_statistic,
+                },
+            } %}
+                {% block content %}
+                    {% import "macros/macros.twig" as macros %}
+                    {% import "macros/forms.twig" as forms %}
+
+                    {% for month in _stats_by_date %}
+
+                        <p class="has-margin-bottom-small">
+                            {{ month.headline|raw }}
+                        </p>
+
+                        {% embed 'components/additional_content.twig' with {
+                            'label': show_details,
+                            'target_id': 'app-additional-content-' ~ month.id,
+                        } %}
+                            {% block content %}
+                                {% include 'components/table_scroll_container.twig' %}
+                                <div class="table-container">
+                                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    {{ protocol }}
+                                                </th>
+                                                <th class="has-text-right">
+                                                    {{ total }}
+                                                </th>
+                                                <th class="has-text-right">
+                                                    {{ incoming }}
+                                                </th>
+                                                <th class="has-text-right">
+                                                    {{ outgoing }}
+                                                </th>
+                                                <th class="has-text-right">
+                                                    {{ requests }}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in month.stats %}
+                                                <tr>
+                                                    <th>
+                                                        {{ item.label }}
+                                                    </th>
+                                                    <td class="has-text-right has-ws-no-wrap">
+                                                        {{ item.total }}
+                                                    </td>
+                                                    <td class="has-text-right has-ws-no-wrap">
+                                                        {{ item.in }}
+                                                    </td>
+                                                    <td class="has-text-right has-ws-no-wrap">
+                                                        {{ item.out }}
+                                                    </td>
+                                                    <td class="has-text-right">
+                                                        {{ item.requests }}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td>
+                                                    {{ total }}
+                                                </td>
+                                                <td class="has-text-right">
+                                                    {{ month.total.total }}
+                                                </td>
+                                                <td class="has-text-right">
+                                                    {{ month.total.in }}
+                                                </td>
+                                                <td class="has-text-right">
+                                                    {{ month.total.out }}
+                                                </td>
+                                                <td class="has-text-right">
+                                                    {{ month.total.requests }}
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            {% endblock %}
+                        {% endembed %}
+
+                        {% if not loop.last %}
+                            <div class="has-margin-top-xlarge"></div>
+                        {% endif %}
+
+                    {% endfor %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

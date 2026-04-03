@@ -1,0 +1,47 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action=add" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {{ forms.input_wrapped({
+                    'label': username,
+                    'name': 'username',
+                    'type': 'text',
+                    'value': _naming_scheme == 'auto' ? autofill : _database_username,
+                    'is_required': _naming_scheme == 'auto' ? false : true,
+                    'is_disabled': _naming_scheme == 'auto' ? true : false,
+                    'addons': _naming_scheme == 'limited' ? { 'left' : { 'label': _user.username ~ '_' } } : {},
+                    'max_length': _naming_scheme == 'limited' ? (64 - _user.username|length - 1) : 64,
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'name': 'description',
+                    'type': 'text',
+                    'label': description,
+                    'value': _description,
+                }) }}
+
+                {% include 'components/form_browse_directory.twig' with {
+                    '_label': home_directory,
+                    '_help': home_directory_help,
+                    '_value': '/www/',
+                    '_purpose': 'ftp'
+                } %}
+
+                {% include 'components/form_password.twig' %}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+    
+{% endblock %}

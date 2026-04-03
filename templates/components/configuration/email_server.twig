@@ -1,0 +1,154 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': max_message_size,
+    'help': max_message_size_help,
+    'name': 'max_message_size',
+    'type': 'number',
+    'min': 0,
+    'value': _max_message_size,
+    'is_required': true,
+    'addons': {
+        'left': {
+            'type': 'select',
+            'select': {
+                'name': 'multiplier',
+                'options': _multiplier_options,
+                'selected': _multiplier_selected
+            }
+        }
+    }
+}) }}
+
+{{ forms.input_wrapped({
+    'label': imap_login_process_limit,
+    'help': imap_login_process_limit_help,
+    'name': 'imap_login_process_limit',
+    'type': 'number',
+    'min': 0,
+    'value': _imap_login_process_limit,
+    'is_required': true,
+}) }}
+
+{{ forms.input_wrapped({
+    'label': max_userip_connections,
+    'help': max_userip_connections_help,
+    'name': 'max_userip_connections',
+    'type': 'number',
+    'min': 0,
+    'value': _max_userip_connections,
+    'is_required': true,
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': email_enforce_quota,
+    'help': email_enforce_quota_help,
+    'options': {
+        'label': enabled,
+        'name': 'enable_enforce_quota',
+        'value': '1',
+        'is_checked': _enable_enforce_quota
+    }
+}) }}
+
+{{ forms.input_wrapped({
+    'label': mail_queue_warning_threshold,
+    'help': mail_queue_warning_threshold_help,
+    'name': 'mail_queue_warning_threshold',
+    'type': 'number',
+    'min': 1,
+    'value': _mail_queue_warning_threshold,
+    'is_required': true,
+}) }}
+
+{{ forms.select_wrapped({
+    'label': accept_postfix_protocols,
+    'help': accept_postfix_protocols_help,
+    'name': 'postfix_inet_protocols',
+    'options': {
+        'all': postfix_inet_protocols_all,
+        'ipv4': postfix_inet_protocols_ipv4,
+        'ipv6': postfix_inet_protocols_ipv6,
+    },
+    'selected': _postfix_inet_protocols,
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': sender_rewriting_scheme,
+    'help': sender_rewriting_scheme_help,
+    'options': {
+        'label': enabled,
+        'name': 'enable_srs',
+        'value': '1',
+        'is_checked': _enable_srs,
+    }
+}) }}
+
+<hr class="has-margin-large">
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': connection_data,
+    }) }}
+</div>
+
+{{ forms.radio_wrapped({
+    'label': connection_data_main_domain,
+    'help': connection_data_main_domain_help,
+    'options': [
+        {
+            'label': use_hostname,
+            'help': use_hostname_help,
+            'name': 'connection_data_type',
+            'value': 'hostname',
+            'is_checked': _connection_data_type == 'hostname'
+        },
+        {
+            'label': use_domain_name,
+            'help': use_domain_name_help,
+            'name': 'connection_data_type',
+            'value': 'domain_name',
+            'is_checked': _connection_data_type == 'domain_name'
+        },
+        {
+            'label': use_custom_domain,
+            'help': use_custom_domain_help,
+            'name': 'connection_data_type',
+            'value': 'custom_domain',
+            'is_checked': _connection_data_type == 'custom_domain'
+        },
+    ]
+}) }}
+
+<div id="app-show-with-use-custom-domain" style="display: none">
+    {{ forms.select_wrapped({
+        'label': connection_data_custom_domain,
+        'help': connection_data_custom_domain_help,
+        'name': 'connection_data_custom_domain',
+        'options': _connection_data_custom_domains,
+        'selected': _connection_data_custom_domain
+    }) }}
+</div>
+
+{{ forms.checkbox_wrapped({
+    'label': connection_data_show_all,
+    'options': {
+        'label': enabled,
+        'name': 'connection_data_show_all',
+        'value': '1',
+        'is_checked': _connection_data_show_all
+    }
+}) }}
+
+<hr class="has-margin-large">
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': spam_virus_protection_settings,
+    }) }}
+
+    <p>{{ settings_moved|raw }}</p>
+</div>
+
+

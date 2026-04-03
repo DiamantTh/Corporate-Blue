@@ -1,0 +1,44 @@
+Version:    0.9.4
+
+Releases:   https://github.com/jgthms/bulma/releases
+
+Homepage:   https://bulma.io/
+
+Notes:      1) Replace the content of /assets/vendor/bulma/scss with the /sass/ directory from the Bulma archive.
+
+            2) Since 0.8.0
+
+                The control size increased to 2.5em.
+                We do not want this and need to override it in various places to the prior settings
+                We can not override it in our main scss files, due the calculated variables rely on a already defined other variable.
+
+                Find the variable values of the following variables and update their value accordingly.
+                (These are the values before 0.8.0)
+
+                    $control-height: 2.25em !default
+                    $control-padding-vertical: calc(0.375em - #{$control-border-width}) !default
+                    $control-padding-horizontal: calc(0.625em - #{$control-border-width}) !default
+                    $button-padding-vertical: calc(0.375em - #{$button-border-width}) !default
+                    $button-padding-horizontal: 0.75em !default
+
+                Ensure all the files are re-compiled!!!
+
+            3) Since 0.9.3
+
+                The colors have changed (It is not clear, if this was intentional or not)
+                I like the colors of 0.9.2 more.
+                __scss/custom_variables/_custom_variables.scss takes care of setting the old colors.
+
+                    Bulma 0.9.2
+
+                        $yellow:       hsl(48,  100%, 67%) !default
+                        $green:        hsl(141, 53%,  53%) !default
+                        $cyan:         hsl(204, 71%,  53%) !default
+                        $blue:         hsl(217, 71%,  53%) !default
+
+                    Bulma 0.9.3
+
+                        $yellow:       hsl(44,  100%, 77%) !default
+                        $green:        hsl(153, 53%,  53%) !default
+                        $cyan:         hsl(207, 61%,  53%) !default
+                        $blue:         hsl(229, 53%,  53%) !default

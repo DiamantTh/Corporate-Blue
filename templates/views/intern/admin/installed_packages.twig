@@ -1,0 +1,66 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ installed_packages_intro|raw }}
+    </p>
+
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _packages is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {{ macros.header_sorting('name') }}>
+                                    {{ name }}
+                                </th>
+                                <th {{ macros.header_sorting('version') }}>
+                                    {{ version }}
+                                </th>
+                                <th {{ macros.header_sorting('description') }}>
+                                    {{ description }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _packages %}
+                                <tr>
+                                    <td>
+                                        {{ item.name }}
+                                    </td>
+                                    <td>
+                                        {{ item.version }}
+                                    </td>
+                                    <td>
+                                        {{ item.description }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42">
+                                    {{ _packages|length|i18n_format }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

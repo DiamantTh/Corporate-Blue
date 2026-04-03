@@ -1,0 +1,123 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': webmail_is_enabled,
+    'options': {
+        'label': yes,
+        'name': 'is_enabled',
+        'value': '1',
+        'is_checked': _is_enabled
+    }
+}) }}
+
+{{ forms.select_wrapped({
+    'label': webmail_client,
+    'name': 'webmail_client',
+    'options': _webmail_clients,
+    'selected': _webmail_clients_selected,
+}) }}
+
+{{ forms.input_wrapped({
+    'label': custom_access_url,
+    'help': custom_access_url_help,
+    'name': 'custom_access_url',
+    'type': 'url',
+    'value': _custom_access_url,
+}) }}
+
+{{ forms.radio_wrapped({
+    'label': webmail_subdomain_behavior,
+    'help': webmail_subdomain_behavior_help,
+    'options': [
+        {
+            'label': behavior_redirect,
+            'help': behavior_redirect_help,
+            'name': 'webmail_subdomain',
+            'value': 'redirect',
+            'is_checked': _webmail_subdomain == 'redirect'
+        },
+        {
+            'label': behavior_stay,
+            'help': behavior_stay_help,
+            'name': 'webmail_subdomain',
+            'value': 'stay',
+            'is_checked': _webmail_subdomain == 'stay'
+        },
+        {
+            'label': behavior_stay_insecure,
+            'help': behavior_stay_insecure_help,
+            'name': 'webmail_subdomain',
+            'value': 'stay_insecure',
+            'is_checked': _webmail_subdomain == 'stay_insecure'
+        },
+    ]
+}) }}
+
+{{ forms.input_wrapped({
+    'label': product_name,
+    'name': 'product_name',
+    'value': _product_name,
+}) }}
+
+<div class="app-show-with-roundcube" style="display:none">
+    {{ forms.input_wrapped({
+        'label': support_url,
+        'name': 'support_url',
+        'value': _support_url,
+    }) }}
+
+    {{ forms.select_wrapped({
+        'label': skin,
+        'name': 'skin',
+        'options': _skins,
+        'selected': _skins_selected,
+    }) }}
+
+    {{ forms.input_wrapped({
+        'label': favicon,
+        'help': favicon_help,
+        'type': 'url',
+        'name': 'logo_favicon',
+        'value': _logo_favicon,
+    }) }}
+
+    {# Logo #}
+    {{ forms.input_wrapped({
+        'label': logo,
+        'help': logo_help,
+        'type': 'url',
+        'name': 'logo',
+        'value': _logo,
+    }) }}
+
+    {{ forms.input_wrapped({
+        'help': dark_mode,
+        'type': 'url',
+        'name': 'dark_mode_logo',
+        'value': _dark_mode_logo,
+    }) }}
+
+    {# Logo login #}
+    {{ forms.input_wrapped({
+        'label': logo_login,
+        'help': logo_login_help,
+        'type': 'url',
+        'name': 'logo_login',
+        'value': _logo_login,
+    }) }}
+
+    {{ forms.input_wrapped({
+        'help': dark_mode,
+        'type': 'url',
+        'name': 'dark_mode_logo_login',
+        'value': _dark_mode_logo_login,
+    }) }}
+
+    {{ forms.input_wrapped({
+        'label': plugins,
+        'help': plugins_help,
+        'name': 'plugins',
+        'value': _plugins,
+    }) }}
+</div>

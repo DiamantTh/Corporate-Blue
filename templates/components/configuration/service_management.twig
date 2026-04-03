@@ -1,0 +1,59 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+
+<input type="hidden" name="custom_services" value="">
+
+{{ forms.label_wrapped({
+    'label': custom_services,
+    'help': custom_services_help
+}) }}
+
+<div class="has-margin-bottom-medium">
+    {{ forms.button({
+        'label': add_service,
+        'type': 'button',
+        'id': 'app-btn-add-service'
+    }) }}
+</div>
+
+<div id="app-service-container">
+    <!-- Content added by JavaScript -->
+</div>
+
+<script id="app-service-template" type="text/x-handlebars-template">
+    <div class="columns">
+        <div class="column has-padding-bottom-none">
+            {{ forms.input_wrapped({
+                'omit_id': true,
+                'name': 'name',
+                'type': 'text',
+                'placeholder': service_name
+            }) }}
+        </div>
+        <div class="column has-mobile-top-padding-none has-padding-bottom-none">
+            {{ forms.input_wrapped({
+                'omit_id': true,
+                'name': 'category',
+                'type': 'text',
+                'placeholder': service_category
+            }) }}
+        </div>
+        <div class="column has-mobile-top-padding-none has-padding-bottom-none">
+            {{ forms.input_wrapped({
+                'omit_id': true,
+                'name': 'system_name',
+                'type': 'text',
+                'placeholder': service_system_name
+            }) }}
+        </div>
+        <div class="column is-narrow has-mobile-top-padding-none has-text-centered">
+            {{ forms.button({
+                'label': remove,
+                'style': 'secondary',
+                'type': 'button',
+                'class': 'app-btn-remove-service'
+            }) }}
+        </div>
+    </div>
+</script>

@@ -1,0 +1,96 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': is_enabled,
+    'options': {
+        'label': yes,
+        'name': 'is_enabled',
+        'value': '1',
+        'is_checked': _is_enabled
+    }
+}) }}
+
+{{ forms.select_wrapped({
+    'label': infection_treatment,
+    'name': 'infection_treatment',
+    'options': _infection_treatments,
+    'selected': _infection_treatments_selected,
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': av_notification_verbose,
+    'options': {
+        'label': yes,
+        'name': 'is_notification_verbose',
+        'value': '1',
+        'is_checked': _is_notification_verbose
+    }
+}) }}
+
+{{ forms.textarea_wrapped({
+    'label': scan_paths,
+    'help': scan_paths_help,
+    'name': 'scan_paths',
+    'value': _scan_paths,
+    'rows': 4,
+}) }}
+
+{{ forms.textarea_wrapped({
+    'label': scan_exclude_paths,
+    'help': scan_exclude_paths_help,
+    'name': 'scan_exclude_paths',
+    'value': _scan_exclude_paths,
+    'rows': 4,
+}) }}
+
+{{ forms.radio_wrapped({
+    'label':additional_virus_signatures,
+    'help': additional_virus_signatures_help,
+    'options': [
+        {
+            'label': best_detection,
+            'help': best_detection_help,
+            'name': 'virus_signatures_type',
+            'value': 'best',
+            'is_checked': _virus_signatures_type == 'best',
+        },
+        {
+            'label': good_detection,
+            'help': good_detection_help,
+            'name': 'virus_signatures_type',
+            'value': 'good',
+            'is_checked': _virus_signatures_type == 'good',
+        },
+        {
+            'label': custom_configuration,
+            'name': 'virus_signatures_type',
+            'value': 'custom',
+            'is_checked': _virus_signatures_type == 'custom',
+        },
+    ]
+}) }}
+
+<div class="app-show-with-best" style="display: none">
+    {{ forms.textarea_wrapped({
+        'name': unused,
+        'value': _virus_signatures_best,
+        'rows': 4,
+        'is_disabled': true,
+    }) }}
+</div>
+<div class="app-show-with-good" style="display: none">
+    {{ forms.textarea_wrapped({
+        'name': unused,
+        'value': _virus_signatures_good,
+        'rows': 4,
+        'is_disabled':true,
+    }) }}
+</div>
+<div class="app-show-with-custom" style="display: none">
+    {{ forms.textarea_wrapped({
+        'name': 'virus_signatures_custom',
+        'value': _virus_signatures_custom,
+        'rows': 4,
+    }) }}
+</div>

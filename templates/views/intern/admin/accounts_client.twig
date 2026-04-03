@@ -1,0 +1,339 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_accounts_user.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'components/admin_accounts_tabs.twig' %}
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': add_client,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add',
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-user-account-index'
+    }) %}
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_search_options': _search_options,
+
+        '_customize_view_elements': [
+            forms.checkbox_wrapped({
+                'label': show_columns,
+                'options': [
+                    {
+                        'label': contact_name,
+                        'name': 'show_contact_name',
+                        'value': '1',
+                        'is_checked': _show_contact_name
+                    }, {
+                        'label': client_id,
+                        'name': 'show_client_id',
+                        'value': '1',
+                        'is_checked': _show_client_id
+                    }, {
+                        'label': disk_space,
+                        'name': 'show_disk_space',
+                        'value': '1',
+                        'is_checked': _show_disk_space
+                    }, {
+                        'label': disk_space_allocation,
+                        'name': 'show_disk_space_allocation',
+                        'value': '1',
+                        'is_checked': _show_disk_space_allocation
+                    }, {
+                        'label': file_count,
+                        'name': 'show_file_count',
+                        'value': '1',
+                        'is_checked': _show_file_count
+                    }, {
+                        'label': traffic,
+                        'name': 'show_traffic',
+                        'value': '1',
+                        'is_checked': _show_traffic
+                    }, {
+                        'label': last_login,
+                        'name': 'show_last_login',
+                        'value': '1',
+                        'is_checked': _show_last_login
+                    },
+                ]
+            })
+        ],
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _clients is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-user-account-index" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+                                    <th {{ macros.header_sorting('status') }} class="is-narrow">
+                                        S
+                                    </th>
+                                    <th {{ macros.header_sorting('username') }} colspan="2">
+                                        {{ username }}
+                                    </th>
+                                    {% if _show_contact_name %}
+                                        <th {{ macros.header_sorting('contact_name_sort') }}>
+                                            {{ contact_name }}
+                                        </th>
+                                    {% endif %}
+                                    {% if _show_client_id %}
+                                        <th {{ macros.header_sorting('client_id') }}>
+                                            {{ client_id }}
+                                        </th>
+                                    {% endif %}
+
+                                    {% if _show_disk_space %}
+                                        <th {{ macros.header_sorting('disk_space_sort') }}>
+                                            {{ disk_space }}
+                                        </th>
+                                    {% endif %}
+
+                                    {% if _show_disk_space_allocation %}
+                                        <th {{ macros.header_sorting('disk_space_web_sort') }}>
+                                            {{ webspace }}
+                                        </th>
+                                        <th {{ macros.header_sorting('disk_space_email_sort') }}>
+                                            {{ emails }}
+                                        </th>
+                                        <th {{ macros.header_sorting('disk_space_db_sort') }}>
+                                            {{ databases }}
+                                        </th>
+                                    {% endif %}
+
+                                    {% if _show_file_count %}
+                                        <th {{ macros.header_sorting('files_sort') }}>
+                                            {{ file_count }}
+                                        </th>
+                                    {% endif %}
+
+                                    {% if _show_traffic %}
+                                        <th {{ macros.header_sorting('traffic_sort') }}>
+                                            {{ traffic }}
+                                        </th>
+                                    {% endif %}
+
+                                    {% if _show_last_login %}
+                                        <th {{ macros.header_sorting('last_login_sort') }}>
+                                            {{ last_login }}
+                                        </th>
+                                    {% endif %}
+
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _clients %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td class="has-padding-x-xsmall">
+                                            {% include 'components/icon.twig' with { '_type': item.status } %}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {{ macros.link_to_switch_to_client(item.id, item.username, _app.page) }}
+                                        </td>
+                                        <td class="is-narrow">
+
+                                            {% if item.delete_on %}
+                                                <span class="app-tooltip-mandatory" data-tippy-content="<b>{{ will_be_deleted_on }}</b> {{ item.delete_on }}">
+                                                    <span class="icon is-medium has-text-grey-light">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </span>
+                                                </span>
+                                            {% else %}
+                                                {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                                            {% endif %}
+
+                                            {% if item.is_suspended %}
+                                                <span class="app-tooltip-mandatory" data-tippy-content="{{ suspended }}">
+                                                    <span class="icon is-medium has-text-danger">
+                                                        <i class="fa-solid fa-lock"></i>
+                                                    </span>
+                                                </span>
+                                            {% elseif item.suspend_on %}
+                                                <span class="app-tooltip-mandatory" data-tippy-content="<b>{{ will_be_suspended_on }}</b> {{ item.suspend_on }}">
+                                                    <span class="icon is-medium has-text-grey-light">
+                                                        <i class="fa-solid fa-lock"></i>
+                                                    </span>
+                                                </span>
+                                            {% else %}
+                                                {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                                            {% endif %}
+
+                                            {% if item.notes %}
+                                                <span class="app-tooltip-mandatory" data-tippy-content="{{ item.notes|nl2br }}">
+                                                    <span class="icon is-medium has-text-grey-light">
+                                                        <i class="fa-solid fa-message"></i>
+                                                    </span>
+                                                </span>
+                                            {% else %}
+                                                {% include 'components/icon.twig' with { '_type': 'spacer' } %}
+                                            {% endif %}
+
+                                            <span class="app-tooltip-user-info" data-user-id="{{ item.id }}">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'info'
+                                                } %}
+                                            </span>
+                                        </td>
+
+                                        {% if _show_contact_name %}
+                                            <td>
+                                                {{ macros.contact_name(item.first_name, item.last_name, item.company) }}
+                                            </td>
+                                        {% endif %}
+
+                                        {% if _show_client_id %}
+                                            <td>
+                                                {{ item.client_id }}
+                                            </td>
+                                        {% endif %}
+
+                                        {% if _show_disk_space %}
+                                            <td>
+                                                {{ macros.usage_indicator({
+                                                    'current': item.disk_space_current,
+                                                    'max': item.disk_space_max,
+                                                    'percent': item.disk_space_percent,
+                                                }) }}
+                                            </td>
+                                        {% endif %}
+
+                                        {% if _show_disk_space_allocation %}
+                                            <td class="is-narrow has-text-right">
+                                                {{ item.disk_space_web }}
+                                            </td>
+                                            <td class="is-narrow has-text-right">
+                                                {{ item.disk_space_email }}
+                                            </td>
+                                            <td class="is-narrow has-text-right">
+                                                {{ item.disk_space_db }}
+                                            </td>
+                                        {% endif %}
+                                        {% if _show_file_count %}
+                                            <td>
+                                                {{ macros.usage_indicator({
+                                                    'current': item.files_current,
+                                                    'max': item.files_max,
+                                                    'percent': item.files_percent,
+                                                }) }}
+                                            </td>
+                                        {% endif %}
+                                        {% if _show_traffic %}
+                                            <td>
+                                                {{ macros.usage_indicator({
+                                                    'current': item.traffic_current,
+                                                    'max': item.traffic_max,
+                                                    'percent': item.traffic_percent,
+                                                }) }}
+                                            </td>
+                                        {% endif %}
+                                        {% if _show_last_login %}
+                                            <td class="is-narrow">
+                                                {{ item.last_login|default('—') }}
+                                            </td>
+                                        {% endif %}
+                                        <td class="is-narrow">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'login',
+                                                '_url': '?page=intern&action=switch_to_client&id=' ~ item.id ~ '&return_to_page=' ~ _app.page
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        {{ _clients|length|i18n_format }} {{ items_total }}
+                                    </td>
+
+                                    {% if _show_contact_name %}
+                                        <td class="has-text-right"></td>
+                                    {% endif %}
+
+                                    {% if _show_client_id %}
+                                        <td class="has-text-right"></td>
+                                    {% endif %}
+
+                                    {% if _show_disk_space %}
+                                        <td class="has-text-right">
+                                            {{ _total.disk_space.consumed }} / {{ _total.disk_space.allocated_string }}
+                                        </td>
+                                    {% endif %}
+
+                                    {% if _show_disk_space_allocation %}
+                                        <td class="has-text-right">
+                                            {{ _total.disk_space_web }}
+                                        </td>
+                                        <td class="has-text-right">
+                                            {{ _total.disk_space_email }}
+                                        </td>
+                                        <td class="has-text-right">
+                                            {{ _total.disk_space_db }}
+                                        </td>
+                                    {% endif %}
+
+                                    {% if _show_file_count %}
+                                        <td class="has-text-right">
+                                            {{ _total.files.consumed }} / {{ _total.files.allocated_string }}
+                                        </td>
+                                    {% endif %}
+
+                                    {% if _show_traffic %}
+                                        <td class="has-text-right">
+                                            {{ _total.traffic.consumed }} / {{ _total.traffic.allocated_string }}
+                                        </td>
+                                    {% endif %}
+
+                                    <td colspan="42">
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

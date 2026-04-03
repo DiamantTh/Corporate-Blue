@@ -1,0 +1,50 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+<div class="level">
+    <div class="level-left">
+        <div class="level-item is-block">
+            {% set is_array = _usage|keys|first is same as(0) %}
+
+            {% if is_array %}
+                {% for item in _usage %}
+                    {{ macros.usage_indicator(item) }}
+                {% endfor %}
+            {% else %}
+                {% if _usage %}
+                    {{ macros.usage_indicator(_usage) }}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="level-right">
+        {% for _button in _buttons %}
+            <div class="level-item">
+               {{ _button }}
+            </div>
+        {% endfor %}
+
+        {% if _bulk_actions is not empty %}
+            {% set options = {}|merge({ '': '- ' ~ bulk_actions ~ ' -' }, _bulk_actions) %}
+            {% set data = {}|merge(
+                { 'form-id': _form_id },
+                _bulk_action_open_modal|default({})|reduce((carry, value, key) => carry|merge({ ('open-modal-on-' ~ key): value }), {}),
+                _bulk_action_call_function|default({})|reduce((carry, value, key) => carry|merge({ ('call-function-on-' ~ key): value }), {})
+            ) %}
+
+            <div class="level-item">
+                {{ forms.select({
+                    'name': 'bulk_action',
+                    'options': options,
+                    'button': {
+                        'label': apply,
+                        'type': 'button',
+                        'style': 'primary',
+                        'class': 'app-update-action-submit-form',
+                        'data': data
+                    }
+                }) }}
+            </div>
+        {% endif %}
+    </div>
+</div>

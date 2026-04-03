@@ -1,0 +1,74 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+
+<input type="hidden" name="service_config" value="">
+
+{{ forms.checkbox_wrapped({
+    'label': enable_monitoring,
+    'help': enable_monitoring_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_enabled',
+        'value': '1',
+        'is_checked': _is_enabled
+    }
+}) }}
+
+{{ forms.label_wrapped({
+    'label': services,
+    'help': services_help
+}) }}
+
+<div class="has-margin-bottom-medium">
+    {{ forms.button({
+        'label': add_service,
+        'type': 'button',
+        'id': 'app-btn-add-service'
+    }) }}
+</div>
+
+<div id="app-service-container">
+    <!-- Content added by JavaScript -->
+</div>
+
+
+<script id="app-service-template" type="text/x-handlebars-template">
+    <div class="columns">
+        <div class="column is-half has-padding-bottom-none">
+            {{ forms.input_wrapped({
+                'omit_id': true,
+                'name': 'name',
+                'type': 'text',
+                'placeholder': service_name
+            }) }}
+        </div>
+        <div class="column has-mobile-top-padding-none has-padding-bottom-none">
+            {{ forms.input_wrapped({
+                'omit_id': true,
+                'name': 'port',
+                'type': 'number',
+                'placeholder': port,
+                'addons': {
+                    'right': [
+                        {
+                            'type': 'select',
+                            'select': {
+                                'name': 'protocol',
+                                'options': { 'tcp': 'TCP', 'udp': 'UDP' },
+                            }
+                        }
+                    ]
+                }
+            }) }}
+        </div>
+        <div class="column is-narrow has-mobile-top-padding-none has-text-centered">
+            {{ forms.button({
+                'label': remove,
+                'style': 'secondary',
+                'type': 'button',
+                'class': 'app-btn-remove-service'
+            }) }}
+        </div>
+    </div>
+</script>

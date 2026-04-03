@@ -1,0 +1,41 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_apache_server_status.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_additional_elements': [
+            forms.button({
+                'label': start_real_time_monitoring,
+                'icon': 'fa-solid fa-play',
+                'class': 'app-button-start-real-time app-show-on-realtime-disabled',
+                'type': 'button'
+            }),
+
+            forms.button({
+                'label': refresh,
+                'icon': 'fa-solid fa-rotate',
+                'class': 'app-button-refresh app-show-on-realtime-disabled',
+                'type': 'button'
+            }),
+            forms.button({
+                'label': stop_real_time_monitoring,
+                'icon': 'fa-solid fa-stop',
+                'class': 'app-button-stop-real-time app-show-on-realtime-enabled',
+                'type': 'button'
+            })
+        ],
+    }) %}
+
+    <div id="app-apache-server-status" class="has-margin-top-large">
+        {% include 'components/apache_server_status.twig' with { '_status': _apache_server_status } %}
+    </div>
+{% endblock %}

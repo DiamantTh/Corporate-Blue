@@ -1,0 +1,31 @@
+{% apply spaceless %}
+
+    {% set icons = {
+        folder   : { class: 'fa-solid fa-folder' },
+        dir      : { class: 'fa-solid fa-folder',       color: 'is-link' },
+        folder_up: { class: 'fa-solid fa-turn-up' },
+        link     : { class: 'fa-solid fa-link',         color: 'has-text-grey' },
+        archive  : { class: 'fa-solid fa-file-zipper',  color: 'has-text-warning' },
+        audio    : { class: 'fa-solid fa-file-audio',   color: 'has-text-success' },
+        code     : { class: 'fa-solid fa-file-code',    color: 'has-text-info' },
+        config   : { class: 'fa-solid fa-file-lines',   color: 'has-text-info' },
+        csv      : { class: 'fa-solid fa-file-csv',     color: 'has-text-grey' },
+        image    : { class: 'fa-solid fa-file-image',   color: 'has-text-success' },
+        pdf      : { class: 'fa-solid fa-file-pdf',     color: 'has-text-danger' },
+        text     : { class: 'fa-solid fa-file-lines',   color: 'has-text-grey' },
+        video    : { class: 'fa-solid fa-file-video',   color: 'has-text-success' },
+    } %}
+
+    {% if icons[_type] %}
+        {% set class = icons[_type].class %}
+        {% set color = icons[_type].color %}
+    {% else %}
+        {% set class = 'fa-solid fa-file' %}
+        {% set color = 'has-text-grey' %}
+    {% endif %}
+
+    <span class="icon is-medium {{ color }}">
+        <i class="{{ class }} fa-lg"></i>
+    </span>
+
+{% endapply %}

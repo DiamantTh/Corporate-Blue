@@ -1,0 +1,265 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_backup.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ restic_help|raw }}
+    </p>
+
+    {# Features #}
+    {% embed "components/card.twig" with {
+        'collapse': {
+            'is_enabled': true,
+            'cookie_name': 'backup_features',
+        },
+        'header': {
+            'icon': 'fa-solid fa-diagram-project',
+            'title': backup_features,
+        },
+    } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="columns">
+                <div class="column is-half">
+                    <div class="content">
+                        <div>
+                            <h2 class="title is-6 has-margin-bottom-small">{{ create_backup }}</h2>
+                            <p>{{ create_backup_desc|raw }}</p>
+
+                            <div class="buttons">
+                                {{ forms.button({
+                                    'label': create_backup,
+                                    'icon': 'fa-solid fa-box-archive',
+                                    'url': '?page=backup_create'
+                                }) }}
+
+                                {{ forms.button({
+                                    'label': schedule_backups,
+                                    'icon': 'fa-solid fa-calendar-days',
+                                    'url': '?page=backup_schedule'
+                                }) }}
+                            </div>
+                        </div>
+
+                        <div class="has-margin-top-large">
+                            <h2 class="title is-6 has-margin-bottom-small">{{ restore_backup }}</h2>
+                            <p>{{ restore_backup_desc|raw }}</p>
+
+                            {{ forms.button({
+                                'label': restore_backup,
+                                'icon': 'fa-solid fa-clock-rotate-left',
+                                'url': '?page=backup_restore&action=select'
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-half">
+                    <div class="content">
+                        <div>
+                            <h2 class="title is-6 has-margin-bottom-small">{{ repository_management }}</h2>
+                            <p>{{ repository_management_desc|raw }}</p>
+
+                            <div class="buttons">
+                                {{ forms.button({
+                                    'label': repository_management,
+                                    'icon': 'fa-solid fa-folder-open',
+                                    'url': '?page=backup_repository'
+                                }) }}
+
+                                {{ forms.button({
+                                    'label': troubleshooting,
+                                    'icon': 'fa-solid fa-screwdriver-wrench',
+                                    'url': '?page=backup_troubleshooting'
+                                }) }}
+                            </div>
+                        </div>
+
+                        {% if not _white_label.is_hide_keyweb_ads %}
+                            <div class="columns has-margin-top-large">
+                                <div class="column is-narrow">
+                                    <a href="{{ _keydisc_url }}" target="_blank" rel="nofollow noopener noreferrer">
+                                        <img class="svg-keydisc" src="theme/bulma/assets/img/{{ _app.theme.is_dark_mode ? 'dark/' }}keydisc.svg">
+                                    </a>
+                                </div>
+                                <div class="column has-mobile-top-padding-none">
+                                    {{ ad_keydisc_text|raw }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Latest events #}
+    {% embed "components/card.twig" with {
+        'margin': 'large',
+        'header': {
+            'icon': 'fa-solid fa-list-check',
+            'title': latest_events,
+        },
+    } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            {% if _latest_events is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {{ macros.header_sorting('created_at') }}>
+                                    {{ started_on }}
+                                </th>
+                                <th {{ macros.header_sorting('operation') }} colspan="2">
+                                    {{ operation }}
+                                </th>
+                                <th {{ macros.header_sorting('state') }}>
+                                    {{ status }}
+                                </th>
+                                <th {{ macros.header_sorting('messages') }}>
+                                    {{ messages }}
+                                </th>
+                                <th {{ macros.header_sorting('description') }}>
+                                    {{ description }}
+                                </th>
+                                <th {{ macros.header_sorting('repository') }}>
+                                    {{ repository }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _latest_events %}
+                                <tr>
+                                    <td class="app-messages-content" style="display:none">
+                                        {% if item.issues %}
+                                            <ul class="list">
+                                            {% for issue in item.issues %}
+                                                <li class="list-item">{{ issue|nl2br }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="has-ws-no-wrap">
+                                        {% if item.duration %}
+                                            {% set _tippy_content %}
+                                                <table class="table is-narrow">
+                                                    <tr>
+                                                        <th>{{ started_on }}</th>
+                                                        <td>{{ item.created_at }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>{{ ended_on }}</th>
+                                                        <td>{{ item.ended_at }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>{{ duration }}</th>
+                                                        <td>{{ item.duration }}</td>
+                                                    </tr>
+                                                </table>
+                                            {% endset %}
+
+                                            <span class="app-tooltip" data-tippy-content="{{ _tippy_content|escape('html') }}">
+                                                {{ item.created_at }}
+                                            </span>
+                                        {% else %}
+                                            {{ item.created_at }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="has-ws-no-wrap">
+                                        {% include 'components/icon_backup.twig' with { '_type': 'type_' ~ item.type } %}
+                                        {{ item.type_label }}
+
+                                        {% if item.id_schedule %}
+                                            (<a href="?page=backup_schedule&action=edit&id={{ item.id_schedule }}">{{ scheduled_backup }}</a>)
+                                        {% endif %}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {% if item.type == 'check' and item.info %}
+                                            <span class="app-tooltip" data-tippy-content="{{ repository_size_change }}">
+                                                {% include 'components/icon_backup.twig' with { '_type': item.info.increase ? 'size_increase' : 'size_decrease' } %}
+                                                {{ item.info.size }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="has-ws-no-wrap">
+                                        {% include 'components/icon_backup.twig' with { '_type': 'state_' ~ item.state } %}
+                                        {{ item.state_label }}
+                                        {{ item.progress ? ' (' ~ item.progress ~ ')' }}
+                                    </td>
+                                    <td>
+                                        {% if item.issues %}
+                                            <a class="app-modal-messages-trigger">
+                                                {{ messages }}
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ item.description }}
+                                    </td>
+                                    <td>
+                                        <a href="?page=backup_repository&action=edit&id={{ item.id_repo }}">{{ item.repo }}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42">
+                                    {{ _latest_events|length|i18n_format }} {{ items }} / {{ _latest_events_total|i18n_format }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+
+    {# Pagination #}
+    {% include 'components/pagination.twig' with { 'params': _pagination } %}
+
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-messages',
+            '_title': messages,
+            '_buttons': {
+                'cancel': { 'label': close },
+            } } %}
+        {% block body %}
+            <p class="has-margin-bottom-medium">
+                {{ messages_were_logged }}
+            </p>
+
+            <div class="app-messages-content is-family-monospace is-size-7">
+                <!-- filled by JS -->
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

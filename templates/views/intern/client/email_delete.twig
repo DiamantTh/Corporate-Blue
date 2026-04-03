@@ -1,0 +1,24 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_config': {
+            'email_utf8': {
+                'label': email_account
+            },
+            'description': {
+                'label': description
+            },
+            'aliases': {
+                'label': alias_addresses
+            },
+            'forwardings': {
+                'label': forwardings
+            },
+        },
+        '_items': _email_accounts
+    } %}
+{% endblock %}

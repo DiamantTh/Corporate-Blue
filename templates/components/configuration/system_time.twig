@@ -1,0 +1,10 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+ {{ forms.select_wrapped({
+    'label': time_zone,
+    'help': time_zone_help,
+    'name': 'time_zone',
+    'options': _time_zones,
+    'selected': _time_zones_selected
+}) }}

@@ -1,0 +1,43 @@
+{% embed "components/modal/modal.twig" with {
+        '_id': 'app-modal-connection-data-' ~ _id,
+        '_title': connection_data,
+        '_buttons': {
+            'cancel': { 'label': close },
+        } } %}
+    {% block body %}
+        <div class="table-container">
+            <table class="table is-centered is-striped is-hoverable">
+                <tbody>
+                    <tr>
+                        <th>{{ database_name }}</th>
+                        <td>{{ _database_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ username }}</th>
+                        <td>{{ _username }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ host }}</th>
+                        <td>{{ _host }}</td>
+                    </tr>
+                    {% if _has_remote_access %}
+                        <tr>
+                            <th>{{ host }} ({{ remote_access }})</th>
+                            <td>
+                                <ul>
+                                    {% for ip in _server_ips %}
+                                        <li>{{ ip }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{{ port }}</th>
+                        <td>{{ _port }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endblock %}
+{% endembed %}

@@ -1,0 +1,37 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {{ forms.input_wrapped({
+                    'label': name,
+                    'help': name_help,
+                    'type': 'text',
+                    'name': 'name',
+                    'value': _name,
+                }) }}
+
+                {{ forms.textarea_wrapped({
+                    'label': public_key,
+                    'help': public_key_help,
+                    'name': 'public_key',
+                    'value': _public_key,
+                    'is_required': true,
+                }) }}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': 'profile#tab-ssh-keys' }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+    
+{% endblock %}
+

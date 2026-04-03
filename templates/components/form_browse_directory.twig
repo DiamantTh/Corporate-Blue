@@ -1,0 +1,28 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+<div class="app-directory-browser-container" data-purpose="{{ _purpose }}" data-id-user="{{ _id_user }}" data-username="{{ _username }}">
+    {{ forms.input_wrapped({
+        'label': _is_empty_label ? '' : _label | default(directory),
+        'help': _help,
+        'name': _name | default('path'),
+        'type': 'text',
+        'value': _value,
+        'is_required': _is_required,
+        'is_required_fake': _is_required_fake,
+        'addons': {
+            'left': _append_directory ? {
+                'label': _append_directory
+            },
+            'right': {
+                'type': 'action',
+                'label': browse ~ '...',
+                'action': 'app-browse-directory'
+            }
+        },
+    }) }}
+
+    <div class="app-directory-browser is-hidden has-margin-bottom-medium has-padding-small textarea" style="height: 16.9rem; overflow-y: auto">
+        <!-- Content added by JavaScript -->
+    </div>
+</div>

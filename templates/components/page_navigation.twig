@@ -1,0 +1,35 @@
+{% import "macros/macros.twig" as macros %}
+
+<div class="columns is-multiline">
+    {% for category in _navigation %}
+        <div class="column is-6-tablet is-6-desktop is-4-widescreen is-4-fullhd">
+            {% embed "components/card.twig" with {
+                'has_equal_height': true,
+                'header': {
+                    'icon': category.icon,
+                    'title': category.label,
+                },
+            } %}
+                {% block content %}
+                    {% for item in category.items %}
+                        {% if not item.hide %}
+                            <div>
+                                <small>
+                                    <span class="icon is-medium has-text-grey-light">
+                                        <i class="fa-solid fa-angle-right"></i>
+                                    </span>
+                                </small>
+                                <a href="{{ item.url }}" {{ item.is_new_tab ? 'target="_blank" rel="nofollow noopener noreferrer"' }}>
+                                    {{ item.label }}
+                                </a>
+                                {% if item.is_pro and not _app.is_pro %}
+                                    {% include 'components/tags/pro.twig' %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+    {% endfor %}
+</div>

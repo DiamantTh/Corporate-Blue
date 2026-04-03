@@ -1,0 +1,24 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_config': {
+            'name': {
+                'label': name
+            },
+            'prefix': {
+                'label': api_key_prefix
+            },
+            'ips': {
+                'label': ip_addresses
+            },
+            'created_at': {
+                'label': created_at
+            },
+        },
+        '_items': _api_keys
+    } %}
+{% endblock %}

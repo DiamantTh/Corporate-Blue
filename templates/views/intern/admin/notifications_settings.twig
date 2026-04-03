@@ -1,0 +1,143 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_notifications.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                    {{ forms.input_wrapped({
+                        'label': sender_name,
+                        'help': sender_name_help,
+                        'name': 'sender_name',
+                        'value': _sender_name,
+                        'type': 'text',
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': sender_email,
+                        'help': sender_email_help,
+                        'name': 'sender_email',
+                        'value': _sender_email,
+                        'type': 'email',
+                        'is_required': true,
+                    }) }}
+
+                    {{ forms.checkbox_wrapped({
+                        'options': {
+                            'label': use_external_smtp,
+                            'name': 'use_smtp',
+                            'value': '1',
+                            'is_checked': _use_smtp
+                        }
+                    }) }}
+
+                    <div id="app-smtp-settings" class="has-margin-left-large has-margin-bottom-large" style="display: none;">
+                        {{ forms.input_wrapped({
+                            'label': hostname,
+                            'name': 'smtp_host',
+                            'value': _smtp_host,
+                            'type': 'text',
+                            'is_required': true
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'label': port,
+                            'name': 'smtp_port',
+                            'value': _smtp_port,
+                            'type': 'number',
+                            'min': 1,
+                            'max': 65535,
+                            'is_required': true
+                        }) }}
+
+                        {{ forms.select_wrapped({
+                            'label': connection_security,
+                            'name': 'smtp_secure',
+                            'options': _smtp_secure_options,
+                            'selected': _smtp_secure
+                        }) }}
+
+                        {{ forms.checkbox_wrapped({
+                            'label': use_auth,
+                            'options': {
+                                'label': enabled,
+                                'name': 'smtp_auth',
+                                'value': '1',
+                                'is_checked': _smtp_auth
+                            }
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'label': username,
+                            'name': 'smtp_username',
+                            'value': _smtp_username,
+                            'type': 'text',
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'label': password,
+                            'help': _has_stored_password ? leave_empty,
+                            'name': 'smtp_password',
+                            'type': 'password',
+                            'autocomplete': 'new-password',
+                            'addons': {
+                                'right': {
+                                    'type': 'action',
+                                    'label': show,
+                                    'action': 'app-show-password'
+                                }
+                            }
+                        }) }}
+                    </div>
+
+                    {{ forms.input_wrapped({
+                        'label': webhook_url,
+                        'help': webhook_url_help,
+                        'name': 'webhook_url',
+                        'value': _webhook_url,
+                        'type': 'text',
+                        'addons': {
+                            'right': {
+                                'type': 'action',
+                                'label': test_webhook,
+                                'action': 'app-test-webhook'
+                            }
+                        }
+                    }) }}
+
+                    <div id="app-test-webhook-error" class="has-margin-bottom-medium" style="display: none">
+                        <span class="has-text-danger has-text-weight-bold">
+                            {{ failed_to_send }}
+                        </span>
+                        <br>
+                        <span id="app-test-webhook-error-message"></span>
+                    </div>
+
+                    {{ forms.select_wrapped({
+                        'label': priority_language,
+                        'help': priority_language_help,
+                        'name': 'priority_language',
+                        'options': _priority_languages,
+                        'selected': _priority_language
+                    }) }}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

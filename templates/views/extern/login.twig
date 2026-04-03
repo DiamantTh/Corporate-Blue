@@ -1,0 +1,111 @@
+{% extends 'layout/extern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/login.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/js/webauthn.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'components/browser_requirements.twig' %}
+
+    <div class="app-show-with-login-password">
+        <form id="form-login" action="index.php" method="post">
+            <input type="hidden" name="submit" value="1">
+
+            {% if _open_page %}
+                <input type="hidden" name="open_page" value="{{ _open_page }}">
+            {% endif %}
+
+            {{ forms.input_wrapped({
+                'name': 'username',
+                'type': 'text',
+                'label': username,
+                'value': _username,
+                'autocomplete': 'username',
+                'is_autofocus': true,
+                'is_required': true,
+                'is_hide_asterisk': true,
+            }) }}
+
+            {{ forms.input_wrapped({
+                'name': 'password',
+                'type': 'password',
+                'label': password,
+                'autocomplete': 'current-password',
+                'is_required': true,
+                'is_hide_asterisk': true,
+                'addons': {
+                    'right': {
+                        'type': 'action',
+                        'label': show,
+                        'action': 'app-show-password'
+                    }
+                },
+            }) }}
+
+            <div id="password-annotations" class="has-text-danger has-margin-top-none">
+                <small>
+                    <p class="app-password-annotation-caps-lock">
+                        {{ password_annotation_caps_lock }}
+                    </p>
+                </small>
+            </div>
+
+            <div class="has-margin-top-large">
+                {{ forms.button({
+                    'label': login,
+                    'style': 'primary',
+                    'class': 'is-fullwidth app-button-with-loading-animation'
+                }) }}
+            </div>
+        </form>
+
+        <p class="has-text-centered has-text-link has-margin-top-medium">
+            <a href="?page=forgot_password">{{ forgot_password }}</a>
+        </p>
+
+        {% if _app.is_demo %}
+            {% include 'components/demo_login_info.twig' %}
+        {% endif %}
+
+        <p class="has-text-centered has-text-link has-margin-top-large">
+            <a class="app-show-login-webauthn" href="javascript:void(0)">{{ login_with_web_auth }}</a>
+        </p>
+
+    </div>
+
+    <div class="app-show-with-login-webauthn" style="display: none">
+        <form id="form-login-webauthn">
+            {{ forms.input_wrapped({
+                'name': 'webauthn_username',
+                'type': 'text',
+                'label': username,
+                'value': _webauthn_username,
+                'autocomplete': 'username',
+                'is_autofocus': true,
+                'is_required': true,
+                'is_hide_asterisk': true,
+            }) }}
+
+            <div class="has-margin-bottom-large"></div>
+
+            {{ forms.button({
+                'label': login_with_web_auth,
+                'icon': 'fa-solid fa-fingerprint',
+                'style': 'primary',
+                'class': 'is-fullwidth',
+                'type': 'button',
+                'id': 'app-webauthn-login'
+            }) }}
+        </form>
+
+        <p class="has-text-centered has-text-link has-margin-top-large">
+            <a class="app-show-login-password" href="javascript:void(0)">{{ login_with_password }}</a>
+        </p>
+    </div>
+{% endblock %}

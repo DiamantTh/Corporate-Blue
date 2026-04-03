@@ -1,0 +1,69 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_dns_lookup.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {% embed "components/card.twig" with {
+        'header': {
+            'title': perform_lookup
+        },
+        'content': {
+            'is_centered': true
+        }
+    } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            {{ forms.input_wrapped({
+                'label': hostname,
+                'help': hostname_help,
+                'name': 'hostname',
+                'type': 'text',
+                'addons': {
+                    'right': {
+                        'type': 'action',
+                        'label': check,
+                        'action': 'app-perform-lookup'
+                    }
+                },
+            }) }}
+
+            <div id="app-error-container" class="has-text-centered" style="display: none">
+                <span class="has-text-danger has-text-weight-bold">
+                    {{ an_error_occurred }}
+                </span>
+                <br>
+                <span id="app-error"></span>
+            </div>
+
+            <div id="app-result-container" class="has-margin-bottom-medium" style="display: none">
+                {% embed "components/card.twig" with {
+                    'margin': 'large',
+                    'is_card_on_card': true,
+                    'header': {
+                        'icon': 'fa-solid fa-bars-staggered',
+                        'title': results,
+                    },
+                } %}
+                    {% block content %}
+                        <pre id="app-result" class="has-padding-small"></pre>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

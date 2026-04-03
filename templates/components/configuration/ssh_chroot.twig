@@ -1,0 +1,22 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+ {{ forms.textarea_wrapped({
+    'label': ssh_chroot_binaries,
+    'help': ssh_chroot_binaries_help,
+    'name': 'binaries',
+    'value': _binaries,
+    'rows': 8,
+}) }}
+
+{{ forms.textarea_wrapped({
+    'label': ssh_chroot_paths,
+    'help': ssh_chroot_paths_help,
+    'name': 'paths',
+    'value': _paths,
+    'rows': 8,
+}) }}
+
+<p class="has-margin-top-large">
+    {{ uninstall_help }}
+</p>

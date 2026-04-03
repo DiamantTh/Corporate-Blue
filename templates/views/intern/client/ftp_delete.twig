@@ -1,0 +1,25 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_config': {
+            'username': {
+                'label': username
+            },
+            'description': {
+                'label': description
+            },
+            'path': {
+                'label': home_directory
+            },
+            'delete_home': {
+                'label': delete_home,
+                'is_checkbox': true
+            },
+        },
+        '_items': _ftp_items
+    } %}
+{% endblock %}

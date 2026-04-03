@@ -1,0 +1,19 @@
+Version:    4.5.1
+
+Releases:   https://github.com/chartjs/Chart.js/releases
+
+Homepage:   https://www.chartjs.org/
+
+Update:     - Download the release
+            - Copy the "dist/chart.umd.js"
+
+
+Adapter date-fns
+
+Version:    3.0.0
+
+Releases:   https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js
+
+Homepage:   https://github.com/chartjs/chartjs-adapter-date-fns
+
+Update:     Just upddate the content from of the file

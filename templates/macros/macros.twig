@@ -1,0 +1,175 @@
+{% macro usage_indicator(params) %}
+{# .has-ws-no-wrap is important for keeping a longer text in level-left and level-right aligned with the meter bar on mobile devices #}
+
+{% set is_percent = params.current is null and params.max is null %}
+{% set percent_formatted = params.percent|i18n_format_percent %}
+{% set size = params.is_large ? 'is-small' : 'is-xsmall' %}
+
+<div class="usage-indicator has-ws-no-wrap app-tooltip" data-tippy-content="{{ percent_formatted }}">
+    <div class="level has-margin-bottom-xsmall is-mobile">
+        <div class="level-left has-margin-right-large">
+            <p class="level-item has-text-weight-bold">
+                {{ params.label }}
+            </p>
+        </div>
+        <div class="level-right">
+            <p class="level-item">
+                {% if is_percent %}
+                    {{ percent_formatted }}
+                {% else %}
+                    {{ params.current }} / {{ params.max }}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% set load_level = params.percent <= params.low|default('79') ? 'low' : params.percent <= params.high|default('89') ? 'medium' : 'high' %}
+    <progress class="progress {{ size }}" data-load-level="{{ load_level }}" value="{{ params.percent }}" max="100">
+        {{ percent_formatted }}
+    </progress>
+</div>
+{% endmacro %}
+
+
+{% macro amount_indicator(number) %}
+{% if number < 0 %}
+    <small>
+        <span class="icon is-small">
+            <i class="fa-solid fa-infinity"></i>
+        </span>
+    </small>
+{% elseif number == 0 %}
+    <span class="has-text-grey">
+        —
+    </span>
+{% else %}
+    {{ number }}
+{% endif %}
+{% endmacro %}
+
+
+{% macro tag(label, color, icon = 'fa-solid fa-tag', tooltip = '') %}
+<span class="tag has-margin-x-xsmall {{ color|default('is-info') }} {{ tooltip ? 'app-tooltip-mandatory' }}" {{ tooltip ? 'data-tippy-content="' }}{{ tooltip|escape('html') }}{{ tooltip ? '"' }}>
+    {% if icon %}
+        <span class="icon is-small">
+            <i class="{{ icon }}"></i>
+        </span>
+    {% endif %}
+    <span>
+        {{ label|raw }}
+    </span>
+</span>
+{% endmacro %}
+
+
+{% macro contact_name(first_name, last_name, company) %}
+    {% set contact_name = '' %}
+
+    {% if first_name != '' %}
+        {% set contact_name = first_name %}
+    {% endif %}
+
+    {% if last_name != '' %}
+        {% if contact_name != '' %}
+           {% set contact_name = last_name ~ ', ' ~ first_name %}
+        {% else %}
+            {% set contact_name = last_name %}
+        {% endif %}
+    {% endif %}
+
+    {% if company != '' %}
+        {% if contact_name != '' %}
+           {{ company }}
+           <br><small>{{ contact_name }}</small>
+        {% else %}
+            {{ company }}
+        {% endif %}
+    {% else %}
+        {{ contact_name }}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro link_to_whois(ip) %}
+    <a href="?page=whois&action=popup&ip_address={{ ip }}" onClick="openPopup(this.href); return false;">
+        {{ ip }}
+    </a>
+{% endmacro %}
+
+{% macro link_to_switch_to_client(id_user, username, return_page) %}
+    <a href="?page=intern&action=switch_to_client&id={{ id_user }}&return_to_page={{ return_page }}">
+        {{ username }}
+    </a>
+{% endmacro %}
+
+
+{# Icons ############################################################################################################ #}
+
+{#
+    s.text  | default: ''
+    s.style | default: ''
+    s.icon  | default: fa-solid fa-square
+    s.color | default: ''
+#}
+{% macro icon(s) %}
+    {% if s.text %}
+        <span class="has-ws-no-wrap">
+    {% endif %}
+            <span class="icon is-small {{ s.text ? 'has-margin-right-xsmall' }} {{ s.style }}" {% if s.color %}style="color: {{ s.color }}"{% endif %}>
+                <i class="{{ s.icon ?: 'fa-solid fa-square' }}"></i>
+            </span>
+    {% if s.text %}
+            {{ s.text }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro setting_status_icon(bool) %}
+    {% import _self as macros %}
+    {% set s = { icon: bool ? 'fa-solid fa-square-check' : 'fa-solid fa-square-xmark',
+                 style: bool ? 'has-text-success' : 'has-text-grey-light' } %}
+    {{ macros.icon(s) }}
+{% endmacro %}
+
+{% macro status_icon(bool, text, isMuted) %}
+    {% import _self as macros %}
+    {% set s = { text: text is iterable ? (bool ? text.0 : text.1) : text,
+                 style: bool ? 'has-text-success' : (isMuted ? 'has-text-grey-light' : 'has-text-danger') } %}
+    {{ macros.icon(s) }}
+{% endmacro %}
+
+
+{# Tables ########################################################################################################### #}
+
+{% macro header_checkbox() %}
+<th class="is-narrow">
+    <label>
+        <input class="app-check-all" type="checkbox">
+    </label>
+</th>
+{% endmacro %}
+
+{% macro row_checkbox(value, name = 'ids') %}
+<td>
+    <label>
+        <input type="checkbox" name="{{ name }}[]" value="{{ value }}">
+    </label>
+</td>
+{% endmacro %}
+
+{% macro header_sorting(column, table = 'default') %}
+data-is-sortable data-sorting-table="{{ table }}" data-sorting-column="{{ column }}" data-sorting-order="{{ _globals.sorting[table].column == column ? _globals.sorting[table].order : '' }}"
+{% endmacro %}
+
+
+{# Loading ########################################################################################################## #}
+
+{% macro loading_container(id = 'app-loading-container') %}
+<div id="{{ id }}" class="has-text-centered is-loading">
+    <div class="has-margin-large has-padding-small">
+        <!--
+            Only to have some content, so that loading animation can be displayed.
+        -->
+    </div>
+</div>
+{% endmacro %}

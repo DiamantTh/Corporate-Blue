@@ -1,0 +1,846 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_file_manager.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+        {% if _root_level_help %}
+            <br><br>
+            {{ root_level_help|raw }}
+        {% endif %}
+    </p>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': new,
+                'style': 'primary',
+                'type': 'button',
+                'class': 'app-modal-new-trigger'
+            }),
+            forms.button({
+                'label': upload,
+                'style': 'primary',
+                'type': 'button',
+                'modal': 'app-modal-upload'
+            }),
+        ],
+        '_bulk_actions': {
+            'copy_move': copy ~ ' / ' ~ move,
+            'delete': delete_selection,
+        },
+        '_bulk_action_open_modal': {
+            'delete': 'app-modal-delete-selection',
+        },
+        '_bulk_action_call_function': {
+            'copy_move': 'initCopyMoveBulk',
+        },
+        '_form_id': 'form-file-manager'
+    }) %}
+
+    {# Path #}
+    {% include 'components/file_manager_path.twig' %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+
+            {% if _files is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-file-manager" action="?page={{ _app.page }}&action=delete" method="post">
+                    <input type="hidden" name="working_dir" value="{{ _working_dir }}">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('name') }}>
+                                        {{ name }}
+                                    </th>
+                                    <th {{ macros.header_sorting('size') }} class="is-narrow">
+                                        {{ size }}
+                                    </th>
+                                    <th {{ macros.header_sorting('modified_time') }} class="is-narrow">
+                                        {{ modified_time }}
+                                    </th>
+                                    <th {{ macros.header_sorting('permissions') }} class="is-narrow">
+                                        {{ permissions }}
+                                    </th>
+                                    <th {{ macros.header_sorting('user') }} class="is-narrow">
+                                        {{ owner }}
+                                    </th>
+                                    <th {{ macros.header_sorting('group') }} class="is-narrow">
+                                        {{ group }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _files|slice(0, _file_item_display_limit) %}
+                                    <tr>
+                                        {#
+                                            Configuration
+
+                                            ATTENTION: We have this configuration 2 times!
+                                                       This one is for triggers inside this row, beside the tippy menu.
+                                                       e.g. a click on the file name
+                                        #}
+                                        <td class="app-configuration" style="display: none">
+                                            <input type="text" name="config_path" value="{{ item.path }}">
+                                            <input type="text" name="config_id" value="{{ item.name }}">
+                                            <input type="text" name="config_permissions" value="{{ item.permissions_numeric }}">
+                                        </td>
+
+                                        {{ item.is_protected ? '<td></td>' : macros.row_checkbox(item.name) }}
+
+                                        <td class="has-ws-no-wrap has-padding-left-xsmall">
+
+                                            {% if item.is_dir or item.is_link %}
+                                                <a href="?page={{ _app.page }}&change_dir={{ item.change_dir|url_encode() }}">
+                                                    {% include 'components/icon_files.twig' with { '_type': item.type } %}
+                                                    {{ item.name }}
+                                                    {{ item.is_link ? ' -> ' ~ item.link_target  }}
+                                                </a>
+                                            {% else %}
+
+                                                {% set _has_action = item.is_editable or item.is_viewable or item.is_archive %}
+
+                                                {% if _has_action %}
+                                                    {% if item.is_editable or item.is_viewable %}
+                                                        <a href="?page={{ _app.page }}&action={{ item.is_editable ? 'edit' : 'show' }}&working_dir={{ _working_dir|url_encode() }}&id={{ item.name|url_encode() }}">
+                                                    {% elseif item.is_archive %}
+                                                        <a class="app-modal-extract-trigger" href="javascript:void(0)">
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                {% include 'components/icon_files.twig' with { '_type': item.type } %}
+
+                                                {{ item.name }}
+
+                                                {% if _has_action %}
+                                                    </a>
+                                                {% endif %}
+
+                                            {% endif %}
+
+                                        </td>
+                                        <td class="has-text-right has-ws-no-wrap">
+                                            {{ item.is_dir ? '' : item.size|bytes }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.modified_time }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.permissions|chunk_split(3, ' ') }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.user }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.group }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% if not item.is_protected %}
+                                                {% set extended_menu %}
+                                                    <div class="has-text-left has-ws-no-wrap">
+                                                        {#
+                                                            Configuration
+
+                                                            ATTENTION: We have this configuration block 2 times!
+                                                                       This one is for the tippy, whichs popup will be created outside of this table.
+                                                        #}
+                                                        <div class="app-configuration" style="display: none">
+                                                            <input type="text" name="config_path" value="{{ item.path }}">
+                                                            <input type="text" name="config_id" value="{{ item.name }}">
+                                                            <input type="text" name="config_permissions" value="{{ item.permissions_numeric }}">
+                                                        </div>
+
+                                                        {# Edit / Show ============================================== #}
+
+                                                        {% if item.is_editable %}
+                                                            <p>
+                                                                {% include 'components/icon.twig' with {
+                                                                    '_type': 'edit',
+                                                                    '_label': edit,
+                                                                    '_url': '?page=' ~ _app.page ~ '&action=edit&working_dir=' ~ _working_dir|url_encode() ~ '&id=' ~ item.name|url_encode()
+                                                                } %}
+                                                            </p>
+                                                        {% elseif item.is_viewable %}
+                                                            <p>
+                                                                {% include 'components/icon.twig' with {
+                                                                    '_type': 'show',
+                                                                    '_label': show,
+                                                                    '_url': '?page=' ~ _app.page ~ '&action=show&working_dir=' ~ _working_dir|url_encode() ~ '&id=' ~ item.name|url_encode()
+                                                                } %}
+                                                            </p>
+                                                        {% endif %}
+
+                                                        {# Rename / Permissions ===================================== #}
+
+                                                        {% if item.is_file or item.is_dir %}
+                                                            <p class="app-modal-rename-trigger">
+                                                                {% include 'components/icon.twig' with {
+                                                                    '_type': 'file_rename',
+                                                                    '_label': rename,
+                                                                    '_url': 'javascript:void(0)'
+                                                                } %}
+                                                            </p>
+
+                                                            <p class="app-modal-permissions-trigger">
+                                                                {% include 'components/icon.twig' with {
+                                                                    '_type': 'file_permissions',
+                                                                    '_label': change_permissions,
+                                                                    '_url': 'javascript:void(0)'
+                                                                } %}
+                                                            </p>
+                                                        {% endif %}
+
+                                                        {# Move / Copy =============================================== #}
+
+                                                        {% if not item.is_link %}
+                                                            <p>
+                                                                <hr class="dropdown-divider">
+                                                            </p>
+
+                                                            <p class="app-modal-copy-move-trigger app-modal-copy-move-single">
+                                                                {% include 'components/icon.twig' with {
+                                                                    '_type': 'file_import',
+                                                                    '_label': copy ~ ' / ' ~ move,
+                                                                    '_url': 'javascript:void(0)'
+                                                                } %}
+                                                            </p>
+                                                        {% endif %}
+
+                                                        {# Archive ================================================== #}
+
+                                                        {% if not item.is_link %}
+                                                            <p>
+                                                                <hr class="dropdown-divider">
+                                                            </p>
+
+                                                            {% if item.is_archive %}
+                                                                <p class="app-modal-extract-trigger">
+                                                                    {% include 'components/icon.twig' with {
+                                                                        '_type': 'extract',
+                                                                        '_label': extract_archive,
+                                                                        '_url': 'javascript:void(0)'
+                                                                    } %}
+                                                                </p>
+                                                            {% else %}
+                                                                <p class="app-modal-create-archive-trigger">
+                                                                    {% include 'components/icon.twig' with {
+                                                                        '_type': 'create_archive',
+                                                                        '_label': create_archive,
+                                                                        '_url': 'javascript:void(0)'
+                                                                    } %}
+                                                                </p>
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                        {# Download ================================================= #}
+
+                                                        {% if item.is_file or item.is_dir %}
+                                                            <p>
+                                                                <hr class="dropdown-divider">
+                                                            </p>
+                                                            {% if item.is_file %}
+                                                                <p>
+                                                                {% include 'components/icon.twig' with {
+                                                                    '_type': 'download',
+                                                                    '_label': download,
+                                                                    '_url': '?page=' ~ _app.page ~ '&action=download&working_dir=' ~ _working_dir|url_encode() ~ '&id=' ~ item.name|url_encode()
+                                                                } %}
+                                                                </p>
+                                                            {% elseif item.is_dir %}
+                                                                <p>
+                                                                    {% include 'components/icon.twig' with {
+                                                                       '_type': 'download',
+                                                                       '_label': download_as_zip,
+                                                                       '_url': '?page=' ~ _app.page ~ '&action=download&archive_type=zip&working_dir=' ~ _working_dir|url_encode() ~ '&id=' ~ item.name|url_encode()
+                                                                    } %}
+                                                                </p>
+                                                                <p>
+                                                                    {% include 'components/icon.twig' with {
+                                                                        '_type': 'download',
+                                                                        '_label': download_as_targz,
+                                                                        '_url': '?page=' ~ _app.page ~ '&action=download&archive_type=targz&working_dir=' ~ _working_dir|url_encode() ~ '&id=' ~ item.name|url_encode()
+                                                                    } %}
+                                                                </p>
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                        {# Delete =================================================== #}
+
+                                                        {% if not item.is_link %}
+                                                            <p>
+                                                                <hr class="dropdown-divider">
+                                                            </p>
+                                                        {% endif %}
+
+                                                        <p class="app-modal-delete-trigger">
+                                                            {% include 'components/icon.twig' with {
+                                                                '_type': 'delete',
+                                                                '_label': delete,
+                                                                '_url': 'javascript:void(0)'
+                                                            } %}
+                                                        </p>
+                                                    </div>
+                                                {% endset %}
+
+                                                <button class="app-extended-menu button is-small has-text-link" type="button" data-tippy-content="{{ extended_menu|escape('html') }}" aria-label="{{ actions|escape('html') }}">
+                                                    <span class="icon is-small">
+                                                        <i class="fa-solid fa-bars"></i>
+                                                    </span>
+                                                    <span class="icon is-small">
+                                                         <i class="fa-solid fa-chevron-down fa-xs"></i>
+                                                    </span>
+                                                </button>
+
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                {% if _files|length > _file_item_display_limit %}
+                                    <tr>
+                                        <td colspan="42" class="has-text-grey has-text-centered">
+                                            {{ _file_item_display_limit_message|raw }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _files|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                </form>
+
+            {% endif %}
+        </div>
+    </div>
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# New #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-new',
+            '_title': new,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=new',
+                'hidden': { 'working_dir': _working_dir },
+            },
+            '_buttons': {
+                'submit': { 'label': create },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="has-text-centered">
+                <p>{{ current_path }}</p>
+                <p class="has-text-weight-bold has-margin-top-xsmall has-margin-bottom-medium">{{ _working_dir }}</p>
+            </div>
+
+            {{ forms.radio_wrapped({
+                'label': please_select,
+                'is_required': true,
+                'options': [
+                    {
+                        'label': directory,
+                        'name': 'type',
+                        'value': 'directory',
+                        'is_checked': true,
+                    },
+                    {
+                        'label': empty_file,
+                        'name': 'type',
+                        'value': 'file',
+                    },
+                    {
+                        'label': symbolic_link,
+                        'name': 'type',
+                        'value': 'link',
+                    },
+                ]
+            }) }}
+
+            {{ forms.input_wrapped({
+                'label': name,
+                'name': 'name',
+                'type': 'text',
+                'is_required': true,
+            }) }}
+
+            <div class="app-show-with-link" style="display: none">
+                {% include 'components/form_browse_directory.twig' with {
+                    '_label': destination_directory,
+                    '_value': '/www/',
+                    '_purpose': 'file_manager',
+                    '_name': 'path',
+                    '_is_required_fake': true
+                } %}
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Upload #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-upload',
+            '_title': upload,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=upload',
+                'hidden': {
+                    'working_dir': _working_dir,
+                    'upload_type': 'local',
+                },
+                'is_upload': true,
+            },
+            '_buttons': {
+                'submit': { 'label': upload },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="has-text-centered">
+                <p>{{ current_path }}</p>
+                <p class="app-current-path has-text-weight-bold has-margin-top-xsmall has-margin-bottom-medium">{{ _working_dir }}</p>
+            </div>
+
+            {% include 'components/tabs.twig' with {
+                'items': [
+                    {
+                        'icon':  'fa-solid fa-upload',
+                        'label': from_local_storage,
+                        'url':   '#tab-upload-local',
+                    },
+                    {
+                        'icon':  'fa-solid fa-link',
+                        'label': from_url,
+                        'url':   '#tab-upload-url',
+                    }
+                ]
+            } %}
+
+            <div class="tabs-content">
+                <div id="tab-upload-local" class="tabs-panel is-active">
+                    {% for i in 0..3 %}
+                        {{ forms.upload_wrapped({
+                            'name': 'file_' ~ i,
+                            'button_label': choose_file,
+                            'is_fullwidth': true
+                        }) }}
+                    {% endfor %}
+
+                    <p class="has-text-grey">
+                        {{ max_file_size }}: {{ _upload_max_filesize|bytes(0) }} / {{ total }}: {{ _post_max_size|bytes(0) }}
+                    </p>
+                </div>
+                <div id="tab-upload-url" class="tabs-panel">
+
+                    {{ forms.input_wrapped({
+                        'label': url,
+                        'help': url_help,
+                        'name': 'url',
+                        'type': 'text',
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': file_name,
+                        'help': file_name_help,
+                        'name': 'file_name',
+                        'type': 'text',
+                    }) }}
+
+                    <p class="has-text-grey">
+                        {{ max_file_size }}: {{ _max_url_upload_file_size|bytes(0) }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="has-margin-bottom-medium"></div>
+
+            {{ forms.checkbox_wrapped({
+                'label': replace_existing_files,
+                'options': {
+                    'label': yes,
+                    'name': 'replace_existing_files',
+                    'value': '1',
+                    'is_checked': false
+                }
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Delete selection #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-selection',
+            '_title': delete_selection,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-file-manager' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_delete_selection }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Delete single #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-single',
+            '_title': delete_item,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=delete',
+                'hidden': {
+                    'id': '___unset___',
+                    'working_dir': _working_dir,
+                },
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <div class="has-text-centered">
+                <p>{{ current_path }}</p>
+                <p class="app-current-path has-text-weight-bold has-margin-top-xsmall has-margin-bottom-medium"></p>
+                <p>{{ are_you_sure_delete_single }}</p>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Rename #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-rename',
+            '_title': rename_item,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=rename',
+                'hidden': {
+                    'id': '___unset___',
+                    'working_dir': _working_dir,
+                },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="has-text-centered">
+                <p>{{ current_path }}</p>
+                <p class="app-current-path has-text-weight-bold has-margin-top-xsmall has-margin-bottom-medium"></p>
+            </div>
+
+            {{ forms.input_wrapped({
+                'label': new_name,
+                'name': 'name',
+                'type': 'text',
+                'is_required': true,
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Permissions #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-permissions',
+            '_title': file_permissions,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=permissions',
+                'hidden': {
+                    'id': '___unset___',
+                    'working_dir': _working_dir,
+                },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="has-text-centered">
+                <p>{{ current_path }}</p>
+                <p class="app-current-path has-text-weight-bold has-margin-top-xsmall has-margin-bottom-medium"></p>
+            </div>
+
+            <div class="table-container">
+                <table id="app-permissions-configurator" class="table is-centered is-striped is-hoverable has-valigned-cells">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>{{ owner }}</th>
+                            <th>{{ group }}</th>
+                            <th>{{ others }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>{{ read }}</th>
+                            <td>
+                                <input type="checkbox" name="owner_read">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="group_read">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="others_read">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ write }}</th>
+                            <td>
+                                <input type="checkbox" name="owner_write">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="group_write">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="others_write">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ execute }}</th>
+                            <td>
+                                <input type="checkbox" name="owner_execute">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="group_execute">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="others_execute">
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="is-summary">
+                        <tr>
+                            <th>{{ numeric_value }}</th>
+                            <td>
+                                {{ forms.input_wrapped({
+                                    'name': 'owner',
+                                    'type': 'number',
+                                    'min' : 0,
+                                    'max' : 7,
+                                    'is_required': true,
+                                }) }}
+                            </td>
+                            <td>
+                                {{ forms.input_wrapped({
+                                    'name': 'group',
+                                    'type': 'number',
+                                    'min' : 0,
+                                    'max' : 7,
+                                    'is_required': true,
+                                }) }}
+                            </td>
+                            <td>
+                                {{ forms.input_wrapped({
+                                    'name': 'others',
+                                    'type': 'number',
+                                    'min' : 0,
+                                    'max' : 7,
+                                    'is_required': true,
+                                }) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Extract #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-extract',
+            '_title': extract_archive,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=extract',
+                'hidden': {
+                    'id': '___unset___',
+                    'working_dir': _working_dir,
+                },
+            },
+            '_buttons': {
+                'submit': { 'label': extract },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="has-text-centered">
+                <p>{{ current_path }}</p>
+                <p class="app-current-path has-text-weight-bold has-margin-top-xsmall has-margin-bottom-medium"></p>
+            </div>
+
+            {{ forms.checkbox_wrapped({
+                'label': replace_existing_files,
+                'options': {
+                    'label': yes,
+                    'name': 'replace_existing_files',
+                    'value': '1',
+                    'is_checked': false
+                }
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Create archive #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-create-archive',
+            '_title': create_archive,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=create_archive',
+                'hidden': {
+                    'id': '___unset___',
+                    'working_dir': _working_dir,
+                },
+            },
+            '_buttons': {
+                'submit': { 'label': create },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="has-text-centered">
+                <p>{{ current_path }}</p>
+                <p class="app-current-path has-text-weight-bold has-margin-top-xsmall has-margin-bottom-medium"></p>
+            </div>
+
+            {{ forms.input_wrapped({
+                'label': archive_name,
+                'help': archive_name_help,
+                'name': 'archive_name',
+                'type': 'text',
+                'is_required': true,
+                'addons': {
+                    'right': [
+                        { 'label': '.' },
+                        {
+                            'type': 'select',
+                            'select': {
+                                'name': 'archive_type',
+                                'options': _archive_types,
+                            }
+                        }
+                    ]
+                }
+            }) }}
+
+            {{ forms.checkbox_wrapped({
+                'label': replace_existing_files,
+                'options': {
+                    'label': yes,
+                    'name': 'replace_existing_files',
+                    'value': '1',
+                    'is_checked': false
+                }
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Copy / Move #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-copy-move',
+            '_title': copy ~ ' / ' ~ move,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=copy_move',
+                'hidden': {
+                    'id': '___unset___',
+                    'working_dir': _working_dir,
+                },
+            },
+            '_buttons': {
+                'submit': { 'label': okay },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="is-hidden app-modal-selected-files">
+                <!--
+                    Content like this one gets added via Javascript:
+                    <input type="hidden" name="ids[]" value="< item.name >">
+                -->
+            </div>
+
+            <div class="app-modal-copy-move-files-count">
+                {{ forms.label_wrapped({
+                    'label': selected_items,
+                    'value': '<!-- added via js -->'
+                }) }}
+            </div>
+
+            {{ forms.radio_wrapped({
+                'label': file_operation,
+                'options': [{
+                    'label': copy,
+                    'name': 'file_operation',
+                    'value': 'copy',
+                    'is_checked': true
+                },
+                {
+                    'label': move,
+                    'name': 'file_operation',
+                    'value': 'move',
+                    'is_checked': false
+                }]
+            }) }}
+
+            {% include 'components/form_browse_directory.twig' with {
+                '_label': destination_directory,
+                '_help': destination_directory_help,
+                '_value': '/www/',
+                '_purpose': 'file_manager'
+            } %}
+
+            {{ forms.checkbox_wrapped({
+                'label': replace_existing_files,
+                'options': {
+                    'label': yes,
+                    'name': 'replace_existing_files',
+                    'value': '1',
+                    'is_checked': false
+                }
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

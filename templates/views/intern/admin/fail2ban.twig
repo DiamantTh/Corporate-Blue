@@ -1,0 +1,230 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+
+    <p class="has-margin-bottom-medium">
+        {{ list_of_active_jails }}
+    </p>
+
+    {% if _jails is empty %}
+        <span class="has-text-grey-light">- {{ no_items_available }} -</span>
+    {% else %}
+        <div class="columns is-multiline">
+            {% for column in _jails|batch_column(3) %}
+                <div class="column">
+                    <table class="table is-narrow">
+                        {% for jail in column %}
+                            <tr>
+                                <th>{{ jail.name }}</th>
+                                <td>{{ jail.banned_count|i18n_format }} x</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    {# Options #}
+    <div class="level has-margin-bottom-medium">
+        <div class="level-left">
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': options,
+                    'style': 'primary',
+                    'class': 'is-outlined',
+                    'modal': 'app-modal-options'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': unban_all,
+                'style': 'secondary',
+                'modal': 'app-modal-unban-all',
+            }),
+        ],
+        '_bulk_actions': {
+            'unban_selected': unban_selected,
+        },
+        '_bulk_action_open_modal': {
+            'unban_selected': 'app-modal-unban-selected',
+        },
+        '_form_id': 'form-fail2ban',
+    }) %}
+
+
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_search_options': _search_options,
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _banned_ips is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-fail2ban" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('ip') }}>
+                                        {{ ip_address }}
+                                    </th>
+                                    <th {{ macros.header_sorting('jail') }}>
+                                        {{ blocked_by_jail }}
+                                    </th>
+                                    {% if not _use_speed_mode %}
+                                        <th style="width: 20%" {{ macros.header_sorting('ban_start_sort') }}>
+                                            {{ banned_since }}
+                                        </th>
+                                    {% endif %}
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _banned_ips %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.ip, 'ips') }}
+
+                                        <td>
+                                            {{ macros.link_to_whois(item.ip) }}
+                                        </td>
+                                        <td>
+                                            {{ item.jail }}
+                                        </td>
+                                        {% if not _use_speed_mode %}
+                                            <td class="has-ws-no-wrap">
+                                                {% set _tippy_content %}
+                                                    <table class="table is-narrow has-ws-no-wrap">
+                                                        <tr>
+                                                            <th>{{ ban_start_time }}</th>
+                                                            <td>{{ item.ban_start }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>{{ ban_end_time }}</th>
+                                                            <td>{{ item.ban_end }}</td>
+                                                        </tr>
+                                                    </table>
+                                                {% endset %}
+
+                                                <span class="app-tooltip" data-tippy-content="{{ _tippy_content|escape('html') }}">
+                                                    {{ item.ban_start }}
+                                                </span>
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _banned_ips|length|i18n_format }} {{ items }} / {{ _items_total|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Pagination #}
+    {% include 'components/pagination.twig' with { 'params': _pagination } %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Modal | Unban selected #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-unban-selected',
+            '_title': unban_selected,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-fail2ban' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_to_unban_selected }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+    {# Modal | Unban all #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-unban-all',
+            '_title': unban_all,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=unban_all',
+                'hidden': { 'process_id': '' },
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_to_unban_all }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-options',
+            '_title': options,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=update_options',
+                'hidden': { 'submit': true },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            {{ forms.checkbox_wrapped({
+                'label': speed_mode,
+                'help': speed_mode_help,
+                'options': {
+                    'label': enabled,
+                    'name': 'use_speed_mode',
+                    'value': '1',
+                    'is_checked': _use_speed_mode
+                }
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+
+
+
+{% endblock %}

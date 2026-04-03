@@ -1,0 +1,113 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ port_usage_intro|raw }}
+    </p>
+
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _records is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {{ macros.header_sorting('protocol') }}>
+                                    {{ protocol }}
+                                </th>
+                                <th {{ macros.header_sorting('state') }}>
+                                    {{ state }}
+                                </th>
+                                <th {{ macros.header_sorting('recv_q') }}>
+                                    {{ receive_queue }}
+                                </th>
+                                <th {{ macros.header_sorting('send_q') }}>
+                                    {{ send_queue }}
+                                </th>
+                                <th {{ macros.header_sorting('local_ip') }} class="has-text-right">
+                                    {{ local_address }}
+                                </th>
+                                <th {{ macros.header_sorting('local_port') }}>
+                                    {{ port }}
+                                </th>
+                                <th {{ macros.header_sorting('peer_ip') }} class="has-text-right">
+                                    {{ peer_address }}
+                                </th>
+                                <th {{ macros.header_sorting('peer_port') }}>
+                                    {{ port }}
+                                </th>
+                                <th {{ macros.header_sorting('process_name') }}>
+                                    {{ process }} / PID
+                                </th>
+                                <th {{ macros.header_sorting('owner_name') }}>
+                                    {{ owner }} / UID
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _records %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.protocol|upper }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ item.state }}
+                                    </td>
+                                    <td>
+                                        {{ item.recv_q }}
+                                    </td>
+                                    <td>
+                                        {{ item.send_q }}
+                                    </td>
+                                    <td class="has-text-right">
+                                        {{ item.local_ip }}
+
+                                        {% if item.local_interface %}
+                                            <span class="has-text-grey-light">[{{ item.local_interface}}]</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ item.local_port }}
+                                    </td>
+                                    <td class="has-text-right">
+                                        {{ item.peer_ip }}
+                                    </td>
+                                    <td>
+                                        {{ item.peer_port }}
+                                    </td>
+                                    <td>
+                                        <strong>{{ item.process_name }}</strong> / {{ item.process_pid }}
+                                    </td>
+                                    <td>
+                                        <strong>{{ item.owner_name }}</strong> / {{ item.owner_uid }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42">
+                                    {{ _records|length|i18n_format }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

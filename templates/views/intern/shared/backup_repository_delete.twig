@@ -1,0 +1,25 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_additional_info': delete_additional_info,
+        '_config': {
+            'name': {
+                'label': name
+            },
+            'storage_type_label': {
+                'label': storage_type
+            },
+            'path': {
+                'label': directory
+            },
+            'amount_schedules': {
+                'label': amount_schedules
+            }
+        },
+        '_items': _repos
+    } %}
+{% endblock %}

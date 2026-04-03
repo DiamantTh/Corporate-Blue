@@ -1,0 +1,53 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_bulk_operations.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ rewrite_client_configs_help|raw }}
+    </p>
+
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {{ forms.checkbox_wrapped({
+                    'label': config_files,
+                    'help': config_files_help,
+                    'options': [
+                        {
+                            'label': web_server_configs,
+                            'name': 'is_web_server',
+                            'value': '1',
+                            'is_checked': _is_web_server
+                        },
+                        {
+                            'label': dns_server_configs,
+                            'name': 'is_dns_server',
+                            'value': '1',
+                            'is_checked': _is_dns_server,
+                        }
+                    ]
+                }) }}
+
+                {% include 'components/bulk_operations_footer.twig' %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}
+

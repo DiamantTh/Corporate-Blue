@@ -1,0 +1,83 @@
+{% import "macros/forms.twig" as forms %}
+
+<div class="card has-margin-bottom-medium">
+    <div class="card-content">
+        <div class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <strong>{{ viewing_options }}</strong>
+                </div>
+            </div>
+            <div class="level-right">
+                {% if _search or _search_options %}
+                    <div class="level-item">
+                        <form action="?page={{ _app.page }}" method="post">
+                            <input type="hidden" name="update_view_search" value="1">
+                            {{ csrf_field() }}
+
+                            {{ forms.input({
+                                'name': 'search',
+                                'type': 'search',
+                                'value': _search,
+                                'addons': {
+                                    'left': {
+                                        'type': 'select',
+                                        'select': {
+                                            'name': 'search_option',
+                                            'options': _search_options,
+                                            'selected': _search_option,
+                                        }
+                                    },
+                                    'right' : {
+                                        'button': {
+                                            'label': search,
+                                            'icon': 'fa-solid fa-magnifying-glass'
+                                        }
+                                    }
+                                }
+                            }) }}
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% for element in _additional_elements %}
+                    <div class="level-item">
+                        {{ element }}
+                    </div>
+                {% endfor %}
+
+                {% if _customize_view_elements %}
+                    <div class="level-item">
+                        {% set _menu %}
+                            <form action="?page={{ _app.page }}{{ _customize_view_form_add_action }}" method="post">
+                                <input type="hidden" name="update_view_options" value="1">
+                                {{ csrf_field() }}
+
+                                <div class="has-text-left has-padding-small">
+
+                                    {% for element in _customize_view_elements %}
+                                        {{ element }}
+                                    {% endfor %}
+
+                                    <div class="has-text-centered">
+                                        {{ forms.button({
+                                            'label': save,
+                                            'style': 'primary',
+                                        }) }}
+                                    </div>
+                                </div>
+                            </form>
+                        {% endset %}
+
+                        <div class="app-tooltip-click" data-tippy-content="{{ _menu|escape('html') }}">
+                            {{ forms.button({
+                                'label': customize_view,
+                                'type': 'button',
+                            }) }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

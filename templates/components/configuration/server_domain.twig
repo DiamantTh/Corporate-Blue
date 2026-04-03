@@ -1,0 +1,20 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.label_wrapped({
+    'label': email_addresses_of_server_domain,
+    'help': email_addresses_of_server_domain_help,
+}) }}
+
+{{ forms.textarea_wrapped({
+    'help': available_recipients,
+    'name': 'server_domain_aliases',
+    'value': _server_domain_aliases,
+}) }}
+
+{{ forms.input_wrapped({
+    'help': forward_to,
+    'name': 'server_domain_forwarding',
+    'value': _server_domain_forwarding,
+    'type': 'email',
+}) }}

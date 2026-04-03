@@ -1,0 +1,35 @@
+{% embed "components/modal/modal.twig" with {
+        '_id': 'app-modal-connection-data-' ~ _id,
+        '_title': connection_data,
+        '_buttons': {
+            'cancel': { 'label': close },
+        } } %}
+    {% block body %}
+        <div class="table-container">
+            <table class="table is-centered is-striped is-hoverable">
+                <tbody>
+                    <tr>
+                        <th>{{ server }}</th>
+                        <td>{{ _ftp_server }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ port }}</th>
+                        <td>21</td>
+                    </tr>
+                    <tr>
+                        <th>{{ protocol }}</th>
+                        <td>{{ ftp_over_tls }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ encryption }}</th>
+                        <td>{{ explicit_mode }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ username }}</th>
+                        <td>{{ item.username }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endblock %}
+{% endembed %}

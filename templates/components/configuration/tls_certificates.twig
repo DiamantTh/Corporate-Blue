@@ -1,0 +1,72 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.radio_wrapped({
+    'label': tls_notifications,
+    'help': tls_notifications_help,
+    'options': [
+        {
+            'label': administrator_accounts,
+            'name': 'tls_notification',
+            'value': 'admins',
+            'is_checked': _tls_notification == 'admins',
+        },
+        {
+            'label': owners,
+            'name': 'tls_notification',
+            'value': 'owners',
+            'is_checked': _tls_notification == 'owners',
+        }
+    ]
+}) }}
+
+{{ forms.select_wrapped({
+    'label': certificate_expired,
+    'help': certificate_expired_help,
+    'name': 'notify_in_advance',
+    'options': _notify_in_advance,
+    'selected': _notify_in_advance_selected,
+}) }}
+
+<hr class="has-margin-large">
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': lets_encrypt,
+    }) }}
+</div>
+
+{{ forms.select_wrapped({
+    'label': environment,
+    'help': environment_help,
+    'name': 'environment',
+    'options': _environments,
+    'selected': _environments_selected,
+}) }}
+
+{{ forms.select_wrapped({
+    'label': country,
+    'help': country_help,
+    'name': 'country',
+    'options': _countries,
+    'selected': _countries_selected,
+}) }}
+
+{{ forms.input_wrapped({
+    'label': state,
+    'help': state_help,
+    'name': 'state',
+    'value': _state,
+    'is_required': true
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': lets_encrypt_local_check,
+    'help': lets_encrypt_local_check_help,
+    'options': {
+        'label': enabled,
+        'name': 'local_check',
+        'value': '1',
+        'is_checked': _local_check
+    }
+}) }}

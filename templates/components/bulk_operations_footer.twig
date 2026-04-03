@@ -1,0 +1,37 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.select_wrapped({
+    'label': scope,
+    'help': scope_help,
+    'name': 'scope',
+    'options': _scope_options,
+    'selected': _scope,
+}) }}
+
+<div class="app-show-with-users-list" style="display: none">
+    <div class="has-margin-bottom-medium">
+        <a class="app-select-all" href="javascript:void(0)">{{ select_all }}</a> /
+        <a class="app-deselect-all" href="javascript:void(0)">{{ deselect_all }}</a>
+    </div>
+
+    <div id="app-user-list" class="columns">
+        {% for columns in _user_lists|batch_column(3) %}
+            <div class="column">
+                {% for item in columns %}
+                    {{ forms.checkbox_wrapped({
+                        'options': [{
+                            'label': item.highlight ? '<strong>' ~ item.username ~ '</strong>' : item.username,
+                            'name': 'id_users[]',
+                            'value': item.id,
+                            'is_checked': item.id in _users_selected
+                        }]
+                    }) }}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}

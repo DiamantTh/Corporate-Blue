@@ -1,0 +1,120 @@
+{% embed "components/modal/modal.twig" with {
+        '_id': 'app-modal-connection-data-' ~ _id,
+        '_title': connection_data,
+        '_buttons': {
+            'cancel': { 'label': close },
+        } } %}
+    {% block body %}
+        <p class="has-margin-bottom-small">
+            {{ autoconfig_help }}
+        </p>
+
+        <h5 class="title is-5 has-margin-top-medium has-margin-bottom-small">{{ apple_config }}</h5>
+
+        <p class="has-margin-bottom-small">
+            {{ autoconfig_apple_help|raw }}
+        </p>
+
+        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+            <tbody>
+                <tr>
+                    <td>
+                        <a href="http://autoconfig-apple.{{ _main_domain }}/setup.mobileconfig?email={{ _email_utf8 }}&protocol=imap" target="_blank">
+                            {{ setup_imap_account }}
+                        </a>
+                    </td>
+                    <td>
+                        <a class="app-modal-scan-qr" data-url="http://autoconfig-apple.{{ _main_domain }}/setup.mobileconfig?email={{ _email_utf8 }}&protocol=imap">
+                            {{ show_qr_code }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="http://autoconfig-apple.{{ _main_domain }}/setup.mobileconfig?email={{ _email_utf8 }}&protocol=pop3" target="_blank">
+                            {{ setup_pop3_account }}
+                        </a>
+                    </td>
+                    <td>
+                        <a class="app-modal-scan-qr" data-url="http://autoconfig-apple.{{ _main_domain }}/setup.mobileconfig?email={{ _email_utf8 }}&protocol=pop3">
+                            {{ show_qr_code }}
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h5 class="title is-5 has-margin-top-medium has-margin-bottom-small">{{ manual_config }}</h5>
+
+        <div class="table-container">
+            <table class="table is-centered is-striped is-hoverable is-fullwidth">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="has-text-centered">{{ inbox }}</th>
+                        <th class="has-text-centered">{{ outbox }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>
+                            {{ server }}
+                        </th>
+                        <td colspan="2" class="has-ws-no-wrap has-text-centered">
+                            {{ _email_server_domain }}
+                        </td>
+                    </tr>
+                    {% if _email_server_alternative_domains %}
+                        <tr>
+                            <th>
+                                {{ alternative_servers }}
+                            </th>
+                            <td colspan="2" class="has-ws-no-wrap has-text-centered">
+                                {% for _domain in _email_server_alternative_domains %}
+                                    <p>{{ _domain }}<p>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>
+                            {{ username }}
+                        </th>
+                        <td colspan="2" class="has-ws-no-wrap has-text-centered">
+                            {% if _email_utf8 != _email_ascii %}
+                                {{ _email_utf8 }}<br>
+                                {{ _email_ascii }}
+                            {% else %}
+                                {{ _email_ascii }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ port_tls }}
+                        </th>
+                        <td class="has-text-centered">
+                            <b>993</b> IMAP<br>
+                            <b>995</b> POP3
+                        </td>
+                        <td class="has-text-centered">
+                            <b>465</b> SMTP
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ port_starttls }}
+                        </th>
+                        <td class="has-text-centered">
+                            <b>143</b> IMAP<br>
+                            <b>110</b> POP3
+                        </td>
+                        <td class="has-text-centered">
+                            <b>587</b> / <b>25</b> SMTP
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endblock %}
+{% endembed %}

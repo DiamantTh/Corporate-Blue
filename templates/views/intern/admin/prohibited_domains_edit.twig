@@ -1,0 +1,41 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+            
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _id }}">
+                {{ csrf_field() }}
+
+                {% if _action == 'add' %}
+                    {{ forms.textarea_wrapped({
+                        'label': domain_names,
+                        'name': 'domain_names',
+                        'type': 'text',
+                        'value': _domain_names,
+                        'rows': 6,
+                        'is_required': true
+                    }) }}
+                {% else %}
+                    {{ forms.input_wrapped({
+                        'label': domain_name,
+                        'name': 'domain_name',
+                        'type': 'text',
+                        'value': _domain_name,
+                        'is_required': true
+                    }) }}
+                {% endif %}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

@@ -1,0 +1,288 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_notifications.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    <div class="level has-margin-bottom-medium">
+        <div class="level-left">
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': general_settings,
+                    'style': 'primary',
+                    'class': 'is-outlined',
+                    'url': '?page=' ~ _app.page ~ '&action=general_settings'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="level">
+        <div class="level-left">
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': add_custom_message,
+                    'style': 'primary',
+                    'url': '?page=' ~ _app.page ~ '&action=add'
+                }) }}
+            </div>
+            <div class="level-item">
+                {{ forms.button({
+                    'label': reset_all_settings,
+                    'style': 'secondary',
+                    'class': 'app-reset-all'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+
+    {% for group in _notification_groups %}
+        <h2 class="title is-5 has-margin-bottom-small {{ not loop.first ? 'has-margin-top-large' }}">
+            {{ group.label }}
+        </h2>
+
+        <div class="card">
+            <div class="card-content">
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-email-notifications-index" action="?page={{ _app.page }}&action=delete" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    <th {{ macros.header_sorting('event_label') }}>
+                                        {{ event }}
+                                    </th>
+                                    <th style="width: 8%" {{ macros.header_sorting('recipients_sort') }}>
+                                        {{ recipients }}
+                                    </th>
+                                    <th style="width: 8%" {{ macros.header_sorting('is_enabled') }}>
+                                        {{ is_enabled }}
+                                    </th>
+                                    <th style="width: 15%" {{ macros.header_sorting('copy_email_addresses') }}>
+                                        {{ send_copy }}
+                                    </th>
+                                    <th style="width: 15%" >
+                                        {{ custom_message }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in group.items %}
+                                    <tr>
+                                        <td style="display: none">
+                                            <input type="text" name="event_type" value="{{ item.event_type }}">
+                                            <input type="text" name="event_label" value="{{ item.event_label }}">
+                                            <input type="text" name="is_enabled" value="{{ item.is_enabled }}">
+                                            <input type="text" name="copy_email_addresses" value="{{ item.copy_email_addresses }}">
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.event_label }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            <span class="icon app-tooltip {{ item.recipients.client ? 'has-text-grey' : 'has-text-grey-lighter' }}" data-tippy-content="{{ client_accounts }}">
+                                                <i class="fa-solid fa-users"></i>
+                                            </span>
+                                            <span class="icon app-tooltip {{ item.recipients.admin ? 'has-text-grey' : 'has-text-grey-lighter' }}" data-tippy-content="{{ administrator_accounts }}">
+                                                <i class="fa-solid fa-user-tie"></i>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ macros.status_icon(item.is_enabled, [enabled , disabled]) }}
+                                        </td>
+                                        <td>
+                                            {{ item.copy_email_addresses }}
+                                        </td>
+                                        <td>
+                                            {% if item.custom_message_languages %}
+                                                {% set _custom_messages_menu %}
+                                                    <table class="table is-narrow is-nested-table">
+                                                        {% for language, message in item.custom_message_languages %}
+                                                            <tr>
+                                                                <td style="display: none">
+                                                                    <input type="text" name="event_type" value="{{ item.event_type }}">
+                                                                    <input type="text" name="language" value="{{ language}}">
+                                                                </td>
+                                                                <td>{{ message.label }}</td>
+                                                                <td>
+                                                                    {% include 'components/icon.twig' with {
+                                                                        '_type': 'edit',
+                                                                        '_url': '?page=' ~ _app.page ~ '&action=edit&event_type=' ~ item.event_type ~ '&language=' ~ language,
+                                                                    } %}
+
+                                                                    <span class="app-modal-delete-custom-message">
+                                                                        {% include 'components/icon.twig' with {
+                                                                            '_type': 'delete',
+                                                                            '_url': 'javascript:void(0)'
+                                                                        } %}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                {% endset %}
+
+                                                <a href="javascript: void(0)" class="app-tooltip-mandatory" data-tippy-content="{{ _custom_messages_menu|escape('html') }}">
+                                                    {{ edit }}
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            <span class="app-edit-notification">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'edit',
+                                                    '_url': 'javascript:void(0)',
+                                                } %}
+                                            </span>
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'plus',
+                                                '_tooltip': add_custom_message,
+                                                '_url': '?page=' ~ _app.page ~ '&action=add&event_type=' ~ item.event_type
+                                            } %}
+
+                                            <span class="app-reset-notification">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'reset',
+                                                    '_url': 'javascript:void(0)'
+                                                } %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ group.items|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+
+    {# Back #}
+    {% include 'components/call_to_action.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Delete custom message #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-custom-message',
+            '_title': delete_custom_message,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=delete',
+                'hidden': {
+                    'submit': true,
+                    'event_type': '',
+                    'language': ''
+                },
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ delete_custom_message_confirmation }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Notification settings #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-notification-settings',
+            '_title': notification_settings,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=update_notification_settings',
+                'hidden': {
+                    'submit': true,
+                    'event_type': ''
+                },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div id="app-event-label">
+                {{ forms.label_wrapped({
+                    'label': event,
+                    'value': '...'
+                }) }}
+            </div>
+
+            {{ forms.checkbox_wrapped({
+                'label': is_enabled,
+                'help': is_enabled_help,
+                'options': {
+                    'label': enabled,
+                    'name': 'is_enabled',
+                    'value': '1',
+                }
+            }) }}
+
+            {{ forms.input_wrapped({
+                'label': send_copy,
+                'help': send_copy_help,
+                'name': 'copy_email_addresses',
+                'type': 'text',
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Reset notification settings #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-settings',
+            '_title': reset_settings,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=reset_notification',
+                'hidden': {
+                    'submit': true,
+                    'event_type': ''
+                },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_reset_settings }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

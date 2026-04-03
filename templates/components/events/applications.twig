@@ -1,0 +1,38 @@
+<p class="has-text-weight-bold has-margin-bottom-medium">
+    {{ _name }}, {{ version }} {{ _version }}
+</p>
+
+<p class="has-margin-bottom-medium">
+    <strong>{{ directory }}:</strong> {{ _directory }}
+    <br>
+    <strong>URL:</strong> <a href="{{ _url }}" target="_blank" rel="nofollow noopener noreferrer">{{ _url }}</a>
+</p>
+
+{% if _is_finished and _is_success %}
+<p class="has-margin-bottom-medium">
+    <strong>{{ username }}:</strong> {{ _admin_username }}
+    <br>
+    <strong>{{ email }}:</strong> {{ _admin_email }}
+    <br>
+    <strong>{{ password }}:</strong> <span class="app-password"></span>
+
+    <a href="javascript:void(0)" class="app-reveal-password" data-id-background-task="{{ _id_background_task }}">{{ show }}</a>
+    <a href="javascript:void(0)" class="app-copy-password" style="display: none">{{ copy }}</a>
+</p>
+{% endif %}
+
+<p>
+    {% if _is_finished %}
+        <strong>{{ _is_success ? install_succeded : install_failed }}</strong>
+    {% else %}
+        <strong>{{ _is_processing ? install_in_progress : install_imminent }}</strong>
+    {% endif %}
+
+    {{ _admin_login|raw }}
+</p>
+
+{% if _is_finished and not _is_success %}
+    <p class="has-margin-top-medium">
+        <strong>{{ error_message }}</strong> {{ _error_message }}
+    </p>
+{% endif %}

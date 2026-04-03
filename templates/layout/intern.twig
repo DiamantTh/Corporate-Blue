@@ -1,0 +1,148 @@
+{% extends 'layout/base.twig' %}
+
+
+{% block body_content %}
+{# Header #}
+<header id="header">
+    <nav id="top-nav">
+        <div class="level is-mobile">
+            <div class="level-left">
+                <a class="level-item" href="{{ _app.home_url }}">
+                    {% if _white_label.logo_intern_url %}
+                        <img src="{{ _white_label.logo_intern_url }}&{{ _globals.cache_control }}" alt="logo">
+                    {% else %}
+                        <figure>
+                            <img src="theme/bulma/assets/img/dark/keyhelp{{ _app.is_pro ? '-pro' }}.svg?{{ _globals.cache_control }}" alt="logo">
+                        </figure>
+                    {% endif %}
+                </a>
+                <div class="level-item is-hidden-touch has-padding-left-medium has-text-grey">
+                    {% if _app.is_demo %}
+                        {{ demo_mode }} |
+                    {% endif %}
+                    {{ _app.area == 'admin' ? admin_area : client_area }}
+                    |
+                    <span id="clock" class="has-margin-left-xsmall">{{ _globals.time }}</span>
+                </div>
+            </div>
+            <div class="level-left">
+                {% if _app.area == 'client' and _user.can_return_to_admin %}
+                    <a href="?page=intern&action=return_to_admin" class="level-item">
+                        <span class="icon is-large">
+                            <span class="fa-stack fa-1x">
+                                <i class="fa fa-square fa-stack-2x has-text-link"></i>
+                                <i class="fa-solid fa-angle-left fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </span>
+                        <span class="is-hidden-touch">
+                            {{ back_to_administrator }}
+                        </span>
+                    </a>
+                {% endif %}
+                <a id="app-user-menu-toggle" class="level-item" href="javascript:void(0)"> {# Keep the href="" for accessibility reasons so one can reach it via [TAB] #}
+                    <span class="icon is-large">
+                        <span class="fa-stack fa-1x">
+                            <i class="fa fa-square fa-stack-2x has-text-link"></i>
+                            <i class="fa-solid fa-user fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </span>
+                    <span class="is-hidden-mobile">
+                        <span class="is-hidden-mobile">
+                            <ul class="horizontal-separated-list">
+                                {% if _user.full_name %}
+                                    <li>{{ _user.full_name }}</li>
+                                {% endif %}
+                                {% if _user.company %}
+                                    <li>{{ _user.company }}</li>
+                                {% endif %}
+                                {% if _user.username %}
+                                    <li>{{ _user.username }}</li>
+                                {% endif %}
+                            </ul>
+                        </span>
+                        <span class="icon is-medium has-text-link">
+                            <i class="fa-solid fa-angle-down"></i>
+                        </span>
+                    </span>
+                </a>
+                <a id="app-sidebar-toggle" class="level-item is-hidden-desktop" href="javascript:void(0)"> {# Keep the href="" for accessibility reasons so one can reach it via [TAB] #}
+                    <span id="app-sidebar-toggle-icon" class="icon is-large">
+                        <i class="fa-solid fa-bars fa-2x has-text-link"></i>
+                    </span>
+                    <span id="app-sidebar-toggle-icon-active" class="icon is-large is-hidden">
+                        <i class="fa-solid fa-xmark fa-2x has-text-link"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+{# User menu #}
+<div id="user-menu" class="is-hidden">
+    <a href="?page=profile" class="dropdown-item">
+        <span class="icon is-medium">
+            <i class="fa-solid fa-user"></i>
+        </span>
+        {{ profile }}
+    </a>
+
+    {% if _app.theme.has_dark_mode %}
+        <div class="dropdown-divider"></div>
+    {% endif %}
+    <a href="?page=profile&action=switch_theme_mode&last_request_uri={{ _app.request_uri }}" class="dropdown-item">
+        <span class="icon is-medium">
+            <i class="fas {{ _app.theme.is_dark_mode ? 'fa-sun' : 'fa-moon' }}"></i>
+        </span>
+        {{ _app.theme.is_dark_mode ? disable_dark_mode : enable_dark_mode }}
+    </a>
+
+    <div class="dropdown-divider"></div>
+    <a href="?page=logout" class="dropdown-item">
+        <span class="icon is-medium">
+            <i class="fa-solid fa-power-off"></i>
+        </span>
+        {{ logout }}
+    </a>
+</div>
+
+{# Sidebar #}
+<section id="sidebar">
+    {% include 'components/sidebar_navigation.twig' %}
+</section>
+
+<div id="sidebar-overlay"></div>
+
+{# Main wrapper #}
+<section id="content-wrapper">
+    {# Content #}
+    <div id="content">
+        {% include 'components/breadcrumbs.twig' %}
+
+        <div class="content-title">
+            <h1 class="title is-4">{{ content_title }}</h1>
+        </div>
+
+        {% include 'components/events.twig' %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {# Footer #}
+    <footer id="footer">
+        <div class="content has-text-centered">
+            {% if _white_label.footer %}
+                {{ _white_label.footer|raw }}
+            {% else %}
+                {% include 'components/footer/icon.twig' %}
+                {% include 'components/footer/copyright.twig' %}
+                {% include 'components/footer/translation.twig' %}
+                {% if not (_white_label.is_hide_keyweb_ads or _app.is_pro) %}
+                    {% include 'components/footer/ads.twig' %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </footer>
+</section>
+{% endblock %}

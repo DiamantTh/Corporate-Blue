@@ -1,0 +1,40 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': ftp_tls_required,
+    'help': ftp_tls_required_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_tls_required',
+        'value': '1',
+        'is_checked': _is_tls_required
+    }
+}) }}
+
+{{ forms.radio_wrapped({
+    'label': ftp_names,
+    'options': [
+        {
+            'label': naming_scheme_auto,
+            'help': naming_scheme_auto_help,
+            'name': 'naming_scheme',
+            'value': 'auto',
+            'is_checked': _naming_scheme == 'auto'
+        },
+        {
+            'label': naming_scheme_restricted,
+            'help': naming_scheme_restricted_help,
+            'name': 'naming_scheme',
+            'value': 'limited',
+            'is_checked': _naming_scheme == 'limited'
+        },
+        {
+            'label': naming_scheme_custom,
+            'help': naming_scheme_custom_help,
+            'name': 'naming_scheme',
+            'value': 'custom',
+            'is_checked': _naming_scheme == 'custom'
+        },
+    ]
+}) }}

@@ -1,0 +1,149 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': add_account_template,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-template-account'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _account_templates is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-template-account" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('name') }}>
+                                        {{ name }}
+                                    </th>
+                                    <th {{ macros.header_sorting('disk_space') }}>
+                                        {{ disk_space }}
+                                    </th>
+                                    <th>
+                                        {{ resources }}
+                                    </th>
+                                    <th style="width: 25%">
+                                        {{ permissions }}
+                                    </th>
+                                    <th style="max-width: 25%">
+                                        PHP / PHP-FPM
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _account_templates %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td>
+                                            <strong>
+                                                {{ item.name }}
+                                            </strong>
+                                        </td>
+                                        <td>
+                                            {{ macros.amount_indicator(item.disk_space) }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            <ul>
+                                                {% for resource in item.resources %}
+                                                    <li>
+                                                        <span style="display: inline-block; min-width: 2em;">{{ macros.amount_indicator(resource.value) }}</span>
+                                                        <span style="display: inline-block;" class="has-margin-left-small">{{ resource.name }}</span>
+                                                    <li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            <ul>
+                                                {% for permission in item.permissions %}
+                                                    <li>
+                                                        <span style="display: inline-block; width: 2em">{{ macros.setting_status_icon(permission.is_enabled) }}</span>
+                                                        <span style="display: inline-block;">{{ permission.name }}</span>
+                                                    <li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                         <td class="has-ws-no-wrap">
+                                            {% for php_settings in item.php_phpfpm_settings %}
+                                                <ul {{ not loop.last ? 'class="has-margin-bottom-large"' }}>
+                                                    {% for php in php_settings %}
+                                                        <li>
+                                                            <span style="display: inline-block; min-width: 5em;">
+                                                                {% if php.is_tooltip %}
+                                                                    <a href="javascript:void(0)" class="app-tooltip-click" data-tippy-maxWidth="500px" data-tippy-content="{{ php.value|escape('html') }}">{{ show }}</a>
+                                                                {% else %}
+                                                                    {{ php.value|default('—') }}
+                                                                {% endif %}
+                                                            </span>
+                                                            <span style="display: inline-block;" class="has-margin-left-small">{{ php.name }}</span>
+                                                        <li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endfor %}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _account_templates|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+
+            {% endif %}
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'components/call_to_action.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+
+{% endblock %}

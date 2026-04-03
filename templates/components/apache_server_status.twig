@@ -1,0 +1,228 @@
+{% import "macros/macros.twig" as macros %}
+
+{% if not _status %}
+    <div class="card">
+        <div class="card-content">
+            <div class="has-text-centered has-text-grey">
+                - {{ no_items_available }} -
+            </div>
+        </div>
+    </div>
+{% else %}
+
+    {% embed "components/card.twig" with {
+        'margin': 'large',
+        'collapse': { 'is_enabled': true },
+        'header': {
+            'icon': 'fa-solid fa-gauge-high',
+            'title': 'Server status',
+        },
+    } %}
+        {% block content %}
+            {% include 'components/table_scroll_container.twig' %}
+            <div class="table-container">
+                <table class="table">
+                    <tbody>
+                        {% for item in _status.server_status %}
+                            <tr>
+                                <th>{{ item.title }}</th>
+                                <td>{{ item.value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {% if _status.event_status %}
+        {% embed "components/card.twig" with {
+            'margin': 'large',
+            'collapse': { 'is_enabled': true },
+            'header': {
+                'icon': 'fa-solid fa-chart-simple',
+                'title': 'MPM event status',
+            },
+        } %}
+            {% block content %}
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells is-narrow">
+                        <thead>
+                            <tr>
+                                {% for item in _status.event_status.headlines %}
+                                    <th>
+                                        {{ item }}
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in _status.event_status.rows %}
+                                <tr>
+                                    {% for item in row %}
+                                        <td class="has-ws-no-wrap">{{ item }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                {% for item in _status.event_status.summary %}
+                                    <td class="has-ws-no-wrap">{{ item }}</td>
+                                {% endfor %}
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+
+    {# Scoreboard #}
+    {% embed "components/card.twig" with {
+        'margin': 'large',
+        'collapse': { 'is_enabled': true },
+        'header': {
+            'icon': 'fa-solid fa-table-list',
+            'title': 'Scoreboard',
+        },
+    } %}
+        {% block content %}
+            <div class="columns">
+                <div class="column is-narrow">
+                    <pre class="has-padding-none">{{ _status.scoreboard }}</pre>
+                </div>
+                <div class="column">
+                    {% for key, description in _status.scoreboard_keys %}
+                        <code>{{ key }}</code> {{ description }}<br>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {# Processes by IP #}
+    {% embed "components/card.twig" with {
+        'margin': 'large',
+        'collapse': { 'is_enabled': true },
+        'header': {
+            'icon': 'fa-solid fa-user-group',
+            'title': 'Processes by IP',
+        },
+    } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+
+            {% include 'components/table_scroll_container.twig' %}
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells is-narrow">
+                    <thead>
+                        <tr>
+                            {% for item in _status.processes_by_ip.headlines %}
+                                <th>
+                                    {{ item }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in _status.processes_by_ip.rows %}
+                            <tr>
+                                {% for item in row %}
+                                    <td class="has-ws-no-wrap">
+                                        {{ loop.index0 == 1 ? macros.link_to_whois(item) : item }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+    {# Active workers #}
+    {% embed "components/card.twig" with {
+        'margin': 'large',
+        'collapse': { 'is_enabled': true },
+        'header': {
+            'icon': 'fa-solid fa-gears',
+            'title': 'Active processes',
+        },
+    } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+
+            {% include 'components/table_scroll_container.twig' %}
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells is-narrow">
+                    <thead>
+                        <tr>
+                            {% for item in _status.processes.headlines %}
+                                <th {{ macros.header_sorting(item) }}>
+                                    {{ item }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in _status.processes.rows %}
+                            <tr>
+                                {% for item in row %}
+                                    <td class="has-ws-no-wrap">
+                                        {{ loop.index0 == _status.processes_client_column_index ? macros.link_to_whois(item) : item }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% include 'components/table_scroll_container.twig' %}
+            <div class="table-container">
+                <table class="table">
+                    <tbody>
+                        {% for row in _status.processes_legend|batch(3) %}
+                            <tr>
+                                {% for key, item in row %}
+                                    <th>{{ key }}</th>
+                                    <td>{{ item }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# SSL/TLS session cache status #}
+    {% embed "components/card.twig" with {
+        'margin': 'large',
+        'collapse': { 'is_enabled': true },
+        'header': {
+            'icon': 'fa-solid fa-box-open',
+            'title': 'SSL/TLS session cache status',
+        },
+    } %}
+        {% block content %}
+            {% include 'components/table_scroll_container.twig' %}
+            <div class="table-container">
+                <table class="table">
+                    <tbody>
+                        {% for key, value in _status.tls_session_cache_records %}
+                            <tr>
+                                <th>{{ key }}</th>
+                                <td>{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endblock %}
+    {% endembed %}
+{% endif %}

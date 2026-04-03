@@ -1,0 +1,264 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% if _app.area == 'admin' %}
+        <div class="level has-margin-bottom-medium">
+            <div class="level-left">
+            </div>
+            <div class="level-right">
+                <div class="level-item">
+                    {{ forms.button({
+                        'label': options,
+                        'style': 'primary',
+                        'class': 'is-outlined',
+                        'modal': 'app-modal-options'
+                    }) }}
+                </div>
+            </div>
+        </div>
+
+        {% embed "components/modal/modal.twig" with {
+                '_id': 'app-modal-options',
+                '_title': options,
+                '_form': {
+                    'action': '?page=' ~ _app.page ~ '&action=update_options',
+                    'hidden': { 'submit': true },
+                },
+                '_buttons': {
+                    'submit': {},
+                    'cancel': {},
+                } } %}
+            {% block body %}
+                {% import "macros/forms.twig" as forms %}
+
+                {{ forms.checkbox_wrapped({
+                    'label': anonymize_ips,
+                    'help': anonymize_ips_help,
+                    'options': {
+                        'label': enabled,
+                        'name': 'anonymize_ips',
+                        'value': '1',
+                        'is_checked': _anonymize_ips
+                    }
+                }) }}
+
+                {{ forms.label_wrapped({
+                    'label': record_rotation,
+                    'has_small_margin': true,
+                }) }}
+
+
+                {{ forms.radio({
+                    'label': delete_by_period,
+                    'name': 'rotation',
+                    'value': 'by_period',
+                    'is_checked': _rotation == 'by_period'
+                }) }}
+
+                <div class="has-margin-left-medium has-margin-bottom-small">
+                    {{ forms.input({
+                        'type': 'number',
+                        'name': 'rotation_by_period',
+                        'value': _rotation_by_period,
+                    }) }}
+                </div>
+
+                {{ forms.radio({
+                    'label': delete_by_number,
+                    'name': 'rotation',
+                    'value': 'by_number',
+                    'is_checked': _rotation == 'by_number'
+                }) }}
+
+                <div class="has-margin-left-medium has-margin-bottom-small">
+                    {{ forms.input({
+                        'type': 'number',
+                        'name': 'rotation_by_number',
+                        'value': _rotation_by_number
+                    }) }}
+                </div>
+
+                {{ forms.radio({
+                    'label': delete_nothing,
+                    'name': 'rotation',
+                    'value': 'keep',
+                    'is_checked': _rotation == 'keep'
+                }) }}
+            {% endblock %}
+        {% endembed %}
+
+    {% endif %}
+
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_customize_view_elements': [
+            forms.checkbox_wrapped({
+                'label': show_log_levels,
+                'options': [{
+                    'label': debug,
+                    'name': 'debug',
+                    'value': '1',
+                    'is_checked': _show_debug
+                },{
+                    'label': info,
+                    'name': 'info',
+                    'value': '1',
+                    'is_checked': _show_info
+                },{
+                    'label': notice,
+                    'name': 'notice',
+                    'value': '1',
+                    'is_checked': _show_notice
+                },{
+                    'label': warning,
+                    'name': 'warning',
+                    'value': '1',
+                    'is_checked': _show_warning
+                },{
+                    'label': error,
+                    'name': 'error',
+                    'value': '1',
+                    'is_checked': _show_error
+                },{
+                    'label': alert,
+                    'name': 'alert',
+                    'value': '1',
+                    'is_checked': _show_alert
+                },{
+                    'label': critical,
+                    'name': 'critical',
+                    'value': '1',
+                    'is_checked': _show_critical
+                },{
+                    'label': emergency,
+                    'name': 'emergency',
+                    'value': '1',
+                    'is_checked': _show_emergency
+                }]
+            })
+        ],
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _log_items is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {{ macros.header_sorting('date') }}>
+                                    {{ date }}
+                                </th>
+                                <th {{ macros.header_sorting('level') }}>
+                                    {{ level }}
+                                </th>
+                                <th {{ macros.header_sorting('message') }}>
+                                    {{ message }}
+                                </th>
+                                <th {{ macros.header_sorting('user') }}>
+                                    {{ user }}
+                                </th>
+                                <th {{ macros.header_sorting('ip_address') }}>
+                                    {{ ip_address }}
+                                </th>
+                                <th {{ macros.header_sorting('channel') }}>
+                                    {{ channel }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _log_items %}
+                                <tr>
+                                    <td class="is-narrow">
+                                        {{ item.date_short }}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {% if item.level_name == 'DEBUG' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-regular fa-circle"></i>
+                                            </span>
+                                            {{ debug }}
+                                        {% elseif item.level_name == 'INFO'  %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-info"></i>
+                                            </span>
+                                            {{ info }}
+                                        {% elseif item.level_name == 'NOTICE' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-info"></i>
+                                            </span>
+                                            {{ notice }}
+                                        {% elseif item.level_name == 'WARNING' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-warning"></i>
+                                            </span>
+                                            {{ warning }}
+                                        {% elseif item.level_name == 'ERROR' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ error }}
+                                        {% elseif item.level_name == 'ALERT' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ alert }}
+                                        {% elseif item.level_name == 'CRITICAL' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ critical }}
+                                        {% elseif item.level_name == 'EMERGENCY' %}
+                                            <span class="icon is-medium">
+                                                <i class="fa-solid fa-circle has-text-danger"></i>
+                                            </span>
+                                            {{ emergency }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ item.message|nl2br }}
+                                    </td>
+                                    <td>
+                                        {% if _app.area == 'admin' and item.id_client %}
+                                            {{ macros.link_to_switch_to_client(item.id_client, item.username, _app.page) }}
+                                        {% else %}
+                                            {{ item.username }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ macros.link_to_whois(item.ip_address) }}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {{ item.channel }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42">
+                                    {{ _log_items|length|i18n_format }} {{ items }} / {{ _log_items_total|i18n_format }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Pagination #}
+    {% include 'components/pagination.twig' with { 'params': _pagination } %}
+{% endblock %}

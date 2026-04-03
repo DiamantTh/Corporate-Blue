@@ -1,0 +1,64 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script id="app-rspamd-web-ui-password">
+        let rspamd_access = htmlDecode('{{ _rspamd_web_ui_password }}');
+
+        function htmlDecode(input)
+        {
+            var doc = new DOMParser().parseFromString(input, 'text/html');
+            return doc.documentElement.textContent;
+        }
+    </script>
+    <script src="/theme/bulma/assets/js/rspamd.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {{ forms.button({
+        'label': update_access_password,
+        'modal': 'app-modal-update-password',
+        'style': 'primary',
+    }) }}
+
+    <div class="has-margin-top-xlarge has-margin-bottom-large">
+        <div class="divider">{{ content_title }}</div>
+    </div>
+
+    <iframe id="app-iframe" src="/rspamd/" style="width: 100%; height: 1024px" title="{{ content_title }}"></iframe>
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-update-password',
+            '_title': update_access_password,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=update_password'
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+             <article class="message is-warning">
+                <div class="message-body">
+                    {{ rspamd_password_note }}
+                </div>
+            </article>
+
+            {% include 'components/form_password.twig' %}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

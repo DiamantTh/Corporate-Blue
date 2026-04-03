@@ -1,0 +1,28 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+
+{{ forms.label_wrapped({
+    'label': byte_values,
+}) }}
+
+{{ forms.select_wrapped({
+    'help': calculation_base,
+    'name': 'byte_base',
+    'options': {
+        'binary': binary ~ ' | ' ~ binary_help,
+        'decimal': decimal ~ ' | ' ~ decimal_help
+    },
+    'selected': _byte_base,
+}) }}
+
+
+{{ forms.select_wrapped({
+    'help': prefixes,
+    'name': 'byte_prefix',
+    'options': {
+        'binary': binary ~ ' | KiB, MiB, GiB, TiB',
+        'decimal': decimal ~ ' | KB, MB, GB, TB'
+    },
+    'selected': _byte_prefix,
+}) }}

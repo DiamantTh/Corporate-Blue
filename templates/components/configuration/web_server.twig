@@ -1,0 +1,84 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': log_format,
+    'help': log_format_help,
+    'name': 'log_format',
+    'value': _log_format,
+    'is_required': true,
+    'addons': {
+        'right': {
+            'button': {
+                'label': default,
+                'icon': 'fa-solid fa-arrow-rotate-left',
+                'type': 'button',
+                'class': 'app-reset-default',
+                'data':  { 'default': _default_log_format|escape('html') },
+            }
+        }
+    }
+}) }}
+
+{{ forms.select_wrapped({
+    'label': multi_processing_module,
+    'help': multi_processing_module_help,
+    'name': 'mpm',
+    'options': _mpm_options,
+    'selected': _mpm_selected,
+}) }}
+
+{{ forms.label_wrapped({
+    'label': web_server_ports,
+    'help': web_server_ports_help
+}) }}
+
+{{ forms.input_wrapped({
+    'label': http_port,
+    'help': http_port_help,
+    'name': 'http_port',
+    'type': 'number',
+    'max': 65535,
+    'value': _http_port,
+    'is_required': true,
+    'addons': {
+        'right': {
+            'button': {
+                'label': default,
+                'icon': 'fa-solid fa-arrow-rotate-left',
+                'type': 'button',
+                'class': 'app-reset-default',
+                'data':  { 'default': 80 },
+            }
+        }
+    }
+}) }}
+
+{{ forms.input_wrapped({
+    'label': https_port,
+    'help': https_port_help,
+    'name': 'https_port',
+    'type': 'number',
+    'max': 65535,
+    'value': _https_port,
+    'is_required': true,
+    'addons': {
+        'right': {
+            'button': {
+                'label': default,
+                'icon': 'fa-solid fa-arrow-rotate-left',
+                'type': 'button',
+                'class': 'app-reset-default',
+                'data':  { 'default': 443 },
+            }
+        }
+    }
+}) }}
+
+{{ forms.textarea_wrapped({
+    'label': global_directives,
+    'help': global_directives_help ~ '<br><span class="has-text-danger has-text-weight-bold">' ~ warning ~ '!</span> ' ~ global_directives_warning,
+    'name': 'global_directives',
+    'value': _global_directives,
+    'i18n': { 'search': search, 'replace': replace, 'full_screen': full_screen, 'exit_full_screen': exit_full_screen }
+}) }}

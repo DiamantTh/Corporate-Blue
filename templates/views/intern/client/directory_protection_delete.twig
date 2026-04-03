@@ -1,0 +1,21 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_config': {
+            'path': {
+                'label': directory
+            },
+            'area_title': {
+                'label': area_title
+            },
+            'username': {
+                'label': username
+            },
+        },
+        '_items': _protected_dir_items
+    } %}
+{% endblock %}

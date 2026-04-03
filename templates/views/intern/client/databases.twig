@@ -1,0 +1,171 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help }}
+        <br><br>
+        {{ _total_size_text|raw }}
+    </p>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_usage': _usage|merge({'label': databases}),
+        '_buttons': [
+            forms.button({
+                'label': add_database,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-database-index'
+    }) %}
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_search_options': _search_options,
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _database_items is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-database-index" action="?page=client_databases" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('name') }}>
+                                        {{ database_name }}
+                                    </th>
+                                    <th {{ macros.header_sorting('username') }}>
+                                        {{ username }}
+                                    </th>
+                                    {% if _has_remote_access %}
+                                        <th {{ macros.header_sorting('has_remote_access') }}>
+                                            {{ remote_access }}
+                                        </th>
+                                    {% endif %}
+                                    <th {{ macros.header_sorting('size') }}>
+                                        {{ database_size }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ connection_data }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _database_items %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td>
+                                            {{ item.name }}
+                                            {{ item.use_backticks ? '<sup>*</sup>' }}
+                                            {% if item.description %}
+                                                <p class="has-text-grey has-margin-top-xsmall">
+                                                    {{ item.description }}
+                                                </p>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ item.username }}
+                                        </td>
+                                        {% if _has_remote_access %}
+                                            <td>
+                                                {{ macros.status_icon(item.has_remote_access, [active, inactive], true) }}
+                                            </td>
+                                        {% endif %}
+                                        <td>
+                                            {{ item.size|bytes }}
+                                        </td>
+                                        <td>
+                                            <a data-open-modal="app-modal-connection-data-{{ item.id }}">
+                                                {{ show }}
+                                            </a>
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=client_databases&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% if _is_db_administration_enabled %}
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'database',
+                                                    '_url': '?page=intern&action=database_auto_login&id=' ~ item.id
+                                                } %}
+                                            {% endif %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=client_databases&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="{{ _has_remote_access ? 4 : 3 }}">
+                                        {{ _database_items|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                    <td>
+                                        {{ _total_size }}
+                                    </td>
+                                    <td colspan="42">
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+
+                {% if _show_use_backticks_note %}
+                    <p class="has-margin-top-medium">
+                        <small>
+                            <sup>*</sup> {{ backticks_note|raw }}
+                        </small>
+                    </p>
+                {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% for item in _database_items %}
+        {% include 'components/modal/connection_data_database.twig' with {
+            '_id': item.id,
+            '_database_name': item.name,
+            '_username': item.username,
+            '_host': item.host,
+            '_port': item.port,
+            '_has_remote_access': _has_remote_access and item.has_remote_access,
+            '_server_ips': _server_ips,
+        } %}
+    {% endfor %}
+
+{% endblock %}

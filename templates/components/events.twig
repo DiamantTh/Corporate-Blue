@@ -1,0 +1,19 @@
+{% set class_map = {
+    'info': 'is-info',
+    'success': 'is-success',
+    'warning': 'is-warning',
+    'error': 'is-danger'
+} %}
+
+{% for event in _app.events %}
+    {% set class = class_map[event.type]|default('') %}
+    <article class="message {{ class }}">
+        <div class="message-body {{ event.hide_event ? 'has-delete' }}">
+            {% if event.hide_event %}
+                <a href="?page={{ _app.page }}&hide_event={{ event.hide_event }}" class="delete app-tooltip" data-tippy-content="{{ hide_this_message }}"></a>
+            {% endif %}
+            {{ event.message|raw }}
+        </div>
+    </article>
+{% endfor %}
+

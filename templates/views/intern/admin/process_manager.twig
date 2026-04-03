@@ -1,0 +1,494 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_process_manager.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Item table #}
+    {% if _processes is empty %}
+        <div class="card">
+            <div class="card-content">
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            </div>
+        </div>
+    {% else %}
+
+        <div class="buttons">
+            {{ forms.button({
+                'label': processes_by_users,
+                'style': 'primary',
+                'icon': 'fa-solid fa-angles-down',
+                'class': 'is-outlined app-scroll-to-processes-by-users',
+            }) }}
+            {{ forms.button({
+                'label': complete_process_list,
+                'style': 'primary',
+                'icon': 'fa-solid fa-angles-down',
+                'class': 'is-outlined app-scroll-to-complete-process-list',
+            }) }}
+        </div>
+
+        {# #############################################################################################################
+            Meta
+        ############################################################################################################# #}
+
+        <div class="columns is-multiline">
+            <div class="column is-6-tablet is-6-desktop is-6-widescreen is-4-fullhd">
+                {% embed "components/card.twig" with {
+                    'has_equal_height': true,
+                    'header': {
+                        'icon': 'fa-solid fa-gears',
+                        'title': processes,
+                    },
+                } %}
+                    {% block content %}
+                        <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                            <tr>
+                                <th>{{ total }}</th>
+                                <td><b>{{ _process_counts.total }}</b></td>
+                            </tr>
+                            <tr>
+                                <th>{{ state_running }}</th>
+                                <td>{{ _process_counts.running }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ state_idle }}</th>
+                                <td>{{ _process_counts.idle }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ state_sleeping }}</th>
+                                <td>{{ _process_counts.sleeping }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ state_stopped }}</th>
+                                <td>{{ _process_counts.stopped }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ state_zombie }}</th>
+                                <td>{{ _process_counts.zombie }}</td>
+                            </tr>
+                            {% if _process_counts.unknown > 0 %}
+                                <tr>
+                                    <th>N/A</th>
+                                    <td>{{ _process_counts.unknown }}</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+
+            <div class="column is-6-tablet is-6-desktop is-6-widescreen is-4-fullhd">
+                {% embed "components/card.twig" with {
+                    'has_equal_height': true,
+                    'header': {
+                        'icon': 'fa-solid fa-microchip',
+                        'title': cpu_usage,
+                    },
+                } %}
+                    {% block content %}
+                        <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                            <tr>
+                                <thead>
+                                    <td>
+                                        <span class="has-text-grey">{{ average_usage }}</span>
+                                    </td>
+                                </thead>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {% include 'components/cpu_load.twig' with { '_load': _load } %}
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                            <tr>
+                                <thead>
+                                    <td colspan="2">
+                                        <span class="has-text-grey">{{ current_cpu_usage }}</span>
+                                    </td>
+                                </thead>
+                            </tr>
+                            <tr>
+                                <th>{{ total }}</th>
+                                <td><b>{{ _summary.total.cpu_usage|i18n_format_percent }}</b></td>
+                            </tr>
+                            <tr>
+                                <th>{{ by_system }}</th>
+                                <td>{{ _summary.system.cpu_usage|i18n_format_percent }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ by_clients }}</th>
+                                <td>{{ _summary.clients.cpu_usage|i18n_format_percent }}</td>
+                            </tr>
+                        </table>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+
+            <div class="column is-6-tablet is-6-desktop is-6-widescreen is-4-fullhd">
+                {% embed "components/card.twig" with {
+                    'has_equal_height': true,
+                    'header': {
+                        'icon': 'fa-solid fa-memory',
+                        'title': memory_usage,
+                    },
+                } %}
+                    {% block content %}
+                        <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                            <tr>
+                                <thead>
+                                    <td>
+                                        <span class="has-text-grey">{{ available_memory }}</span>
+                                    </td>
+                                </thead>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>{{ _available_memory }}</b>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                            <tr>
+                                <thead>
+                                    <td colspan="3">
+                                        <span class="has-text-grey">{{ current_memory_usage }}</span>
+                                    </td>
+                                </thead>
+                            </tr>
+                            <tr>
+                                <th>{{ total }}</th>
+                                <td><b>{{ _summary.total.memory_usage|i18n_format_percent }}</b></td>
+                                <td><b>{{ _summary.total.memory_human_readable }}</b></td>
+                            </tr>
+                            <tr>
+                                <th>{{ by_system }}</th>
+                                <td>{{ _summary.system.memory_usage|i18n_format_percent }}</td>
+                                <td>{{ _summary.system.memory_human_readable }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ by_clients }}</th>
+                                <td>{{ _summary.clients.memory_usage|i18n_format_percent }}</td>
+                                <td>{{ _summary.clients.memory_human_readable }}</td>
+                            </tr>
+                        </table>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+        </div>
+
+        {# #############################################################################################################
+            Processes by users
+        ############################################################################################################# #}
+
+        <div id="app-anchor-processes-by-users" class="has-margin-top-medium"></div>
+
+        <h2 class="title is-5 has-margin-bottom-medium">
+            {{ processes_by_users }}
+        </h2>
+
+        <div class="card">
+            <div class="card-content">
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {{ macros.header_sorting('username', 'processes_by_users') }} colspan="2">
+                                    {{ username }}
+                                </th>
+                                <th {{ macros.header_sorting('process_count', 'processes_by_users') }}>
+                                    {{ process_count }}
+                                </th>
+                                <th {{ macros.header_sorting('cpu_usage', 'processes_by_users') }}>
+                                    {{ cpu_usage }}
+                                </th>
+                                <th {{ macros.header_sorting('memory_usage_in_byte', 'processes_by_users') }} colspan="2">
+                                    {{ memory_usage }}
+                                </th>
+                                <th {{ macros.header_sorting('cpu_time', 'processes_by_users') }}>
+                                    {{ cpu_time }}
+                                </th>
+                                <th class="is-narrow">
+                                    {{ actions }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _processes_by_users %}
+                                <tr>
+                                    <td style="display: none">
+                                        <input type="text" name="username" value="{{ item.username }}">
+                                        <input type="text" name="process_count" value="{{ item.process_count }}">
+                                    </td>
+                                    <td>
+                                        {% if item.id_user %}
+                                            {{ macros.link_to_switch_to_client(item.id_user, item.username, _app.page) }}
+                                        {% else %}
+                                            {{ item.username }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {% if (item.id_user) %}
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'user_edit',
+                                                '_url': '?page=admin_accounts_client&action=edit&id=' ~ item.id_user,
+                                                '_is_new_tab': true
+                                            } %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ item.process_count }}
+                                    </td>
+                                    <td>
+                                        {{ item.cpu_usage }}
+                                    </td>
+                                    <td>
+                                        {{ item.memory_usage }}
+                                    </td>
+                                    <td>
+                                        {{ item.memory_human_readable }}
+                                    </td>
+                                    <td>
+                                        {{ item.cpu_time }}
+                                    </td>
+                                    <td class="has-ws-no-wrap">
+                                        {% if item.username != 'root' %}
+                                            <span class="app-kill-processes-by-username">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'kill',
+                                                    '_label': kill_processes,
+                                                    '_url': 'javascript:void(0)'
+                                                } %}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42">
+                                    {{ _processes_by_users|length|i18n_format }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# #############################################################################################################
+            Processes list
+        ############################################################################################################# #}
+
+        <div id="app-anchor-complete-process-list" class="has-margin-top-large"></div>
+
+        <h2 class="title is-5 has-margin-bottom-medium">
+            {{ complete_process_list }}
+        </h2>
+
+        <div class="card">
+            <div class="card-content">
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                        <thead>
+                            <tr>
+                                <th {{ macros.header_sorting('process_id', 'processes') }}>
+                                    {{ process_id }}
+                                </th>
+                                <th {{ macros.header_sorting('username', 'processes') }} colspan="2">
+                                    {{ username }}
+                                </th>
+                                <th {{ macros.header_sorting('priority', 'processes') }}>
+                                    {{ priority }}
+                                </th>
+                                <th {{ macros.header_sorting('nice', 'processes') }}>
+                                    Nice
+                                </th>
+                                <th {{ macros.header_sorting('state', 'processes') }} colspan="2">
+                                    {{ state }}
+                                </th>
+                                <th {{ macros.header_sorting('cpu_usage', 'processes') }}>
+                                    {{ cpu_usage }}
+                                </th>
+                                <th {{ macros.header_sorting('memory_usage_in_byte', 'processes') }} colspan="2">
+                                    {{ memory_usage }}
+                                </th>
+                                <th {{ macros.header_sorting('cpu_time', 'processes') }}>
+                                    {{ cpu_time }}
+                                </th>
+                                <th {{ macros.header_sorting('command', 'processes') }}>
+                                    {{ command }}
+                                </th>
+                                <th class="is-narrow">
+                                    {{ actions }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in _processes %}
+                                <tr>
+                                    <td style="display: none">
+                                        <input type="text" name="process_id" value="{{ item.process_id }}">
+                                        <input type="text" name="username" value="{{ item.username }}">
+                                        <input type="text" name="command" value="{{ item.command }}">
+                                    </td>
+                                    <td>
+                                        {{ item.process_id }}
+                                    </td>
+                                    <td>
+                                        {% if (item.id_user) %}
+                                            {{ macros.link_to_switch_to_client(item.id_user, item.username, _app.page) }}
+                                        {% else %}
+                                            {{ item.username }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {% if (item.id_user) %}
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'user_edit',
+                                                '_url': '?page=admin_accounts_client&action=edit&id=' ~ item.id_user,
+                                                '_is_new_tab': true
+                                            } %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ item.priority }}
+                                    </td>
+                                    <td>
+                                        {{ item.nice }}
+                                    </td>
+                                    <td class="is-narrow">
+                                        {{ item.state }}
+                                    </td>
+                                    <td>
+                                        {{ item.state_meaning }}
+                                    </td>
+                                    <td>
+                                        {{ item.cpu_usage }}
+                                    </td>
+                                    <td>
+                                        {{ item.memory_usage }}
+                                    </td>
+                                    <td>
+                                        {{ item.memory_human_readable }}
+                                    </td>
+                                    <td>
+                                        {{ item.cpu_time }}
+                                    </td>
+                                    <td>
+                                        {{ item.command }}
+                                    </td>
+                                    <td class="has-ws-no-wrap">
+                                        <span class="app-kill-process">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'kill',
+                                                '_label': kill_process,
+                                                '_url': 'javascript:void(0)'
+                                            } %}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42">
+                                    {{ _processes|length|i18n_format }} {{ items_total }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Kill process by username #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-kill-processes-by-username',
+            '_title': kill_processes,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=kill',
+                'hidden': { 'username': '' },
+            },
+            '_buttons': {
+                'submit': { 'label': okay },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ confirm_process_killing_by_username }}
+            </p>
+            <table class="table is-centered has-margin-top-medium">
+                <tr>
+                    <th>{{ username }}</th>
+                    <td class="app-kill-username"></td>
+                </tr>
+                <tr>
+                    <th>{{ process_count }}</th>
+                    <td class="app-kill-process-count"></td>
+                </tr>
+            </table>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Kill process #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-kill-process-id',
+            '_title': kill_process,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=kill',
+                'hidden': { 'process_id': '' },
+            },
+            '_buttons': {
+                'submit': { 'label': okay },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ confirm_process_killing }}
+            </p>
+            <table class="table is-centered has-margin-top-medium">
+                <tr>
+                    <th>{{ process_id }}</th>
+                    <td class="app-kill-process-id"></td>
+                </tr>
+                <tr>
+                    <th>{{ username }}</th>
+                    <td class="app-kill-username"></td>
+                </tr>
+                <tr>
+                    <th>{{ command }}</th>
+                    <td class="app-kill-command"></td>
+                </tr>
+            </table>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

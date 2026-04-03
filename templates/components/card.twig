@@ -1,0 +1,97 @@
+{#
+    {% embed "components/card.twig" with {
+        'margin': 'large',
+        'collapse': {
+            'is_enabled': true,
+            'cookie_name': 'applications',
+        },
+        'header': {
+            'icon': 'fa-solid fa-tv',
+            'title': applications,
+        },
+    } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+        {% endblock %}
+
+        {% block footer %}
+            <div class="card-footer-item has-text-right">
+                <a href="?page=admin_installed_packages">
+                    {{ show_details }}
+                </a>
+            </div>
+        {% endblock %}
+    {% endembed %}
+#}
+
+{% if header.icon is not defined %}
+    {% set header = header|default({})|merge({'icon': 'fa-solid fa-gear'}) %}
+{% endif %}
+
+{% if is_card_on_card %}
+    {% set content = {} %}
+{% endif %}
+
+<div class="card {{ margin ? 'has-margin-top-' ~ margin }} {{ has_equal_height ? 'has-equal-height' }} {{ is_card_on_card ? 'is-card-on-card' }}">
+    {% if header and header.is_hidden != true %}
+        <div class="card-header {{ collapse.is_enabled ? 'is-collapsible' }}" {% if collapse.cookie_name %}data-name="{{ collapse.cookie_name }}"{% endif %}>
+            {% if header.icon %}
+                <div class="card-header-icon">
+                    <span class="icon is-medium">
+                        <i class="{{ header.icon }} fa-lg"></i>
+                    </span>
+                </div>
+            {% endif %}
+
+            <div class="card-header-title">
+                {{ header.title|default(settings) }}
+            </div>
+
+            {# Loading #}
+            {% if header.loading_spinner_class %}
+                <div class="card-header-icon">
+                    <span class="{{ header.loading_spinner_class }}">
+                        <span class="icon is-small has-text-grey-light">
+                            <i class="fa-solid fa-rotate fa-spin"></i>
+                        </span>
+                    </span>
+                </div>
+            {% endif %}
+
+            {% if block('header_buttons') is not empty %}
+                <div class="card-header-icon app-header-buttons">
+                    {% block header_buttons %}{% endblock %}
+                </div>
+            {% endif %}
+
+            {% if collapse.is_enabled %}
+                <div class="card-header-icon">
+                    <span class="icon is-medium has-text-grey-light app-collapse-indicator">
+                        <i class="fa-solid fa-angle-down"></i>
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="card-content">
+        {% if content.is_centered %}
+        <div class="columns is-centered">
+            <div class="column is-12-tablet is-12-desktop is-12-widescreen {{ content.is_wide ? 'is-10-fullhd' : 'is-7-fullhd' }}">
+        {% endif %}
+
+        {% block content %}{% endblock %}
+
+        {% if content.is_centered %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if block('footer') is not empty %}
+        <div class="card-footer">
+            {% block footer %}{% endblock %}
+        </div>
+    {% endif %}
+</div>

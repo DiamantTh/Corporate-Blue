@@ -1,0 +1,207 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_mail_queue.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-medium">
+        {{ help|raw }}
+    </p>
+
+    <p class="has-margin-bottom-medium">
+        <strong>{{ messages_in_queue }}:</strong> {{ _messages_in_queue }}
+    </p>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': process_queue,
+                'style': 'primary',
+                'modal': 'app-modal-process-queue',
+            }),
+            forms.button({
+                'label': delete_all,
+                'style': 'secondary',
+                'modal': 'app-modal-delete-all',
+            }),
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection,
+        },
+        '_bulk_action_open_modal': {
+            'delete': 'app-modal-delete-selection',
+        },
+        '_form_id': 'form-mail-queue',
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _mail_queue_records is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-mail-queue" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('id') }} colspan="2">
+                                        {{ id }}
+                                    </th>
+                                    <th {{ macros.header_sorting('status') }} colspan="2">
+                                        {{ status }}
+                                    </th>
+                                    <th {{ macros.header_sorting('sender') }}>
+                                        {{ sender }}
+                                    </th>
+                                    <th {{ macros.header_sorting('recipients_sort') }}>
+                                        {{ recipients }}
+                                    </th>
+                                    <th {{ macros.header_sorting('arrival_data_timestamp') }}>
+                                        {{ arrival_date }}
+                                    </th>
+                                    <th {{ macros.header_sorting('age_timestamp') }}>
+                                        {{ age }}
+                                    </th>
+                                    <th {{ macros.header_sorting('size') }}>
+                                        {{ size }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _mail_queue_records %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td>
+                                            {{ item.id }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            <span class="app-tooltip-mail-header" data-tippy-maxwidth="800px" data-queue-id="{{ item.id }}">
+                                                {% include 'components/icon.twig' with { '_type': 'header' } %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="app-tooltip-mandatory" data-tippy-content="{{ item.status_help }}">
+                                                {{ item.status }}
+                                            </span>
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% if item.reason %}
+                                                <span class="app-tooltip-mandatory" data-tippy-content="{{ item.reason }}">
+                                                    {% include 'components/icon.twig' with { '_type': 'info' } %}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ item.sender }}
+                                        </td>
+                                        <td>
+                                            {% if item.recipients|length <= 3 %}
+                                                {{ item.recipients|join(', ') }}
+                                            {% else %}
+                                                {{ item.recipients[0] }}, {{ item.recipients[1] }}, {{ item.recipients[2] }}
+                                                {{ macros.tag('+ ' ~ (item.recipients|length - 3), 'is-info', '') }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ item.arrival_date }}
+                                        </td>
+                                        <td>
+                                            {{ item.age }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.size|bytes }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _mail_queue_records|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            {% endif %}
+
+        </div>
+    </div>
+
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Flush #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-process-queue',
+            '_title': process_queue,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=process_queue'
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ process_queue_help|raw }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Delete all #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-all',
+            '_title': delete_all,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=delete_all'
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_delete_all }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Delete selection #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-selection',
+            '_title': delete_selection,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-mail-queue' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_delete_selection }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

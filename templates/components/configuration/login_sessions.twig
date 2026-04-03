@@ -1,0 +1,83 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': max_throttle_delay,
+    'help': max_throttle_delay_help,
+    'name': 'max_throttle_delay',
+    'value': _max_throttle_delay,
+    'type': 'number',
+    'min': 0,
+    'addons': {
+        'left': {
+            'type': 'select',
+            'select': {
+                'name': 'max_throttle_delay_multiplier',
+                'options': _time_intervals_multipliers,
+                'selected': _max_throttle_delay_multiplier_selected
+            }
+        },
+    }
+}) }}
+
+{{ forms.input_wrapped({
+    'label': session_idle_time,
+    'help': session_idle_time_help,
+    'name': 'session_idle_time',
+    'value': _session_idle_time,
+    'type': 'number',
+    'min': 1,
+    'addons': {
+        'left': {
+            'type': 'select',
+            'select': {
+                'name': 'session_idle_time_multiplier',
+                'options': _time_intervals_multipliers,
+                'selected': _session_idle_time_multiplier_selected
+            }
+        },
+    }
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': session_ip_lock,
+    'help': session_ip_lock_help,
+    'options': {
+        'label': enabled,
+        'name': 'session_ip_lock',
+        'value': '1',
+        'is_checked': _session_ip_lock
+    }
+}) }}
+
+{{ forms.textarea_wrapped({
+    'label': restrict_admin_access,
+    'help': restrict_admin_access_help,
+    'name': 'administrative_access',
+    'value': _administrative_access,
+}) }}
+
+{{ forms.radio_wrapped({
+    'help': list_acts_as,
+    'options': [
+        {
+            'label': access_blacklist,
+            'name': 'administrative_access_behavior',
+            'value': 'blacklist',
+            'is_checked': _administrative_access_behavior == 'blacklist',
+        },
+        {
+            'label': access_whitelist,
+            'name': 'administrative_access_behavior',
+            'value': 'whitelist',
+            'is_checked': _administrative_access_behavior == 'whitelist',
+        },
+    ]
+}) }}
+
+{{ forms.label_wrapped({
+    'label': important_note,
+    'help': restricted_access_note_help
+}) }}
+
+<code>keyhelp-toolbox</code>

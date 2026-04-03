@@ -1,0 +1,546 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_backup_repository.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form id="form-repository-settings" action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _id }}">
+                {{ csrf_field() }}
+
+                {{ forms.input_wrapped({
+                    'label': name,
+                    'name': 'name',
+                    'type': 'text',
+                    'value': _name,
+                    'is_required': true
+                }) }}
+
+                <hr class="has-margin-large">
+
+                <div class="has-text-centered">
+                    {{ forms.label_wrapped({
+                        'label': repository_settings,
+                    }) }}
+                </div>
+
+                {{ forms.label_wrapped({
+                    'help': repository_settings_help
+                }) }}
+
+                {% include 'components/form_password.twig' with { '_leave_empty': _action == 'edit' } %}
+
+                {{ forms.input_wrapped({
+                    'label': max_snapshots,
+                    'help': max_snapshots_help,
+                    'name': 'max_snapshots',
+                    'type': 'number',
+                    'value': _max_snapshots,
+                    'min': 1,
+                }) }}
+
+                <hr class="has-margin-large">
+
+                <div class="has-text-centered">
+                    {{ forms.label_wrapped({
+                        'label': storage_settings,
+                    }) }}
+                </div>
+
+                {{ forms.select_wrapped({
+                    'label': storage_type,
+                    'name': 'storage_type',
+                    'options': _storage_types,
+                    'selected': _storage_type,
+                }) }}
+
+                <div class="app-storage-settings" data-storage-type="local" style="display: none">
+                    {% if _app.area == 'admin' %}
+                        {{ forms.input_wrapped({
+                            'label': directory,
+                            'help': local_directory_admin_help,
+                            'name': 'local_path',
+                            'value': _local.path,
+                            'type': 'text',
+                        }) }}
+                    {% else %}
+                        {% include 'components/form_browse_directory.twig' with {
+                            '_name': 'local_path',
+                            '_value': _local.path,
+                            '_help': local_directory_user_help,
+                            '_purpose': 'files',
+                            '_append_directory': '/files',
+                        } %}
+                    {% endif %}
+                </div>
+
+                <div class="app-storage-settings" data-storage-type="ftp" style="display: none">
+                    {{ forms.input_wrapped({
+                        'label': host,
+                        'help': host_help,
+                        'name': 'ftp_host',
+                        'type': 'text',
+                        'is_required': true,
+                        'value': _ftp.host,
+                    }) }}
+
+
+                    {{ forms.input_wrapped({
+                        'label': port,
+                        'help': port_help,
+                        'name': 'ftp_port',
+                        'type': 'number',
+                        'value': _ftp.port,
+                        'min': 0,
+                        'max': 65535
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': username,
+                        'name': 'ftp_user',
+                        'type': 'text',
+                        'is_required': true,
+                        'value': _ftp.user,
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': password,
+                        'help': _action == 'edit' ? leave_empty,
+                        'name': 'ftp_pass',
+                        'type': 'password',
+                        'value': _ftp.pass,
+                        'is_required': _action == 'add',
+                        'autocomplete': 'new-password',
+                        'addons': {
+                            'right': {
+                                'type': 'action',
+                                'label': show,
+                                'action': 'app-show-password'
+                            }
+                        }
+                    }) }}
+
+                    {{ forms.radio_wrapped({
+                        'label': ftp_encryption,
+                        'options': [
+                            {
+                                'label': ftp_explicit,
+                                'name': 'ftp_encryption',
+                                'value': 'explicit',
+                                'is_checked': _ftp.encryption == 'explicit'
+                            },
+                            {
+                                'label': ftp_implicit,
+                                'name': 'ftp_encryption',
+                                'value': 'implicit',
+                                'is_checked': _ftp.encryption == 'implicit'
+                            },
+                            {
+                                'label': ftp_plain,
+                                'name': 'ftp_encryption',
+                                'value': 'plain',
+                                'is_checked': _ftp.encryption == 'plain'
+                            },
+                        ]
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': directory,
+                        'name': 'ftp_path',
+                        'value': _ftp.path,
+                        'type': 'text',
+                    }) }}
+
+                    {% embed 'components/additional_content.twig' with {
+                        'label': advanced_settings
+                    } %}
+                        {% block content %}
+                            {% import "macros/forms.twig" as forms %}
+
+                            {{ forms.checkbox_wrapped({
+                                'label': ftp_no_check_certificate,
+                                'options': [
+                                    {
+                                        'label': enabled,
+                                        'name': 'ftp_no_check_certificate',
+                                        'value': 1,
+                                        'is_checked': _ftp.no_check_certificate
+                                    }
+                                ]
+                            }) }}
+
+                            {{ forms.input_wrapped({
+                                'label': ftp_concurrency,
+                                'help': ftp_concurrency_help,
+                                'name': 'ftp_concurrency',
+                                'type': 'number',
+                                'min': 0,
+                                'value': _ftp.concurrency,
+                            }) }}
+                        {% endblock %}
+                    {% endembed %}
+                </div>
+
+                <div class="app-storage-settings" data-storage-type="sftp" style="display: none">
+                    {{ forms.input_wrapped({
+                        'label': host,
+                        'help': host_help,
+                        'name': 'sftp_host',
+                        'type': 'text',
+                        'is_required': true,
+                        'value': _sftp.host,
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': port,
+                        'help': port_help,
+                        'name': 'sftp_port',
+                        'type': 'number',
+                        'value': _sftp.port,
+                        'min': 0,
+                        'max': 65535
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': username,
+                        'name': 'sftp_user',
+                        'type': 'text',
+                        'is_required': true,
+                        'value': _sftp.user,
+                    }) }}
+
+                    {{ forms.select_wrapped({
+                        'label': auth_method,
+                        'name': 'sftp_auth_method',
+                        'options': { 'password': password, 'key': public_private_key },
+                        'selected': _sftp.auth_method,
+                    }) }}
+
+                    <div class="app-auth-password">
+                        {{ forms.input_wrapped({
+                            'label': password,
+                            'help': _action == 'edit' ? leave_empty,
+                            'name': 'sftp_pass',
+                            'type': 'password',
+                            'value': _sftp.pass,
+                            'is_required': _action == 'add',
+                            'autocomplete': 'new-password',
+                            'addons': {
+                                'right': {
+                                    'type': 'action',
+                                    'label': show,
+                                    'action': 'app-show-password'
+                                }
+                            }
+                        }) }}
+                    </div>
+
+                    <div class="app-auth-key has-margin-bottom-medium" style="display: none">
+                        <input type="hidden" name="sftp_private_key" value="{{ _sftp.private_key }}">
+
+                        {{ forms.label_wrapped({
+                            'label': public_key,
+                            'help': public_key_help,
+                        }) }}
+
+                        <div class="app-auth-key-not-exists" style="display: none">
+                            {{ forms.button({
+                                'type': 'button',
+                                'label': create_public_key,
+                                'style': 'primary',
+                                'class': 'app-auth-key-create',
+                            }) }}
+                        </div>
+
+                        <div class="app-auth-key-exists" style="display: none">
+                            {{ forms.input_wrapped({
+                                'name': 'sftp_public_key',
+                                'value': _sftp.public_key,
+                                'type': 'text',
+                                'is_readonly': true,
+                                'addons': {
+                                    'right': [
+                                        {
+                                            'button': {
+                                                'type': 'button',
+                                                'label': copy,
+                                                'style': 'primary',
+                                                'class': 'app-copy-to-clipboard'
+                                            }
+                                        },{
+                                            'button': {
+                                                'type': 'button',
+                                                'label': remove,
+                                                'style': 'secondary',
+                                                'class': 'app-auth-key-remove'
+                                            }
+                                        }
+                                    ]
+                                }
+                            }) }}
+                        </div>
+                    </div>
+
+                    {{ forms.input_wrapped({
+                        'label': directory,
+                        'name': 'sftp_path',
+                        'value': _sftp.path,
+                        'type': 'text',
+                    }) }}
+                </div>
+
+                <div class="app-storage-settings" data-storage-type="webdav" style="display: none">
+                    {{ forms.input_wrapped({
+                        'label': webdav_url,
+                        'name': 'webdav_url',
+                        'type': 'text',
+                        'is_required': true,
+                        'value': _webdav.url,
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': username,
+                        'name': 'webdav_user',
+                        'type': 'text',
+                        'is_required': true,
+                        'value': _webdav.user,
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': password,
+                        'help': _action == 'edit' ? leave_empty,
+                        'name': 'webdav_pass',
+                        'type': 'password',
+                        'value': _webdav.pass,
+                        'is_required': _action == 'add',
+                        'autocomplete': 'new-password',
+                        'addons': {
+                            'right': {
+                                'type': 'action',
+                                'label': show,
+                                'action': 'app-show-password'
+                            }
+                        }
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': directory,
+                        'name': 'webdav_path',
+                        'value': _webdav.path,
+                        'type': 'text',
+                    }) }}
+                </div>
+
+                <div class="app-storage-settings" data-storage-type="keydisc" style="display: none">
+                    {{ forms.input_wrapped({
+                        'label': username,
+                        'name': 'keydisc_user',
+                        'type': 'text',
+                        'is_required': true,
+                        'value': _keydisc.user,
+                    }) }}
+
+                    {{ forms.select_wrapped({
+                        'label': auth_method,
+                        'name': 'keydisc_auth_method',
+                        'options': { 'password': password, 'key': public_private_key },
+                        'selected': _keydisc.auth_method,
+                    }) }}
+
+                    <div class="app-auth-password">
+                        {{ forms.input_wrapped({
+                            'label': password,
+                            'help': _action == 'edit' ? leave_empty,
+                            'name': 'keydisc_pass',
+                            'type': 'password',
+                            'value': _keydisc.pass,
+                            'is_required': _action == 'add',
+                            'autocomplete': 'new-password',
+                            'addons': {
+                                'right': {
+                                    'type': 'action',
+                                    'label': show,
+                                    'action': 'app-show-password'
+                                }
+                            }
+                        }) }}
+                    </div>
+
+                    <div class="app-auth-key has-margin-bottom-medium" style="display: none">
+                        <input type="hidden" name="keydisc_private_key" value="{{ _keydisc.private_key }}">
+
+                        {{ forms.label_wrapped({
+                            'label': public_key,
+                            'help': public_key_help,
+                        }) }}
+
+                        <div class="app-auth-key-not-exists" style="display: none">
+                            {{ forms.button({
+                                'type': 'button',
+                                'label': create_public_key,
+                                'style': 'primary',
+                                'class': 'app-auth-key-create',
+                            }) }}
+                        </div>
+
+                        <div class="app-auth-key-exists" style="display: none">
+                            {{ forms.input_wrapped({
+                                'name': 'keydisc_public_key',
+                                'value': _keydisc.public_key,
+                                'type': 'text',
+                                'is_readonly': true,
+                                'addons': {
+                                    'right': [
+                                        {
+                                            'button': {
+                                                'type': 'button',
+                                                'label': copy,
+                                                'style': 'primary',
+                                                'class': 'app-copy-to-clipboard'
+                                            }
+                                        },{
+                                            'button': {
+                                                'type': 'button',
+                                                'label': remove,
+                                                'style': 'secondary',
+                                                'class': 'app-auth-key-remove'
+                                            }
+                                        }
+                                    ]
+                                }
+                            }) }}
+                        </div>
+                    </div>
+
+                    {{ forms.input_wrapped({
+                        'label': directory,
+                        'name': 'keydisc_path',
+                        'value': _keydisc.path,
+                        'type': 'text',
+                        'addons': {
+                            'left': {
+                                'label': '/files',
+                            }
+                        }
+                    }) }}
+                </div>
+
+                <div class="app-storage-settings" data-storage-type="dropbox" style="display: none">
+
+                    {{ forms.label_wrapped({
+                        'label': request_access_code,
+                        'help': dropbox_help,
+                    }) }}
+
+                    <div class="has-margin-top-medium has-margin-bottom-large">
+                        {{ forms.button({
+                            'label': request_access_code,
+                            'style': 'primary',
+                            'icon': 'fa-solid fa-key',
+                            'url': 'https://www.dropbox.com/oauth2/authorize/?client_id=' ~ _dropbox_client_id ~ '&token_access_type=offline&response_type=code',
+                            'is_new_tab': true
+                        }) }}
+                    </div>
+
+                    {{ forms.input_wrapped({
+                        'label': access_code,
+                        'help': _action == 'edit' ? access_code_help,
+                        'name': 'dropbox_access_code',
+                        'type': 'text',
+                        'is_required': _action == 'add',
+                        'value': _dropbox.access_code,
+                    }) }}
+
+                    {{ forms.input_wrapped({
+                        'label': directory,
+                        'name': 'dropbox_path',
+                        'value': _dropbox.path,
+                        'type': 'text',
+                    }) }}
+                </div>
+
+                <div class="app-storage-settings" data-storage-type="custom" style="display: none">
+                    {{ forms.textarea_wrapped({
+                        'label': custom_config,
+                        'help': custom_config_help,
+                        'name': 'custom_config',
+                        'value': _custom.config,
+                        'is_required': true,
+                        'rows': 7,
+                    }) }}
+
+
+                    {{ forms.label_wrapped({
+                        'help': example_configurations,
+                        'has_small_margin': true
+                    }) }}
+
+                    <div class="buttons">
+                        {{ forms.button({
+                            'label': 'SFTP',
+                            'style': 'primary',
+                            'tooltip': 'type = sftp<br>
+                                        host = example.com<br>
+                                        user = test<br>
+                                        pass = 8CBxF30NBHco_aBVdzzhSnMuZr0ZnZtM5Xft9Q'
+                        }) }}
+
+                        {{ forms.button({
+                            'label': 'AWS S3',
+                            'style': 'primary',
+                            'tooltip': 'type = s3<br>
+                                        provider = AWS<br>
+                                        access_key_id = GDHT46FSH63AFBJU6HBS<br>
+                                        secret_access_key = jduz38fn3z2bdRvjrHD5gnb2CH234hvfGDfk732dDY<br>
+                                        region = eu-west-1<br>
+                                        location_constraint = eu-west-1'
+                        }) }}
+                    </div>
+
+                    {{ forms.input_wrapped({
+                        'label': directory,
+                        'name': 'custom_path',
+                        'value': _custom.path,
+                        'type': 'text',
+                    }) }}
+                </div>
+
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-save-settings',
+            '_title': repository_setup
+            } %}
+        {% block body %}
+            <div class="has-text-centered">
+                <p>{{ repository_setup_help|raw }}</p>
+                <div class="has-margin-top-medium">
+                    <div class="is-loading has-padding-large">
+                        {{ processing }}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

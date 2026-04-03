@@ -1,0 +1,247 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.label_wrapped({
+    'label': os_default_version,
+    'value': _os_default_version
+}) }}
+
+{{ forms.select_wrapped({
+    'label': default_interpreter,
+    'help': default_interpreter_help,
+    'name': 'default_interpreter',
+    'options': _default_interpreters,
+    'selected': _default_interpreter
+}) }}
+
+{{ forms.label_wrapped({
+    'label': installed_interpreters,
+    'help': installed_interpreters_help ~ (_app.is_pro ? '<br>' ~ installed_interpreters_help_pro)
+}) }}
+
+
+
+
+{% if _interpreters is empty %}
+    <div class="has-text-centered has-text-grey has-margin-bottom-large">
+        - {{ no_items_available }} -
+    </div>
+{% else %}
+    {% include 'components/table_scroll_container.twig' %}
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable is-striped has-valigned-cells">
+            <thead>
+                <tr>
+                    <th class="is-narrow">
+                        S
+                    </th>
+                    <th class="is-narrow">
+                        {{ version }}
+                    </th>
+                    <th>
+                        <!-- eol -->
+                    </th>
+                    <th class="is-narrow" colspan="3">
+                        {{ usage }}
+                    </th>
+                    <th class="is-narrow">
+                        {{ selectable }}
+                    </th>
+                    <th  class="is-narrow">
+                        {{ auto_update }}
+                    </th>
+                    <th class="is-narrow">
+                        {{ remove }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in _interpreters %}
+                <tr>
+                    <td class="has-padding-x-xsmall">
+                        {% include 'components/icon.twig' with { '_type': item.status } %}
+                    </td>
+                    <td class="has-ws-no-wrap">
+                        <strong>{{ item.main_version }}</strong><span class="has-text-grey-light">{{ item.patch_version }}</span>
+                    </td>
+                    <td>
+                        {% if item.is_beta %}
+                            {{ macros.tag('Beta', 'is-warning', 'fa-solid fa-triangle-exclamation') }}
+                        {% endif %}
+                        {% if item.is_eol %}
+                            {% include 'components/tags/outdated.twig' %}
+                        {% endif %}
+                    </td>
+                    <td class="is-narrow">
+                        {% if item.usage_by_users > 0 %}
+                            {% include 'components/icon.twig' with {
+                                '_type': 'user_config',
+                                '_label': item.usage_by_users ~ 'x',
+                                '_tooltip': tooltip_usage_user_configs
+                            } %}
+                        {% endif %}
+                    </td>
+                    <td class="is-narrow">
+                        {% if item.usage_by_domains > 0 %}
+                            {% include 'components/icon.twig' with {
+                                '_type': 'globe',
+                                '_label': item.usage_by_domains ~ 'x',
+                                '_tooltip': tooltip_usage_domains
+                            } %}
+                        {% endif %}
+                    </td>
+                    <td class="is-narrow">
+                        {% if item.usage_by_scheduled_tasks > 0 %}
+                            {% include 'components/icon.twig' with {
+                                '_type': 'clock',
+                                '_label': item.usage_by_scheduled_tasks ~ 'x',
+                                '_tooltip': tooltip_usage_scheduled_tasks
+                            } %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="checkbox" name="selectable[]" value="{{ item.main_version }}" {{ item.is_selectable ? 'checked' }}>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="auto_update[]" value="{{ item.main_version }}" {{ item.is_auto_update ? 'checked' }}>
+                    </td>
+                    <td>
+                        {% if not item.is_used %}
+                            <input type="checkbox" name="uninstall[]" value="{{ item.main_version }}" {{ item.is_uninstall ? 'checked' }}>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if item.has_errors %}
+                    <tr>
+                        <td colspan="42">
+                            {{ item.errors }}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="42">
+                        {{ _interpreters|length }} {{ items_total }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+{% endif %}
+
+{% if _app.is_pro %}
+    {{ forms.label_wrapped({
+        'label': interpreter_cli,
+        'help': interpreter_cli_help ~ '<br><br>' ~ interpreter_cli_help_pro ~ '<br><br>' ~ interpreter_cli_fpm_help
+    }) }}
+{% else %}
+    {{ forms.label_wrapped({
+        'label': interpreter_cli,
+        'help': interpreter_cli_help ~ '<br><br>' ~ interpreter_cli_fpm_help
+    }) }}
+
+    <div class="columns">
+        <div class="column is-narrow">
+            {% include 'components/tags/pro.twig' %}
+        </div>
+        <div class="column">
+            {{ forms.label_wrapped({
+                'help': interpreter_cli_help_pro
+            }) }}
+        </div>
+    </div>
+{% endif %}
+
+{{ forms.label_wrapped({
+    'label': available_interpreters,
+    'help': available_interpreters_help
+}) }}
+
+<input type="hidden" name="scheduled_installs" value="{{ _scheduled_installs }}">
+<input type="hidden" name="ajax_finished" value="0">
+
+<div id="app-interpreter-not-available" class="has-text-centered has-text-grey" style="display: none">
+    - {{ no_items_available }} -
+</div>
+
+<div id="app-interpreter-error" class="has-text-centered" style="display: none">
+    <span class="has-text-danger has-text-weight-bold">
+        {{ an_error_occurred }}
+    </span>
+    <br>
+    <span id="app-interpreter-error-message"></span>
+</div>
+
+
+<script id="app-interpreter-template" type="text/x-handlebars-template">
+    {% verbatim %}
+        <tr>
+            <td class="has-padding-x-xsmall">
+                {{# if is_scheduled }}
+                    {% endverbatim %}{% include 'components/icon.twig' with { '_type': 'status_processing' } %}{% verbatim %}
+                {{ else }}
+                    <span class="icon is-medium has-text-grey-lighter">
+                        <i class="fa-solid fa-minus"></i>
+                    </span>
+                {{/ if }}
+            </td>
+            <td class="has-ws-no-wrap">
+                <strong>{{ main_version }}</strong><span class="has-text-grey-light">{{ patch_version }}</span>
+            </td>
+            <td>
+                {{# if is_eol }}
+                    {% endverbatim %}{% include 'components/tags/outdated.twig' %}{% verbatim %}
+                {{/ if }}
+            </td>
+            <td>
+                <input type="checkbox" name="install[]" value="{{ main_version }}" {{# if is_scheduled }}checked{{/ if }}>
+            </td>
+        </tr>
+    {% endverbatim %}
+</script>
+
+
+<div id="app-interpreter-table" style="display: none">
+    {% include 'components/table_scroll_container.twig' %}
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable is-striped has-valigned-cells">
+            <thead>
+                <tr>
+                    <th class="is-narrow">
+                        S
+                    </th>
+                    <th class="is-narrow">
+                        {{ version }}
+                    </th>
+                    <th>
+                        <!-- eol -->
+                    </th>
+                    <th class="is-narrow">
+                        {{ install }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="app-interpreter-tbody">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="42">
+                        <span id="app-interpreter-count"></span> {{ items_total }}
+                    </td>
+                <tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="has-text-centered has-margin-y-medium">
+    {{ forms.button({
+        'label': refresh,
+        'style': 'primary',
+        'icon': 'fa-solid fa-rotate',
+        'id': 'app-load-interpreters',
+        'type': 'button'
+    }) }}
+</div>

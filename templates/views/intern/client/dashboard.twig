@@ -1,0 +1,551 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+<script src="/theme/bulma/assets/js/page_client_dashboard.js?{{ _globals.cache_control }}"></script>
+<script src="/theme/bulma/assets/js/dashboard_notes.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+<div class="columns">
+
+    <div class="column">
+
+        {###############################################################################################################
+            Left | 1st
+        ###############################################################################################################}
+
+        {% if _is_show_chart %}
+            {% embed "components/card.twig" with {
+                'collapse': {
+                    'is_enabled': true,
+                    'cookie_name': 'disk-space',
+                },
+                'header': {
+                    'icon': 'fa-solid fa-hard-drive',
+                    'title': disk_space,
+                },
+            } %}
+                {% block content %}
+                    {% import "macros/macros.twig" as macros %}
+                    {% import "macros/forms.twig" as forms %}
+
+                    <div class="columns is-vcentered">
+                        <div class="column is-narrow">
+                           <div style="width: 150px; height: 150px; margin: auto auto;">
+                               <canvas id="app-chart" data-chart="{{ _chart_data|json_encode }}"></canvas>
+                            </div>
+                        </div>
+                        <div class="column table-container">
+                            <table class="table is-fullwidth is-striped is-hoverable has-ws-no-wrap">
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            {{ macros.icon({text: webspace, color: '#3273DC'}) }}
+                                        </th>
+                                        <td class="has-text-right">{{ _disk_space_human_readable.web|bytes }}</td>
+                                    </tr>
+                                    {% if _has_resource_email %}
+                                        <tr>
+                                            <th>
+                                                {{ macros.icon({text: emails, color: '#23D160'}) }}
+                                            </th>
+                                            <td class="has-text-right">{{ _disk_space_human_readable.email|bytes }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% if _has_resource_databases %}
+                                        <tr>
+                                            <th>
+                                                {{ macros.icon({text: databases, color: '#FF2B56'}) }}
+                                            </th>
+                                            <td class="has-text-right">{{ _disk_space_human_readable.db|bytes }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% if not _is_unlimited_disk_space %}
+                                        <tr>
+                                            <th>
+                                                {{ macros.icon({text: free, color: _app.theme.is_dark_mode ? '#3D3D3D' : '#CCCCCC'}) }}
+                                            </th>
+                                            <td class="has-text-right">{{ _disk_space_human_readable.free|bytes }}</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                                <tfoot class="is-summary">
+                                    <tr>
+                                        <th></th>
+                                        <th class="has-text-right">
+                                            {{ _disk_space_human_readable.sum|bytes }}
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                {% endblock %}
+            {% endembed %}
+        {% endif %}
+
+        {###############################################################################################################
+            Left | 2nd
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'margin': _is_show_chart ? 'large' : '',
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'resources',
+            },
+            'header': {
+                'icon': 'fa-solid fa-gauge-high',
+                'title': resources,
+            },
+        } %}
+            {% block content %}
+                {% import "macros/macros.twig" as macros %}
+                {% import "macros/forms.twig" as forms %}
+
+                {{ macros.usage_indicator({
+                    'label': disk_space,
+                    'percent': _disk_space.percent,
+                    'current': _disk_space.current,
+                    'max': _disk_space.max
+                }) }}
+
+                {{ macros.usage_indicator({
+                    'label': file_count,
+                    'percent': _files.percent,
+                    'current': _files.current,
+                    'max': _files.max
+                }) }}
+
+                {{ macros.usage_indicator({
+                    'label': traffic ~ ' / ' ~ _traffic_month,
+                    'percent': _traffic.percent,
+                    'current': _traffic.current,
+                    'max': _traffic.max
+                }) }}
+
+                {% if _has_resource_main_domains %}
+                    {{ macros.usage_indicator({
+                        'label': main_domains,
+                        'percent': _main_domains.percent,
+                        'current': _main_domains.current,
+                        'max': _main_domains.max
+                    }) }}
+                {% endif %}
+
+                {% if _has_resource_subdomains %}
+                    {{ macros.usage_indicator({
+                        'label': subdomains,
+                        'percent': _subdomains.percent,
+                        'current': _subdomains.current,
+                        'max': _subdomains.max
+                    }) }}
+                {% endif %}
+
+                {% if _has_resource_email %}
+                    {{ macros.usage_indicator({
+                        'label': email_accounts,
+                        'percent': _email_accounts.percent,
+                        'current': _email_accounts.current,
+                        'max': _email_accounts.max,
+                    }) }}
+
+                    {{ macros.usage_indicator({
+                        'label': email_addresses,
+                        'percent': _email_addresses.percent,
+                        'current': _email_addresses.current,
+                        'max': _email_addresses.max,
+                    }) }}
+
+                    {{ macros.usage_indicator({
+                        'label': email_forwardings,
+                        'percent': _email_forwardings.percent,
+                        'current': _email_forwardings.current,
+                        'max': _email_forwardings.max,
+                    }) }}
+                {% endif %}
+
+                {% if _has_resource_databases %}
+                    {{ macros.usage_indicator({
+                        'label': databases,
+                        'percent': _databases.percent,
+                        'current': _databases.current,
+                        'max': _databases.max,
+                    }) }}
+                {% endif %}
+
+                {% if _has_resource_ftp %}
+                    {{ macros.usage_indicator({
+                        'label': ftp_users,
+                        'percent': _ftp_users.percent,
+                        'current': _ftp_users.current,
+                        'max': _ftp_users.max,
+                    }) }}
+                {% endif %}
+
+                {% if _has_resource_scheduled_tasks %}
+                    {{ macros.usage_indicator({
+                        'label': scheduled_tasks,
+                        'percent': _scheduled_tasks.percent,
+                        'current': _scheduled_tasks.current,
+                        'max': _scheduled_tasks.max,
+                    }) }}
+                {% endif %}
+            {% endblock %}
+        {% endembed %}
+
+        {###############################################################################################################
+            Left | 3rd
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'margin': 'large',
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'account-options',
+            },
+            'header': {
+                'icon': 'fa-solid fa-gear',
+                'title': account_options,
+            },
+        } %}
+            {% block content %}
+                {% import "macros/macros.twig" as macros %}
+                {% import "macros/forms.twig" as forms %}
+
+                <p>
+                    <strong>{{ directory_listing }}</strong><br>
+                    {{ directory_listing_desc|raw }}
+                </p>
+
+                <div class="has-margin-bottom-small"></div>
+
+                {{ forms.button({
+                    'label': _is_directory_listing ? enabled : disabled,
+                    'style': _is_directory_listing ? 'primary' : 'grey',
+                    'url': '?page=' ~ _app.page ~ '&action=toggle_directory_listing'
+                }) }}
+
+                {% if not _is_anonymize_all %}
+                    <div class="has-margin-bottom-large"></div>
+
+                    <p>
+                        <strong>{{ anonymize_ips }}</strong><br>
+                        {{ anonymize_ips_desc|raw }}
+                    </p>
+
+                    <div class="has-margin-bottom-small"></div>
+
+                    {{ forms.button({
+                        'label': _is_anonymize_ips ? enabled : disabled,
+                        'style': _is_anonymize_ips ? 'primary' : 'grey',
+                        'url': '?page=' ~ _app.page ~ '&action=toggle_anonymize_ips'
+                    }) }}
+                {% endif %}
+            {% endblock %}
+        {% endembed %}
+
+    </div>
+
+    <div class="column">
+
+        {###############################################################################################################
+            Right | 1st
+        ###############################################################################################################}
+
+        {% include 'components/dashboard_notes.twig' %}
+
+        {###############################################################################################################
+            Right | 2nd
+        ###############################################################################################################}
+
+        {% if _app.is_pro and _client_group_members is not empty %}
+            {% embed "components/card.twig" with {
+                'margin': 'large',
+                'collapse': {
+                    'is_enabled': true,
+                    'cookie_name': 'account-group',
+                },
+                'header': {
+                    'icon': 'fa-solid fa-users',
+                    'title': account_group,
+                },
+            } %}
+                {% block content %}
+                    {% import "macros/macros.twig" as macros %}
+                    {% import "macros/forms.twig" as forms %}
+
+                    <p class="has-margin-bottom-medium">
+                        {{ _you_are_logged_in_as|raw }}
+                    </p>
+
+                    <form action="?page={{ _app.page }}&action=switch_to_client" method="post" autocomplete="off">
+                        {{ csrf_field() }}
+
+                        {{ forms.select_wrapped({
+                            'name': 'id_client',
+                            'options': _client_group_members,
+                            'button': {
+                                'label': switch_to_account,
+                                'style': 'primary',
+                            }
+                        }) }}
+                    </form>
+                {% endblock %}
+            {% endembed %}
+        {% endif %}
+
+        {###############################################################################################################
+            Right | 3nd
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'margin': 'large',
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'account-information',
+            },
+            'header': {
+                'icon': 'fa-solid fa-circle-info',
+                'title': account_information,
+            },
+        } %}
+            {% block content %}
+                {% import "macros/macros.twig" as macros %}
+                {% import "macros/forms.twig" as forms %}
+
+                <div class="table-container has-margin-bottom-none">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                    <colgroup>
+                        <col>
+                        <col style="width: 50%">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>{{ main_domains }}</th>
+                            <td>
+                                {% if _domains is empty %}
+                                    <span class="has-text-grey">
+                                        - {{ no_items_available }} -
+                                    </span>
+                                {% else %}
+                                    {% set _items_to_show = 8 %}
+
+                                    <ul id="app-domain-items">
+                                        {% for item in _domains %}
+                                            <li class="has-ws-no-wrap {{ loop.index > _items_to_show ? 'is-hidden'}}">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'edit',
+                                                    '_url': '?page=domains&action=edit&id=' ~ item.id
+                                                } %}
+                                                <a href="http://{{ item.domain }}" target="_blank" rel="nofollow noopener noreferrer">
+                                                    {{ item.domain_utf8 }}
+                                                </a>
+                                                {% if item.is_disabled %}
+                                                    {{ macros.tag(disabled, 'is-danger') }}
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                    {% if _domains|length > _items_to_show %}
+                                        <div id="app-show-more-domains" class="has-margin-top-small">
+                                            <a href="javascript:void(0)">{{ show_more }} ({{ (_domains|length) - _items_to_show }})</a>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ ip_addresses }}</th>
+                            <td>
+                                <ul class="horizontal-separated-list">
+                                    {% for ip_address in _ip_addresses %}
+                                    <li>{{ ip_address }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ system_username }}</th>
+                            <td>{{ _username }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ absolute_path_home }}</th>
+                            <td>{{ _absolute_path_home }}</td>
+                        </tr>
+                        {% if _has_ssh and _ssh_fingerprint %}
+                            <tr>
+                                <th>{{ ssh_fingerprint }}</th>
+                                <td>
+                                    <ul class="horizontal-separated-list">
+                                    {% for _algorithm, _formats in _ssh_fingerprint %}
+                                        {% set _tippy_content %}
+                                            <table class="table is-narrow">
+                                            {% for _format, _key in _formats %}
+                                                <tr>
+                                                    <th>{{ _format }}</th>
+                                                    <td class="is-family-monospace">{{ _key }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </table>
+                                        {% endset %}
+                                        <li>
+                                            <a href="javascript:void(0)" class="app-tooltip-click" data-tippy-maxWidth="500px" data-tippy-content="{{ _tippy_content|escape('html') }}">{{ _algorithm }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <th>{{ permissions }}</th>
+                            <td>
+                                {% embed 'components/additional_content.twig' with {
+                                    'has_margin_toggle': false,
+                                } %}
+                                    {% block content %}
+                                        <ul>
+                                            {% for item in _permissions %}
+                                                <li>
+                                                    {{ item }}
+                                                </li>
+                                            {% else %}
+                                                <li>
+                                                    —
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endblock %}
+                                {% endembed %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endblock %}
+        {% endembed %}
+
+        {###############################################################################################################
+            Right | 4th
+        ###############################################################################################################}
+
+        {% embed "components/card.twig" with {
+            'margin': 'large',
+            'collapse': {
+                'is_enabled': true,
+                'cookie_name': 'contact-data',
+            },
+            'header': {
+                'icon': 'fa-solid fa-address-card',
+                'title': contact_data,
+            },
+        } %}
+            {% block content %}
+                {% import "macros/macros.twig" as macros %}
+                {% import "macros/forms.twig" as forms %}
+
+                {% if not _has_email %}
+                    <p class="has-margin-bottom-medium">
+                        <span class="has-text-danger has-text-weight-bold">
+                            {{ attention }}!
+                        </span>
+                        <br>
+                        {{ no_email_specified|raw }}
+                    </p>
+                {% endif %}
+
+                <div class="table-container has-margin-bottom-none">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col style="width: 50%">
+                        </colgroup>
+                        <tbody>
+                            {% if _company %}
+                                <tr>
+                                    <th class="is-narrow">
+                                        <span class="icon is-small">
+                                            <i class="fa-solid fa-industry"></i>
+                                        </span>
+                                    </th>
+                                    <th>{{ company }}</th>
+                                    <td>{{ _company }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if _name %}
+                                <tr>
+                                    <th class="is-narrow">
+                                        <span class="icon is-small">
+                                            <i class="fa-solid fa-user"></i>
+                                        </span>
+                                    </th>
+                                    <th>{{ name }}</th>
+                                    <td>{{ _name }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if _address or _city or _state or _country %}
+                                <tr>
+                                    <th class="is-narrow">
+                                        <span class="icon is-small">
+                                            <i class="fa-solid fa-house"></i>
+                                        </span>
+                                    </th>
+                                    <th>{{ address }}</th>
+                                    <td>
+                                        {% if _address %}{{ _address|nl2br }}<br>{% endif %}
+                                        {% if _city %}{{ _city }}<br>{% endif %}
+                                        {% if _state %}{{ _state }}<br>{% endif %}
+                                        {% if _country %}{{ _country }}{% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if _telephone %}
+                                <tr>
+                                    <th class="is-narrow">
+                                        <span class="icon is-small">
+                                            <i class="fa-solid fa-phone"></i>
+                                        </span>
+                                    </th>
+                                    <th>{{ telephone }}</th>
+                                    <td>{{ _telephone }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if _email %}
+                                <tr>
+                                    <th class="is-narrow">
+                                        <span class="icon is-small">
+                                            <i class="fa-solid fa-envelope"></i>
+                                        </span>
+                                    </th>
+                                    <th>{{ email_address }}</th>
+                                    <td>{{ _email }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if _client_id %}
+                                <tr>
+                                    <th class="is-narrow">ID</th>
+                                    <th>{{ client_id }}</th>
+                                    <td>{{ _client_id }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="has-margin-top-medium">
+                    <a class="button is-link" href="?page=profile">{{ update_profile }}</a>
+                </div>
+            {% endblock %}
+        {% endembed %}
+
+    </div>
+
+</div>
+{% endblock %}

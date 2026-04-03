@@ -1,0 +1,43 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': disabled_domains,
+    'help': disabled_domains_help,
+    'name': 'redirect_url_domain_disabled',
+    'value': _redirect_url_domain_disabled,
+    'type': 'url',
+}) }}
+
+{{ forms.input_wrapped({
+    'label': nonexistent_domains,
+    'help': nonexistent_domains_help,
+    'name': 'redirect_url_domain_not_found',
+    'value': _redirect_url_domain_not_found,
+    'type': 'url',
+}) }}
+
+{{ forms.radio_wrapped({
+    'label': nonexistent_subdomains,
+    'help': nonexistent_subdomains_help,
+    'options': [
+        {
+            'label': return_404,
+            'name': 'subdomain_catch_all',
+            'value': '404',
+            'is_checked': _subdomain_catch_all == 404,
+        },
+        {
+            'label': redirect_to_main_domain,
+            'name': 'subdomain_catch_all',
+            'value': 'redirect',
+            'is_checked': _subdomain_catch_all == 'redirect',
+        },
+        {
+            'label': use_same_as_for_nonexistent,
+            'name': 'subdomain_catch_all',
+            'value': 'off',
+            'is_checked': _subdomain_catch_all == 'off',
+        },
+    ]
+}) }}

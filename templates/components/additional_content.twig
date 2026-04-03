@@ -1,0 +1,43 @@
+{#
+    Parameter:
+        'target_id'         | Default: 'app-additional-content'
+        'has_margin_toggle' | Default: true
+        'label'             | Default: null
+        'label_show'        | Default: show
+        'label_hide'        | Default: hide
+
+    Block:
+        'content'
+#}
+
+{% set target_id = target_id|default('app-additional-content') %}
+{% set has_margin_toggle = has_margin_toggle is null ? true : has_margin_toggle %}
+{% set label_show = label ? label : label_show|default(show) %}
+{% set label_hide = label ? label : label_hide|default(hide) %}
+
+{% if has_margin_toggle %}
+    <div class="has-margin-y-medium">
+{% endif %}
+
+        <a href="javascript:void(0)" class="app-additional-content-toggle" data-target-id="{{ target_id }}">
+            <div class="app-additional-content-toggle-show">
+                {{ label_show }}
+                <span class="app-collapse-indicator has-margin-left-small">
+                    <i class="fa-solid fa-angle-right"></i>
+                </span>
+            </div>
+            <div class="app-additional-content-toggle-hide" style="display: none">
+                {{ label_hide }}
+                <span class="app-collapse-indicator has-margin-left-small">
+                    <i class="fa-solid fa-angle-down"></i>
+                </span>
+            </div>
+        </a>
+
+{% if has_margin_toggle %}
+    </div>
+{% endif %}
+
+<div id="{{ target_id }}" class="{{ not has_margin_toggle ? 'has-margin-top-small' }}" style="display: none">
+    {% block content %}{% endblock %}
+</div>

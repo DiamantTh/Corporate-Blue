@@ -1,0 +1,58 @@
+{% extends 'layout/intern.twig' %}
+
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _id }}">
+                {{ csrf_field() }}
+
+                {{ forms.input_wrapped({
+                    'label': name,
+                    'name': 'name',
+                    'help': name_help,
+                    'value': _name,
+                    'is_required': true
+                }) }}
+
+                {{ forms.label_wrapped({
+                    'label': members,
+                    'help': members_help ~ '<br><span class="has-text-danger has-text-weight-bold">' ~ warning ~ '!</span> ' ~ members_help_warning,
+                    'is_required': true
+                }) }}
+
+                <div class="columns">
+                    {% for columns in _clients|batch_column(3) %}
+                        <div class="column">
+                            {% for item in columns %}
+                                {{ forms.checkbox_wrapped({
+                                    'options': [{
+                                        'label': item.username,
+                                        'name': 'id_clients[]',
+                                        'value': item.id,
+                                        'is_checked': item.id in _clients_selected,
+                                        'is_disabled': item.is_disabled
+                                    }]
+                                }) }}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

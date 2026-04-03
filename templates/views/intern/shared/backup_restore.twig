@@ -1,0 +1,198 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_backup_restore.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _id }}">
+                {{ csrf_field() }}
+
+                {% for category_id, category in _categories  %}
+                    <div class="has-margin-bottom-large app-restore-category" data-category="{{ category_id }}">
+                        {% set _help_map = {
+                            'email_accounts': category_help_email_accounts ~ '<br>',
+                            'databases': category_help_databases ~ '<br>',
+                            'paths': ''
+                        } %}
+
+                        {{ forms.label_wrapped({
+                            'label': category.label,
+                            'help': _help_map[category_id]|default('') ~ '<b>' ~ attention ~ '!</b> ' ~ category_search_help
+                        }) }}
+
+                        {% if category.items is empty %}
+                            <div class="has-text-grey has-text-centered">
+                                - {{ no_items_available }} -
+                            </div>
+                        {% else %}
+                            {{ forms.input_wrapped({
+                                'placeholder': search,
+                                'name': 'search',
+                                'type': 'search',
+                                'icon': 'fa-solid fa-magnifying-glass',
+                            }) }}
+
+                            <div class="card is-card-on-card">
+                                <div class="card-content has-padding-medium app-elements" style="height: 200px; overflow-y: scroll;">
+                                    {% for item in category.items %}
+
+                                        {% set label = item.label %}
+
+                                        {% if category_id == 'paths' and _app.area == 'client' %}
+                                            {% if item.is_inside_home %}
+                                                {% set label = ' <span class="has-text-grey-light">&lt;' ~ home_directory ~ '&gt</span> ' ~ label %}
+                                            {% else %}
+                                                {% set label = label ~ ' <span class="has-text-grey-light app-tooltip" data-tippy-content="' ~ no_restore_at_origin ~ '">(*)</span> ' %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {{ forms.checkbox({
+                                            'label': label,
+                                            'value': item.name,
+                                            'name': category_id ~ '[]',
+                                            'is_checked': item.is_checked,
+                                            'is_disabled': item.is_disabled
+                                        }) }}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <p class="has-text-right has-text-grey">
+                                <small>
+                                    <a href="javascript:void(0)" class="app-select-filtered">{{ select_filtered }}</a>
+                                    /
+                                    <a href="javascript:void(0)" class="app-select-all">{{ select_all }}</a>
+                                    /
+                                    <a href="javascript:void(0)" class="app-deselect-all">{{ deselect_all }}</a>
+                                </small>
+                            </p>
+
+
+                            {# Databases ---------------------------------------------------------------------------- #}
+
+                            {% if category_id == 'databases' %}
+
+                                {{ forms.checkbox({
+                                    'label': restore_sql,
+                                    'value': '1',
+                                    'name': 'is_restore_sql',
+                                    'is_checked': _is_restore_sql,
+                                }) }}
+
+                                <div class="app-show-with-restore-sql has-padding-left-medium" style="display: none">
+                                    {% if _app.area == 'admin' %}
+                                        {{ forms.input_wrapped({
+                                            'label': restore_location,
+                                            'help': restore_sql_path_help_admin,
+                                            'name': 'restore_sql_path',
+                                            'value': _restore_sql_path,
+                                            'type': 'text',
+                                        }) }}
+                                    {% else %}
+                                        {% include 'components/form_browse_directory.twig' with {
+                                            '_label': restore_location,
+                                            '_help': restore_sql_path_help_client,
+                                            '_name': 'restore_sql_path',
+                                            '_value': _restore_sql_path,
+                                            '_username': _user.username,
+                                            '_append_directory': '/files',
+                                            '_purpose': 'files'
+                                        } %}
+                                    {% endif %}
+                                </div>
+
+                            {% endif %}
+
+
+                            {# Files and directories ---------------------------------------------------------------- #}
+
+                            {% if category_id == 'paths' %}
+
+                                {{ forms.checkbox({
+                                    'label': restore_single_path,
+                                    'value': '1',
+                                    'name': 'is_restore_single_path',
+                                    'is_checked': _is_restore_single_path,
+                                }) }}
+
+                                <div class="app-show-with-restore-single-path has-padding-left-medium" style="display: none">
+                                    {{ forms.input_wrapped({
+                                        'help': restore_single_path_help,
+                                        'name': 'restore_single_path',
+                                        'value': _restore_single_path,
+                                        'type': 'text',
+                                        'addons': {
+                                            'left': [{
+                                                'type': 'select',
+                                                'select': {
+                                                    'name': 'restore_single_path_prepend',
+                                                    'options': _paths_dropdown,
+                                                    'selected': _restore_single_path_prepend
+                                                }
+                                            }]
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div class="app-show-with-paths" style="display: none">
+                                    {{ forms.radio_wrapped({
+                                        'label': restore_location,
+                                        'options': [
+                                            {
+                                                'label': original_path,
+                                                'name': 'restore_location',
+                                                'value': 'original',
+                                                'is_checked': _restore_location == 'original'
+                                            },
+                                            {
+                                                'label': alternative_path,
+                                                'name': 'restore_location',
+                                                'value': 'alternative',
+                                                'is_checked': _restore_location == 'alternative'
+                                            },
+                                        ]
+                                    }) }}
+
+                                    <div class="app-show-with-alternative-restore-path has-padding-left-medium" style="display: none">
+                                        {% if _app.area == 'admin' %}
+                                            {{ forms.input_wrapped({
+                                                'help': alternative_path_help_admin,
+                                                'name': 'alternative_restore_path',
+                                                'value': _alternative_restore_path,
+                                                'type': 'text',
+                                            }) }}
+                                        {% else %}
+                                            {% include 'components/form_browse_directory.twig' with {
+                                                '_is_empty_label': true,
+                                                '_help': alternative_path_help_user,
+                                                '_name': 'alternative_restore_path',
+                                                '_value': _alternative_restore_path,
+                                                '_username': _user.username,
+                                                '_purpose': 'backup_restore',
+                                                '_is_required_fake': true,
+                                            } %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page ~ '&id=' ~ _id }, '_confirm': true } %}
+
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

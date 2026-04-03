@@ -1,0 +1,46 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action=edit" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _id }}">
+                {{ csrf_field() }}
+
+                {{ forms.input_wrapped({
+                    'name': 'username',
+                    'type': 'text',
+                    'label': username,
+                    'value': _username,
+                    'is_disabled': true,
+                    'max_length': 100,
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'name': 'description',
+                    'type': 'text',
+                    'label': description,
+                    'value': _description,
+                }) }}
+
+                {% include 'components/form_browse_directory.twig' with {
+                    '_label': home_directory,
+                    '_help': home_directory_help,
+                    '_value': _path,
+                    '_purpose': 'ftp'
+                } %}
+
+                {% include 'components/form_password.twig' with { '_leave_empty': true } %}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

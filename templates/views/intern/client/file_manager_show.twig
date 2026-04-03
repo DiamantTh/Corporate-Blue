@@ -1,0 +1,31 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+
+    {% include 'components/file_manager_path.twig' %}
+
+    {% embed "components/card.twig" with { 'header': { 'is_hidden': true }, 'content': { 'is_centered': true, 'is_wide': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <div class="has-margin-y-medium has-text-centered">
+                {% if _type == 'image' %}
+                    <img class="app-image has-frame" src="{{ _data_uri }}" style="max-height: 60em;">
+                {% elseif _type == 'pdf' %}
+                    <embed src="{{ _data_uri }}" type="application/pdf" width="100%" height="800px" />
+                {% elseif _type == 'audio' %}
+                    <div class="has-padding-large has-background-primary is-inline-block">
+                        <audio controls>
+                            <source src="{{ _data_uri }}">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                {% endif %}
+            </div>
+            {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page ~ '&change_dir=' ~ _working_dir|url_encode() } } %}
+        {% endblock %}
+    {% endembed %}    
+
+{% endblock %}

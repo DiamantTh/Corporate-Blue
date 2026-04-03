@@ -1,0 +1,28 @@
+Version:    5.65.18
+
+Releases:   https://github.com/codemirror/CodeMirror/releases
+
+Homepage:   https://codemirror.net/
+
+Update:     Download from https://codemirror.net/5/, due the github release does not contain lib/codemirror.js.
+
+            Minify lib/codemirror.js  -> codemirror.min.js      (https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js)
+            Minify lib/codemirror.css -> codemirror.min.css     (https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css)
+
+            Fullscreen | Update all files in addon/display/:
+                Update z-index of fullscreen.css to at least 9999
+
+            Search | Update all files in addon/search/
+                     Update all files in addon/dialog/
+                     Update all files in addon/scroll/
+
+                    addon/scroll/simplescrollbars.css:
+                        Update .CodeMirror-simplescroll-horizontal {
+                            height: 8px -> 12px
+                        Update .CodeMirror-simplescroll-vertical {
+                            width: 8px -> 12px
+
+            Dark-Mode | Update all files in theme/:
+                Change background color ".cm-s-material-darker.CodeMirror" to #121212
+
+            Update all files in mode/.

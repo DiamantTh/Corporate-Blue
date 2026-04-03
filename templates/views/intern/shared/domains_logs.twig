@@ -1,0 +1,262 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script id="app-log-record-template" type="text/x-handlebars-template">
+		{% verbatim %}
+            <tr>
+                <td class="has-ws-no-wrap">
+                    {{ date }}
+                </td>
+                <td class="has-ws-no-wrap">
+                    <!-- macros.link_to_whois(ip) -->
+                    <a href="?page=whois&action=popup&ip_address={{ ip }}" onClick="openPopup(this.href); return false">
+                        {{ ip }}
+                    </a>
+                </td>
+                <td>
+                    {{#if user_agent }}
+                        <span class="icon has-text-grey app-tooltip-mandatory" data-tippy-content="<b>{% endverbatim %}{{ user_agent }}{% verbatim %}</b><br>{{ user_agent }}">
+                            <i class="fa-solid fa-user-tag"></i>
+                        </span>
+                    {{/if}}
+                </td>
+                <td>
+                    {{#if referrer }}
+                        <span class="icon has-text-grey app-tooltip-mandatory" data-tippy-content="<b>{% endverbatim %}{{ referrer }}{% verbatim %}</b><br>{{ referrer }}">
+                            <i class="fa-solid fa-link"></i>
+                        </span>
+                    {{/if}}
+                </td>
+                <td {{#if is_error }}class="has-text-danger"{{/ if }}>
+                    {{ status_code }}
+                </td>
+                <td {{#if is_error }}class="has-text-danger"{{/ if }}>
+                    {{ nl2br message }}
+                </td>
+            </tr>
+		{% endverbatim %}
+    </script>
+
+    <script src="/theme/bulma/assets/js/page_domain_logs.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ web_server_logs_help }}
+        {{ web_server_logs_download_help }}
+
+        {% if (_log_files.access is not empty) or (_log_files.error is not empty) %}
+            <br><br>
+            {{ forms.button({
+                'label': go_to_download,
+                'style': 'primary',
+                'icon': 'fa-solid fa-angles-down',
+                'class': 'is-outlined',
+                'url': '#anchor_download'
+            }) }}
+        {% endif %}
+    </p>
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_customize_view_form_add_action': '&id=' ~ _id|url_encode(),
+        '_additional_elements': [
+            forms.button({
+                'label': start_real_time_monitoring,
+                'icon': 'fa-solid fa-play',
+                'class': 'app-button-start-real-time app-show-on-realtime-disabled',
+                'type': 'button'
+            }),
+
+            forms.button({
+                'label': refresh,
+                'icon': 'fa-solid fa-rotate',
+                'class': 'app-button-refresh app-show-on-realtime-disabled',
+                'type': 'button'
+            }),
+            forms.button({
+                'label': stop_real_time_monitoring,
+                'icon': 'fa-solid fa-stop',
+                'class': 'app-button-stop-real-time app-show-on-realtime-enabled',
+                'type': 'button'
+            }),
+            forms.button({
+                'label': clear,
+                'icon': 'fa-solid fa-broom',
+                'class': 'app-button-clear app-show-on-realtime-enabled',
+                'type': 'button'
+            })
+        ],
+
+        '_customize_view_elements': [
+            forms.checkbox_wrapped({
+                'options': [
+                    {
+                        'label': access_log,
+                        'name': 'show_access_log',
+                        'value': '1',
+                        'is_checked': _show_access_log
+                    },{
+                        'label': error_log,
+                        'name': 'show_error_log',
+                        'value': '1',
+                        'is_checked': _show_error_log
+                    }
+                ]
+            })
+        ],
+    }) %}
+
+    <input type="hidden" name="show_access_log" value="{{ _show_access_log }}">
+    <input type="hidden" name="show_error_log" value="{{ _show_error_log }}">
+    <input type="hidden" name="id_domain" value="{{ _id }}">
+
+    {# Log entry table #}
+    <div class="card has-margin-bottom-medium">
+        <div class="card-content">
+
+            {{ macros.loading_container() }}
+
+            <div id="app-log-empty" style="display: none">
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            </div>
+
+            <div id="app-log-content-container" style="display: none">
+                {% include 'components/table_scroll_container.twig' %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells is-narrow">
+                        <thead>
+                            <tr>
+                                <th class="is-narrow">
+                                    {{ date }}
+                                </th>
+                                <th colspan="3" class="is-narrow">
+                                    {{ client_ip }}
+                                </th>
+                                <th class="is-narrow">
+                                    {{ http_code }}
+                                </th>
+                                <th>
+                                    {{ message }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="app-log-content">
+                            <!-- Content added by JavaScript -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42" class=""></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {# Download table #}
+    {% if (_log_files.access is not empty) or (_log_files.error is not empty) %}
+        <div id="anchor_download" class="columns has-margin-top-xlarge">
+
+            {% for type, log_file in _log_files %}
+                {% set _card_icon  = type == 'access' ? 'fa-solid fa-circle-info' : 'fa-solid fa-triangle-exclamation' %}
+                {% set _card_label = type == 'access' ? access_logs : error_logs %}
+
+                <div class="column">
+                    {% embed "components/card.twig" with {
+                        'header': {
+                            'icon':  _card_icon,
+                            'title': _card_label,
+                        },
+                    } %}
+                        {% block content %}
+
+                            {% if log_file is empty %}
+                                <div class="has-text-centered has-text-grey">
+                                    - {{ no_items_available }} -
+                                </div>
+                            {% else %}
+                                {% include 'components/table_scroll_container.twig' %}
+                                <div class="table-container">
+                                    <table class="table is-fullwidth is-striped is-hoverable">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    {{ filename }}
+                                                </th>
+                                                <th>
+                                                    {{ modification_date }}
+                                                </th>
+                                                <th>
+                                                    {{ size }}
+                                                </th>
+                                                <th class="is-narrow">
+                                                    {{ actions }}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in log_file %}
+                                            <tr>
+                                                <td>
+                                                    {{ item.filename }}
+                                                </td>
+                                                <td class="has-ws-no-wrap">
+                                                    {{ item.modified }}
+                                                </td>
+                                                <td class="has-ws-no-wrap">
+                                                    {{ item.size|bytes }}
+                                                </td>
+                                                <td class="is-narrow">
+                                                    {% if item.show_view %}
+                                                        {% include 'components/icon.twig' with {
+                                                            '_type': 'show',
+                                                            '_url': '?page=' ~ _app.page ~ '&id=' ~ _id ~ '&action=show&filename=' ~ item.filename,
+                                                            '_is_new_tab': true
+                                                        } %}
+                                                    {% else %}
+                                                        {% include 'components/icon.twig' with { '_type': 'placeholder' } %}
+                                                    {% endif %}
+
+                                                    {% include 'components/icon.twig' with {
+                                                        '_type': 'download',
+                                                        '_url': '?page=' ~ _app.page ~ '&id=' ~ _id ~ '&action=download&filename=' ~ item.filename
+                                                    } %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="42">
+                                                    {{ log_file|length|i18n_format }} {{ items_total }}
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            {% endif %}
+
+                        {% endblock %}
+                    {% endembed %}
+                </div>
+            {% endfor %}
+
+        </div>
+
+        {# Return buttons #}
+        {% include 'components/call_to_action.twig' with { '_back': { 'target': 'domains' } } %}
+
+    {% endif %}
+
+{% endblock %}

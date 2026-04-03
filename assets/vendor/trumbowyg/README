@@ -1,0 +1,10 @@
+Version:        2.31.0
+
+Documentation:  https://alex-d.github.io/Trumbowyg/documentation/
+
+Releases:       https://github.com/Alex-D/Trumbowyg/releases
+
+Homepage:       https://alex-d.github.io/Trumbowyg/
+                https://github.com/Alex-D/Trumbowyg
+
+Update:         Just replace the trumbowyg.js / trumbowyg.min.js files

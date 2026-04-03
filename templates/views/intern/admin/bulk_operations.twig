@@ -1,0 +1,53 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# List features #}
+    {% embed "components/card.twig" with {
+        'header': {
+            'icon': 'fa-solid fa-diagram-project',
+            'title': feature_overview,
+        },
+    } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            {% set features = [{
+                'title': update_php_interpreter,
+                'desc': update_php_interpreter_help,
+                'action': 'php'
+            },{
+                'title': rewrite_client_configs,
+                'desc': rewrite_client_configs_help,
+                'action': 'config'
+            },{
+                'title': override_ttl,
+                'desc': override_ttl_help,
+                'action': 'ttl'
+            }] %}
+
+            <div class="content">
+                {% for item in features %}
+                    <div {{ not loop.first ? 'class="has-margin-top-large"' }}>
+                        <h2 class="title is-6 has-margin-bottom-small">{{ item.title }}</h2>
+                        <p>{{ item.desc|raw }}</p>
+                        {{ forms.button({
+                            'label': continue,
+                            'icon': 'fa-solid fa-angles-right',
+                            'url': '?page=' ~ _app.page ~ '&action=' ~ item.action
+                        }) }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

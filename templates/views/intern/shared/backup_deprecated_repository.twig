@@ -1,0 +1,152 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Button line #}
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <strong>{{ view }}</strong>
+            </div>
+            <div class="level-item">
+                <div class="buttons">
+                    {{ forms.button({
+                        'label': local,
+                        'icon': 'fa-solid fa-hard-drive',
+                        'style': _repository == 'local' ? 'primary' : '',
+                        'url': '?page=backup_deprecated&action=repository&repository=local'
+                    }) }}
+                    {{ forms.button({
+                        'label': remote,
+                        'icon': 'fa-solid fa-globe',
+                        'style': _repository == 'remote' ? 'primary' : '',
+                        'url': '?page=backup_deprecated&action=repository&repository=remote'
+                    }) }}
+                </div>
+            </div>
+        </div>
+        <div class="level-right">
+        </div>
+    </div>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [],
+        '_bulk_actions': {
+            'delete': delete_selection,
+        },
+        '_bulk_action_open_modal': {
+            'delete': 'app-modal-delete-selection',
+        },
+        '_form_id': 'form-files',
+    }) %}
+
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _files is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-files" action="?page={{ _app.page }}&repository={{ _repository }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('date_sort') }}>
+                                        {{ creation_date }}
+                                    </th>
+                                    <th {{ macros.header_sorting('filename') }}>
+                                        {{ filename }}
+                                    </th>
+                                    <th {{ macros.header_sorting('size') }}>
+                                        {{ size }}
+                                    </th>
+
+                                    {% if _repository == 'local' %}
+                                        <th class="is-narrow">
+                                            {{ actions }}
+                                        </th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _files %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.filename, 'files') }}
+
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.date }}
+                                        </td>
+                                        <td>
+                                            <span class="icon is-medium">
+                                                <i class="fa-regular fa-file-zipper"></i>
+                                            </span>
+                                            {{ item.filename }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.size }}
+                                        </td>
+
+                                        {% if _repository == 'local' %}
+                                            <td class="is-narrow">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'download',
+                                                    '_url': '?page=backup_deprecated&action=repository&repository=local&download=' ~ item.filename,
+                                                } %}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3">
+                                        {{ _files|length }} {{ items }}
+                                    </td>
+                                    <td>
+                                        {{ _total_size }}
+                                    </td>
+                                    <td colspan="42"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {# Back to overview #}
+    {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page } } %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-selection',
+            '_title': delete_selection,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-files' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_to_delete }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

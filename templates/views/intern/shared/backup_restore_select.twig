@@ -1,0 +1,136 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script>
+        var snapshots = {{ _snapshots_json|raw }};
+    </script>
+
+    <script id="app-snapshot-template" type="text/x-handlebars-template">
+        <tr>
+            <td>
+                <label>
+                    <input type="checkbox" name="ids[]" value="{% verbatim %}{{ id }}{% endverbatim %}">
+                </label>
+            </td>
+            <td class="has-ws-no-wrap">
+                <a href="?page={{ _app.page }}&action=restore&id={% verbatim %}{{ id }}{% endverbatim %}">
+                    {% verbatim %}{{ time }}{% endverbatim %}
+                </a>
+            </td>
+            <td>
+                {% verbatim %}{{ description }}{% endverbatim %}
+            </td>
+            <td>
+                {% verbatim %}{{ email_count }}{% endverbatim %}
+            </td>
+            <td>
+                {% verbatim %}{{ database_count }}{% endverbatim %}
+            </td>
+            <td>
+                {% verbatim %}{{ path_count }}{% endverbatim %}
+            </td>
+            <td>
+                <span class="has-ws-no-wrap">{% verbatim %}{{ size_restore }}{% endverbatim %}</span>
+            </td>
+        </tr>
+	</script>
+
+    <script src="/theme/bulma/assets/js/page_backup_restore.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            {{ forms.select_wrapped({
+                'label': repository,
+                'help': repository_restore_help,
+                'name': 'repo_id',
+                'options': _repos,
+                'selected': _repo_selected,
+                'is_required': true,
+            }) }}
+
+            <div class="has-margin-top-large"></div>
+
+            {{ forms.label_wrapped({
+                'label': snapshots,
+                'help': snapshots_help
+            }) }}
+
+            {# No items #}
+            <div id="app-no-items-available" style="display: none">
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            </div>
+
+            {# Item table #}
+            <div id="app-item-table" style="display: none">
+                {% include 'components/index_page_button_line.twig' with ({
+                    '_bulk_actions': {
+                        'delete': delete_snapshots
+                    },
+                    '_bulk_action_open_modal': {
+                        'delete': 'app-modal-delete-snapshots',
+                    },
+                    '_form_id': 'form-delete-snapshots'
+                }) %}
+
+                <form id="form-delete-snapshots" action="?page={{ _app.page }}&action=delete" method="post">
+                {{ csrf_field() }}
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+                                    
+                                    <th>{{ created_at }}</th>
+                                    <th>{{ description }}</th>
+                                    <th>{{ email_accounts }}</th>
+                                    <th>{{ databases }}</th>
+                                    <th>{{ paths }}</th>
+                                    <th>{{ size_after_restore }}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="app-snapshot-container">
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+            </div>
+
+            {% include 'components/call_to_action.twig' with { '_back': { 'target': 'backup' } } %}
+        {% endblock %}
+    {% endembed %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Reset single #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-snapshots',
+            '_title': delete_snapshots,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-delete-snapshots' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_delete_snapshots }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

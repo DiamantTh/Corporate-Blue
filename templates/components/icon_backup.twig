@@ -1,0 +1,31 @@
+{% apply spaceless %}
+
+    {% set icons = {
+        type_check:             { class: 'fa-solid fa-rotate',               color: 'has-text-grey-light' },
+        type_prune:             { class: 'fa-solid fa-trash',                color: 'has-text-grey-light' },
+        type_backup:            { class: 'fa-solid fa-box-archive',          color: 'has-text-info'       },
+        type_restore:           { class: 'fa-solid fa-clock-rotate-left',    color: 'has-text-success'    },
+        type_unlock:            { class: 'fa-solid fa-unlock',               color: 'has-text-grey-light' },
+        type_repair_index:      { class: 'fa-solid fa-hammer',               color: 'has-text-grey-light' },
+        type_delete_snapshots:  { class: 'fa-solid fa-trash',                color: 'has-text-grey-light' },
+
+        state_pending:          { class: 'fa-solid fa-clock',                color: 'has-text-grey-light' },
+        state_preparing:        { class: 'fa-solid fa-dolly',                color: 'has-text-info'       },
+        state_processing:       { class: 'fa-solid fa-wrench',               color: 'has-text-info'       },
+        state_finished:         { class: 'fa-solid fa-circle',               color: 'has-text-success'    },
+        state_finished_unclean: { class: 'fa-solid fa-triangle-exclamation', color: 'has-text-warning'    },
+        state_canceled:         { class: 'fa-solid fa-triangle-exclamation', color: 'has-text-danger'     },
+
+        size_increase:          { class: 'fa-solid fa-caret-up',             color: 'has-text-danger',    size: '' },
+        size_decrease:          { class: 'fa-solid fa-caret-down',           color: 'has-text-success',   size: '' },
+    } %}
+
+    {% set class = icons[_type].class|default('fa-solid fa-question') %}
+    {% set color = icons[_type].color|default('has-text-danger') %}
+    {% set size = icons[_type].size|default('is-medium') %}
+
+    <span class="icon {{ size }} {{ color }}">
+        <i class="{{ class }}"></i>
+    </span>
+
+{% endapply %}

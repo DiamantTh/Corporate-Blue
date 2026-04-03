@@ -1,0 +1,7 @@
+# Preview server artifacts
+.DS_Store
+*.swp
+*.swo
+# IDE
+.vscode/
+.idea/

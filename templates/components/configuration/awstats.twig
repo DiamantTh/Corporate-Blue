@@ -1,0 +1,28 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': awstats,
+    'help': awstats_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_enabled',
+        'value': '1',
+        'is_checked': _is_enabled
+    }
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': awstats_dns_lookup,
+    'help': awstats_dns_lookup_help,
+    'options': {
+        'label': enabled,
+        'name': 'dns_lookup',
+        'value': '1',
+        'is_checked': _dns_lookup
+    }
+}) }}
+
+<p class="has-text-centered has-text-grey">
+    {{ awstats_further_options|raw }}
+</p>

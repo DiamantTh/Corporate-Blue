@@ -1,0 +1,196 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{% if _system_uses_rspamd %}
+    {# We keep those old amavis/spamassassin values for now, we can use those later on #}
+    <input type="hidden" name="enable_catchall_protections" value="{{ _enable_catchall_protections }}">
+{% else %}
+    <hr class="has-margin-large">
+
+    <div class="has-text-centered">
+        {{ forms.label_wrapped({
+            'label': general_protection_settings,
+        }) }}
+    </div>
+
+   {{ forms.checkbox_wrapped({
+        'label': catchall_protections,
+        'help': catchall_protections_help,
+        'options': {
+            'label': enabled,
+            'name': 'enable_catchall_protections',
+            'value': '1',
+            'is_checked': _enable_catchall_protections
+        }
+    }) }}
+
+    <hr class="has-margin-large">
+{% endif %}
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': spam_training_settings,
+    }) }}
+</div>
+
+{% if _system_uses_rspamd %}
+    {{ forms.label_wrapped({
+        'help': spam_training_settings_help,
+    }) }}
+
+    {{ forms.label_wrapped({
+        'help': manual_spam_training
+    }) }}
+
+    {{ forms.label_wrapped({
+        'help': manual_ham_training
+    }) }}
+{% endif %}
+
+{{ forms.checkbox_wrapped({
+    'label': train_spam_filters,
+    'help': train_spam_filters_help,
+    'options': {
+        'label': enabled,
+        'name': 'enable_train_spam_filters',
+        'value': '1',
+        'is_checked': _enable_train_spam_filters
+    }
+}) }}
+
+{% if _system_uses_rspamd %}
+    {{ forms.input_wrapped({
+        'label': autolearn_spam,
+        'help': autolearn_spam_help ~ '<br>' ~ check_rspamd_web_ui,
+        'name': 'autolearn_spam_threshold',
+        'value': _autolearn_spam_threshold,
+        'type': 'number',
+        'min': 6,
+        'step': 0.01,
+        'checkbox': {
+            'position': 'left',
+            'label': enabled,
+            'name': 'enable_autolearn_spam',
+            'value': '1',
+            'is_checked': _enable_autolearn_spam,
+        }
+    }) }}
+
+    {{ forms.input_wrapped({
+        'label': autolearn_ham,
+        'help': autolearn_ham_help ~ '<br>' ~ check_rspamd_web_ui,
+        'name': 'autolearn_ham_threshold',
+        'value': _autolearn_ham_threshold,
+        'type': 'number',
+        'max': 0,
+        'step': 0.01,
+        'checkbox': {
+            'position': 'left',
+            'label': enabled,
+            'name': 'enable_autolearn_ham',
+            'value': '1',
+            'is_checked': _enable_autolearn_ham,
+        }
+    }) }}
+{% endif %}
+
+<hr class="has-margin-large">
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': other_spam_protection_settings,
+    }) }}
+</div>
+
+
+{% if _system_uses_rspamd %}
+    {{ forms.checkbox_wrapped({
+        'label': reject_spf_fail,
+        'help': reject_spf_fail_help,
+        'options': {
+            'label': enabled,
+            'name': 'reject_spf_fail',
+            'value': '1',
+            'is_checked': _reject_spf_fail
+        }
+    }) }}
+{% else %}
+    <input type="hidden" name="reject_spf_fail" value="{{ _reject_spf_fail ? 1 : 0 }}">
+{% endif %}
+
+{{ forms.label_wrapped({
+    'label': spam_protection_addresses,
+    'help': spam_protection_addresses_help,
+}) }}
+
+<div class="columns">
+    <div class="column">
+        {{ forms.textarea_wrapped({
+            'label': blacklist_addresses,
+            'name': 'blacklist_addresses',
+            'value': _blacklist_addresses,
+        }) }}
+
+        {% if _system_uses_rspamd %}
+            {{ forms.checkbox_wrapped({
+                'options': {
+                    'label': reject_blacklist_addresses,
+                    'help': reject_blacklist_addresses_help,
+                    'name': 'reject_blacklist_addresses',
+                    'value': '1',
+                    'is_checked': _reject_blacklist_addresses
+                }
+            }) }}
+        {% endif %}
+    </div>
+    <div class="column">
+        {{ forms.textarea_wrapped({
+            'label': whitelist_addresses,
+            'name': 'whitelist_addresses',
+            'value': _whitelist_addresses,
+        }) }}
+    </div>
+</div>
+
+{{ forms.label_wrapped({
+    'label': spam_protection_dns,
+    'help': spam_protection_dns_help,
+}) }}
+
+<div class="columns">
+    <div class="column">
+        {{ forms.textarea_wrapped({
+            'label': dns_blacklists,
+            'help': dns_blacklists_help,
+            'name': 'dns_blacklists',
+            'value': _dns_blacklists,
+        }) }}
+    </div>
+    <div class="column">
+        {{ forms.textarea_wrapped({
+            'label': dns_whitelists,
+            'help': dns_whitelists_help,
+            'name': 'dns_whitelists',
+            'value': _dns_whitelists,
+        }) }}
+    </div>
+</div>
+
+<hr class="has-margin-large">
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': virus_protection_settings,
+    }) }}
+</div>
+
+{{ forms.checkbox_wrapped({
+    'label': email_virus_checks,
+    'help': email_virus_checks_help,
+    'options': {
+        'label': enabled,
+        'name': 'enable_virus_checks',
+        'value': '1',
+        'is_checked': _enable_virus_checks
+    }
+}) }}

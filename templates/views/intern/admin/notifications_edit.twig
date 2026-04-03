@@ -1,0 +1,124 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_notifications.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {% if _action == 'add' %}
+
+                    {{ forms.select_wrapped({
+                        'label': event,
+                        'name': 'event_type',
+                        'options': _event_types,
+                        'selected': _event_type,
+                        'is_required': true,
+                    }) }}
+
+                    {{ forms.select_wrapped({
+                        'label': language,
+                        'name': 'language',
+                        'options': _languages,
+                        'selected': _language,
+                    }) }}
+
+                {% else %}
+
+                    <input type="hidden" name="event_type" value="{{ _event_type }}">
+                    <input type="hidden" name="language" value="{{ _language }}">
+
+                    {{ forms.label_wrapped({
+                        'label': event,
+                        'value': _event_label
+                    }) }}
+
+                    {{ forms.label_wrapped({
+                        'label': language,
+                        'value': _language_label
+                    }) }}
+
+                {% endif %}
+
+                <div class="has-margin-bottom-medium">
+                    {{ forms.button({
+                        'label': load_default_message,
+                        'type': 'button',
+                        'id': 'app-load-default-message',
+                        'style': 'primary',
+                    }) }}
+                </div>
+
+                {{ forms.label_wrapped({
+                    'label': placeholders,
+                    'help': placeholder_start,
+                }) }}
+
+                <table class="table is-narrow has-text-grey has-margin-left-large">
+                    <tbody>
+                        {% for key, item in _placeholders %}
+                            <tr {{ item.events ? 'style="display: none;" class="app-non-default-placeholder"' }} data-events="{{ item.events|join(',') }}" >
+                                <td><b>##{{ key }}##</b></td>
+                                <td>{{ item.text }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {{ forms.input_wrapped({
+                    'label': subject,
+                    'name': 'subject',
+                    'type': 'text',
+                    'value': _subject,
+                    'is_required': true,
+                }) }}
+
+                {{ forms.textarea_wrapped({
+                    'label': text,
+                    'name': 'body',
+                    'value': _body,
+                    'is_required': true,
+                    'rows': 15,
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'label': test_message,
+                    'help': test_message_help,
+                    'name': 'test_recipients',
+                    'type': 'email',
+                    'value': _test_recipients,
+                    'addons': {
+                        'right': {
+                            'type': 'action',
+                            'label': send_email,
+                            'action': 'app-send-test-email'
+                        }
+                    },
+                }) }}
+
+                <div id="app-send-test-error" style="display: none">
+                    <span class="has-text-danger has-text-weight-bold">
+                        {{ failed_to_send }}
+                    </span>
+                    <br>
+                    <span id="app-send-test-error-message"></span>
+                </div>
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

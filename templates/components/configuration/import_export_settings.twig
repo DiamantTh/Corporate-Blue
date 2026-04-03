@@ -1,0 +1,83 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+<p class="has-text-centered has-margin-bottom-xlarge">
+    {{ import_export_help|raw }}
+</p>
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': export_settings,
+    }) }}
+</div>
+
+{{ forms.label_wrapped({
+    'label': create_export_file,
+    'help': create_export_file_help,
+    'has_small_margin': true,
+}) }}
+
+{{ forms.button({
+    'label': download,
+    'style': 'primary',
+    'url': '?page=' ~ _app.page ~ '&configure=' ~ _configure ~ '&export=1'
+}) }}
+
+<hr class="has-margin-y-xlarge">
+
+<div class="has-text-centered">
+    {{ forms.label_wrapped({
+        'label': import_settings,
+    }) }}
+</div>
+
+{{ forms.upload_wrapped({
+    'label': upload_export_file,
+    'help': upload_export_file_help,
+    'name': 'export_file',
+    'button_label': choose_file,
+    'accept': '.json, application/json',
+    'is_required': true,
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': import_scope,
+    'help': import_scope_help ~ '<br>' ~ '<a href="javascript:void(0)" class="app-select-all">' ~ select_all ~ '</a>',
+    'options': [
+        {
+            'label': api_settings,
+            'help': api_settings_help,
+            'name': 'import[]',
+            'value': 'api',
+        },
+        {
+            'label': account_templates,
+            'name': 'import[]',
+            'value': 'account_templates',
+        },
+        {
+            'label': notification_settings,
+            'help': notification_settings_help,
+            'name': 'import[]',
+            'value': 'notification_settings',
+        },
+        {
+            'label': white_label_settings,
+            'name': 'import[]',
+            'value': 'white_label',
+        },
+        {
+            'label': domain_default_page,
+            'name': 'import[]',
+            'value': 'domain_default_page',
+        },
+    ]
+}) }}
+
+{{ forms.button({
+    'label': start_import_process,
+    'style': 'primary',
+    'class': 'app-button-with-loading-animation',
+}) }}
+
+<div class="has-margin-bottom-xlarge"></div>

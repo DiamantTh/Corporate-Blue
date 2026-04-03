@@ -1,0 +1,187 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    {% if _app.area == 'client' %}
+        {% set _usage = _usage|merge({'label': scheduled_tasks}) %}
+    {% else %}
+        {% set _usage = false %}
+    {% endif %}
+
+
+    {% include 'components/index_page_button_line.twig' with ({
+        '_usage': _usage,
+        '_buttons': [
+            forms.button({
+                'label': add_task,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_bulk_actions': {
+            'set_status_enabled': set_status_enabled,
+            'set_status_disabled': set_status_disabled,
+            'delete': delete_selection
+        },
+        '_form_id': 'form-scheduled-tasks-index'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _scheduled_tasks_items is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-scheduled-tasks-index" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('status') }} class="is-narrow">
+                                        S
+                                    </th>
+                                    <th {{ macros.header_sorting('sorting_command') }}>
+                                        {{ command }}
+                                    </th>
+                                    <th {{ macros.header_sorting('is_enabled') }}>
+                                        {{ is_enabled }}
+                                    </th>
+                                    <th {{ macros.header_sorting('sorting_schedule') }}>
+                                        {{ schedule }}
+                                    </th>
+                                    {% if _app.area == 'admin' %}
+                                        <th {{ macros.header_sorting('sorting_owner') }}>
+                                            {{ owner }}
+                                        </th>
+                                    {% endif %}
+                                    <th {{ macros.header_sorting('sorting_notification') }}>
+                                        {{ notification }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _scheduled_tasks_items %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td class="has-padding-x-xsmall">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': item.status,
+                                            } %}
+                                        </td>
+                                        <td>
+                                            {% if item.type == 'exec' %}
+                                                <span class="icon is-medium app-tooltip" data-tippy-content="{{ execute_command }}">
+                                                    <i class="fa-solid fa-tv"></i>
+                                                </span>
+                                            {% elseif item.type == 'http' %}
+                                                <span class="icon is-medium app-tooltip" data-tippy-content="{{ call_url }}">
+                                                    <i class="fa-solid fa-earth-americas"></i>
+                                                </span>
+                                            {% elseif item.type == 'php' %}
+                                                <span class="icon is-medium app-tooltip" data-tippy-content="{{ execute_php_script }}">
+                                                    <span class="has-text-weight-bold">php</span>
+                                                </span>
+
+                                                {{ macros.tag(item.php_version_label, item.is_default_php_version ? 'is-success' : 'is-info', '') }}
+                                            {% endif %}
+
+                                            {{ item.command }}
+
+                                            {% if item.description %}
+                                                <p class="has-text-grey has-margin-top-xsmall">
+                                                    {{ item.description }}
+                                                </p>
+                                            {% endif %}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ macros.status_icon(item.is_enabled, [enabled, disabled], true) }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.schedule }}
+                                        </td>
+                                        {% if _app.area == 'admin' %}
+                                            <td>
+                                                {% if item.is_root_context %}
+                                                    {{ item.owner }}
+                                                {% elseif item.owner %}
+                                                    {{ macros.link_to_switch_to_client(item.id_owner, item.owner, _app.page) }}
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                        <td>
+                                            {% if item.notification == 'never' %}
+                                                {{ never }}
+                                            {% elseif item.notification == 'error' %}
+                                                {{ on_errors }}
+                                            {% elseif item.notification == 'always' %}
+                                                {{ always }}
+                                            {% endif %}
+
+                                            {% if item.email %}
+                                                <br>
+                                                <span class="has-text-grey">
+                                                    {{ item.email }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'run',
+                                                '_url': '?page=' ~ _app.page ~ '&action=run&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _scheduled_tasks_items|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </form>
+
+            {% endif %}
+        </div>
+    </div>
+
+    {% if _app.area == 'admin' %}
+        {# Back #}
+        {% include 'components/call_to_action.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+    {% endif %}
+
+{% endblock %}

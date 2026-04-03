@@ -1,0 +1,489 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_profile.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/bulma/assets/js/webauthn.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'components/tabs.twig' with {
+        'items': [
+            {
+                'icon': 'fa-solid fa-gear',
+                'label': account_settings,
+                'url': '#tab-account',
+            },
+            {
+                'icon': 'fa-solid fa-address-card',
+                'label': contact_data,
+                'url': '#tab-contact',
+                'skip_if': not _is_client
+            },
+            {
+                'icon': 'fa-solid fa-shield-alt',
+                'label': two_factor_auth,
+                'url': '#tab-two-factor-auth',
+            },
+            {
+                'icon': 'fa-solid fa-fingerprint',
+                'label': web_auth,
+                'url': '#tab-web-auth',
+            },
+            {
+                'icon': 'fa-solid fa-key',
+                'label': ssh_keys,
+                'url': '#tab-ssh-keys',
+                'skip_if': not _show_ssh_keys
+            }
+        ]
+    } %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                <div class="tabs-content">
+
+                    <div id="tab-account" class="tabs-panel is-active">
+                        {{ forms.select_wrapped({
+                            'label': language,
+                            'name': 'interface_language',
+                            'options': _language_items,
+                            'selected': _language_items_selected,
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'label': email_address,
+                            'name': 'email',
+                            'type': 'email',
+                            'is_required': true,
+                            'value': _email
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'current_password',
+                            'type': 'password',
+                            'help': leave_empty,
+                            'label': current_password,
+                            'autocomplete': 'current-password',
+                            'addons': {
+                                'right': {
+                                    'type': 'action',
+                                    'label': show,
+                                    'action': 'app-show-password'
+                                }
+                            }
+                        }) }}
+
+                        {% include 'components/form_password.twig' with { '_leave_empty': true } %}
+
+                        {{ forms.checkbox_wrapped({
+                            'label': login_notification,
+                            'help': login_notification_help,
+                            'options': {
+                                'label': enabled,
+                                'name': 'is_login_notification',
+                                'value': '1',
+                                'is_checked': _is_login_notification
+                            }
+                        }) }}
+                    </div>
+
+                    <div id="tab-contact" class="tabs-panel">
+                        {{ forms.input_wrapped({
+                            'name': 'first_name',
+                            'type': 'text',
+                            'label': first_name,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _first_name
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'last_name',
+                            'type': 'text',
+                            'label': last_name,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _last_name
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'company',
+                            'type': 'text',
+                            'label': company,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _company
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'telephone',
+                            'type': 'tel',
+                            'label': telephone,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _telephone
+                        }) }}
+
+                        {{ forms.textarea_wrapped({
+                            'name': 'address',
+                            'label': address,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _address,
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'zip',
+                            'type': 'text',
+                            'label': zip,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _zip
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'city',
+                            'type': 'text',
+                            'label': city,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _city
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'state',
+                            'type': 'text',
+                            'label': state,
+                            'is_disabled': not _can_update_contact_data,
+                            'value': _state
+                        }) }}
+
+                        {{ forms.select_wrapped({
+                            'label': country,
+                            'name': 'country',
+                            'options': _countries,
+                            'selected': _countries_selected,
+                            'is_disabled': not _can_update_contact_data,
+                        }) }}
+
+                        {{ forms.input_wrapped({
+                            'name': 'client_id',
+                            'type': 'text',
+                            'label': client_id,
+                            'is_disabled': true,
+                            'value': _client_id
+                        }) }}
+                    </div>
+
+                    <div id="tab-two-factor-auth" class="tabs-panel">
+                        <input type="hidden" name="two_factor_is_loaded" value="{{ _two_factor_is_loaded }}">
+                        <input type="hidden" name="two_factor_secret" value="{{ _two_factor_secret }}">
+
+                        <p class="has-margin-bottom-medium">
+                            {{ two_factor_auth_help|raw }}
+                        </p>
+
+                        {{ forms.checkbox_wrapped({
+                            'label': two_factor_auth,
+                            'options': {
+                                'label': enabled,
+                                'name': 'two_factor_is_enabled',
+                                'value': '1',
+                                'is_checked': _two_factor_is_enabled
+                            }
+                        }) }}
+
+                        <div id="app-two-factor-method" style="display: none;">
+                            {{ forms.label_wrapped({
+                                'label': auth_method,
+                                'help': auth_method_help ~ '<br>' ~
+                                        '<b>' ~ attention ~ '!</b> ' ~ auth_method_backup,
+                            }) }}
+
+                            <div id="app-two-factor-new-app" class="has-text-centered" style="display: none;">
+                                {{ forms.button({
+                                    'label': setup_new_app,
+                                    'icon': 'fa-solid fa-mobile-screen-button',
+                                    'type': 'button',
+                                    'class': 'has-margin-bottom-medium'
+                                }) }}
+                            </div>
+                        </div>
+
+                        <div id="app-two-factor-app-setup" style="display: none;">
+                            {{ forms.label_wrapped({
+                                'label': setup_authentication_app,
+                                'help': setup_authentication_app_help
+                            }) }}
+
+                            <div class="columns has-text-centered has-margin-bottom-xsmall">
+                                <div class="column">
+                                    <p>{{ scan_qr_code }}</p>
+                                    <img class="has-margin-top-medium" src="{{ _two_factor_qr_code }}">
+                                </div>
+                                <div class="column">
+                                    <p>{{ enter_key }}</p>
+                                    <p class="has-margin-top-medium has-text-weight-bold">
+                                        {{ _two_factor_secret|chunk_split(4, ' ') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="app-two-factor-auth-code" style="display: none;">
+                            {{ forms.input_wrapped({
+                                'label': auth_code,
+                                'help': auth_code_help,
+                                'name': 'two_factor_auth_code',
+                                'type': 'text',
+                                'is_required_fake': true,
+                                'autocomplete': 'off',
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div id="tab-web-auth" class="tabs-panel">
+                        <p class="has-margin-bottom-medium">
+                            {{ web_auth_help|raw }}
+                        </p>
+
+                        <div class="has-text-centered has-margin-bottom-medium">
+                            {{ forms.button({
+                                'label': add_authenticator,
+                                'url': 'javascript:void(0)',
+                                'id': 'app-add-authenticator'
+                            }) }}
+                        </div>
+
+                        <div id="app-webauthn-error" class="has-text-centered has-margin-y-large" style="display: none">
+                            <span class="has-text-danger has-text-weight-bold">
+                                {{ an_error_occurred }}
+                            </span>
+                            <br>
+                            <span id="app-webauthn-error-message"></span>
+                        </div>
+
+                        {% if not _webauthn_authenticators is empty %}
+                            {% include 'components/table_scroll_container.twig' %}
+
+                            <div class="table-container">
+                                <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ name }}</th>
+                                            <th>{{ created_at }}</th>
+                                            <th class="is-narrow">{{ actions }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in _webauthn_authenticators %}
+                                        <tr>
+                                            <td style="display: none">
+                                                <input type="text" name="id" value="{{ item.id }}">
+                                                <input type="text" name="name" value="{{ item.name }}">
+                                            </td>
+                                            <td>
+                                                <b>{{ item.name }}</b>
+                                            </td>
+                                            <td class="has-ws-no-wrap">
+                                                {{ item.created_at }}
+                                            </td>
+                                            <td class="is-narrow">
+                                                <span class="app-update-webauthn-authenticator">
+                                                    {% include 'components/icon.twig' with {
+                                                        '_type': 'edit',
+                                                        '_url': 'javascript:void(0)'
+                                                    } %}
+                                                </span>
+                                                <span class="app-delete-webauthn-authenticator">
+                                                    {% include 'components/icon.twig' with {
+                                                        '_type': 'delete',
+                                                        '_url': 'javascript:void(0)',
+                                                    } %}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="42">
+                                                {{ _webauthn_authenticators|length|i18n_format }} {{ items_total }}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if _show_ssh_keys %}
+                        <div id="tab-ssh-keys" class="tabs-panel">
+
+                            <p class="has-margin-bottom-medium">
+                                {{ ssh_keys_help|raw }}
+                            </p>
+
+                            <div class="has-text-centered has-margin-bottom-medium">
+                                {{ forms.button({
+                                    'label': add_ssh_key,
+                                    'url': '?page=' ~ _app.page ~ '&action=add_ssh_key'
+                                }) }}
+                            </div>
+
+                            {% if not _ssh_keys is empty %}
+                                {% include 'components/table_scroll_container.twig' %}
+
+                                <div class="table-container">
+                                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ name }}</th>
+                                                <th>{{ fingerprint }}</th>
+                                                <th>{{ created_at }}</th>
+                                                <th class="is-narrow">{{ actions }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for item in _ssh_keys %}
+                                            <tr>
+                                                <td style="display: none">
+                                                    <input type="text" name="id" value="{{ item.id }}">
+                                                    <input type="text" name="name" value="{{ item.name ? item.name : '—' }}">
+                                                </td>
+                                                <td>
+                                                    <b>{{ item.name ? item.name : '—' }}</b>
+                                                </td>
+                                                <td>
+                                                    <ul class="horizontal-separated-list">
+                                                        {% for key, value in item.fingerprints %}
+                                                            <li>
+                                                                <a href="javascript:void(0)" class="app-tooltip-click" data-tippy-maxwidth="475" data-tippy-content='<span class="is-family-monospace">{{ value }}</span>'>
+                                                                    {{ key }}
+                                                                </a>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </td>
+                                                <td class="has-ws-no-wrap">
+                                                    {{ item.created_at }}
+                                                </td>
+                                                <td class="is-narrow">
+                                                    <span class="app-delete-ssh-key">
+                                                        {% include 'components/icon.twig' with {
+                                                            '_type': 'delete',
+                                                            '_url': 'javascript:void(0)'
+                                                        } %}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="42">
+                                                    {{ _ssh_keys|length|i18n_format }} {{ items_total }}
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                {% include 'components/call_to_action.twig' with { '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Delete SSH keys #}
+    {% if _show_ssh_keys %}
+        {% embed "components/modal/modal.twig" with {
+                '_id': 'app-modal-delete-ssh-key',
+                '_title': delete_ssh_key,
+                '_form': {
+                    'action': '?page=' ~ _app.page ~ '&action=delete_ssh_key',
+                    'hidden': { 'id': '' },
+                },
+                '_buttons': {
+                    'submit': { 'label': okay },
+                    'cancel': {},
+                } } %}
+            {% block body %}
+                <p class="has-text-centered">
+                    {{ delete_confirmation_single }}
+                </p>
+                <table class="table is-centered has-margin-top-medium">
+                    <tr>
+                        <th>{{ name }}</th>
+                        <td class="app-ssh-key-name"></td>
+                    </tr>
+                </table>
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+
+    {# Delete WebAuthn authenticator #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-delete-webauthn-authenticator',
+            '_title': delete_authenticator,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=delete_webauthn_authenticator',
+                'hidden': { 'id': '' },
+            },
+            '_buttons': {
+                'submit': { 'label': okay },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ delete_confirmation_single }}
+            </p>
+            <table class="table is-centered has-margin-top-medium">
+                <tr>
+                    <th>{{ name }}</th>
+                    <td class="app-webauthn-authenticator-name"></td>
+                </tr>
+            </table>
+        {% endblock %}
+    {% endembed %}
+
+
+    {# Update WebAuthn authenticator #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-update-webauthn-authenticator',
+            '_title': edit_authenticator,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=update_webauthn_authenticator',
+                'hidden': { 'id': '' },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            {{ forms.input_wrapped({
+                'label': name,
+                'name': 'name',
+                'type': 'text',
+                'is_required': true,
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}
+

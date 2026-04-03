@@ -1,0 +1,94 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+<script>
+    select2_prepareSelect('#input-id_owner', select2_formatUsers, '0');
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action={{ _action }}" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="id" value="{{ _id }}">
+                {{ csrf_field() }}
+
+                <div class="content">
+                    <p>
+                        {{ change_owner_intro }}
+                    </p>
+                    <p>
+                        <strong>{{ automatic_transferred }}</strong>
+                    </p>
+                    <ul>
+                        <li>
+                            <b>{{ domain_settings }}</b></br>
+                            {{ domain_settings_help|raw }}
+                        </li>
+                        <li>
+                            <b>{{ email_settings_and_emails }}</b></br>
+                            {{ email_settings_and_emails_help }}
+                        </li>
+                    </ul>
+                    <p>
+                        <strong>{{ manual_actions_required }}</strong><br>
+                        {{ manual_actions_required_help }}
+                    </p>
+                    <ul>
+                        <li>
+                            <b>{{ webspace_data }}</b></br>
+                            {{ webspace_data_help|raw }}
+                        </li>
+                        <li>
+                            <b>{{ databases }}</b></br>
+                            {{ manual_resource_transfer }}
+                        </li>
+                        <li>
+                            <b>{{ scheduled_tasks }}</b></br>
+                            {{ manual_resource_transfer }}
+                        </li>
+                        <li>
+                            <b>{{ ssl_certificates }}</b></br>
+                            {{ ssl_certificates_help|raw }}
+                        </li>
+                    </ul>
+                </div>
+
+                <hr class="has-margin-large">
+
+                {{ forms.label_wrapped({
+                    'label': domain,
+                    'value': _domain,
+                }) }}
+
+                {{ forms.label_wrapped({
+                    'label': domain_type,
+                    'value': _is_subdomain ? subdomain : main_domain,
+                }) }}
+
+                <article class="message is-warning">
+                    <div class="message-body">
+                        {{ _is_subdomain ? change_owner_note_subdomain : change_owner_note_main_domain }}
+                    </div>
+                </article>
+
+                {{ forms.select_wrapped({
+                    'label': owner,
+                    'name': 'id_owner',
+                    'options': _owner_ids,
+                    'selected': _owner_id_selected,
+                }) }}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page ~ '&action=edit&id=' ~ _id }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+    
+{% endblock %}

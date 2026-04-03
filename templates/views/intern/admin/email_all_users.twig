@@ -1,0 +1,110 @@
+{% extends 'layout/intern.twig' %}
+
+{% block page_css %}
+    {% include 'components/vendor/trumbowyg_css_files.twig' %}
+{% endblock %}
+
+{% block page_scripts %}
+    {% include 'components/vendor/trumbowyg_js_files.twig' %}
+    <script src="/theme/bulma/assets/js/page_email_all_users.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page=admin_email_all_users" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {{ forms.checkbox_wrapped({
+                    'label': recipients,
+                    'is_required_fake': true,
+                    'options': [
+                        {
+                            'label': administrator_accounts ~ ' (' ~ _admins_count ~ ')',
+                            'name': 'is_send_to_admins',
+                            'value': '1',
+                            'is_checked': _is_send_to_admins
+                        },
+                        {
+                            'label': client_accounts  ~ ' (' ~ _clients_count ~ ')',
+                            'name': 'is_send_to_users',
+                            'value': '1',
+                            'is_checked': _is_send_to_users
+                        },
+                    ]
+                }) }}
+
+                {% if _users_without_email %}
+                    <div class="has-margin-bottom-medium">
+                        <span class="icon is-medium has-text-danger">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </span>
+                        <strong>{{ accounts_without_email }}</strong>
+                        <p>
+                            {% for item in _users_without_email %}
+                                <a href="?page=admin_accounts_client&action=edit&id={{ item.id }}">{{ item.username }}</a>{{ not loop.last ? ',' }}
+                            {% endfor %}
+                        </p>
+                    </div>
+                {% endif %}
+
+                {{ forms.input_wrapped({
+                    'label': subject,
+                    'name': 'subject',
+                    'type': 'text',
+                    'is_required': true,
+                    'value': _subject
+                }) }}
+
+                {# When using WYSIWYG, we need 'is_required_fake' instead of 'is_required' #}
+                {{ forms.textarea_wrapped({
+                    'label': message,
+                    'name': 'body',
+                    'value': _body,
+                    'is_required_fake': true,
+                    'rows': 15,
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'label': test_message,
+                    'help': test_message_help,
+                    'name': 'test_recipients',
+                    'type': 'email',
+                    'value': _test_recipients,
+                    'addons': {
+                        'right': {
+                            'type': 'action',
+                            'label': send_email,
+                            'action': 'app-send-test-email'
+                        }
+                    },
+                }) }}
+
+                <div id="app-send-test-error" style="display: none">
+                    <span class="has-text-danger has-text-weight-bold">
+                        {{ failed_to_send }}
+                    </span>
+                    <br>
+                    <span id="app-send-test-error-message"></span>
+                </div>
+
+                <p class="has-text-grey has-text-centered has-margin-top-large">
+                    {{ sender_note|raw }}
+                </p>
+
+                <div class="has-text-centered has-margin-top-medium">
+                    <button class="button is-link">{{ send_email }}</a>
+                </div>
+            </form>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

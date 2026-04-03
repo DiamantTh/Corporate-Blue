@@ -1,0 +1,191 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_service_management.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+
+    {# Intro #}
+    <div class="has-margin-bottom-large">
+        {{ help|raw }}
+    </div>
+
+
+    {% for group in _services %}
+        <h2 class="title is-5 {{ group.description ? 'has-margin-bottom-small' }} {{ not loop.first ? 'has-margin-top-large' }}">
+            {{ group.label }}
+        </h2>
+
+        {% if group.description %}
+            <p class="has-margin-bottom-slarge">
+                {{ group.description|raw }}
+            </p>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-content">
+                {% if group.items is empty %}
+                    <div class="has-text-centered has-text-grey">
+                        - {{ no_items_available }} -
+                    </div>
+                {% else %}
+                    {% include 'components/table_scroll_container.twig' %}
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <th style="width: 15%">
+                                    {{ name }}
+                                </th>
+                                <th style="width: 30%">
+                                    {{ category }}
+                                </th>
+                                <th style="width: 20%">
+                                    {{ status }}
+                                </th>
+                                <th>
+                                    {{ details }}
+                                </th>
+                                <th class="is-narrow">
+                                    {{ actions }}
+                                </th>
+                            </thead>
+                            <tbody class="app-service-group">
+                                {% for id, item in group.items %}
+                                    <tr>
+                                        <td style="display: none">
+                                            <input type="text" name="service" value="{{ id }}">
+                                            <input type="text" name="restrict_stop" value="{{ item.restrict_stop ? '1' : '0' }}">
+                                            <input type="text" name="restrict_restart" value="{{ item.restrict_restart ? '1' : '0' }}">
+                                        </td>
+                                        <td class="has-text-weight-bold">
+                                            {{ item.name }}
+                                        </td>
+                                        <td>
+                                            {{ item.info }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            <div class="app-service-status-loading">
+                                                <span class="icon is-small has-text-grey-light has-margin-left-xsmall">
+                                                    <i class="fa-solid fa-rotate fa-spin"></i>
+                                                </span>
+                                            </div>
+                                            <div class="app-service-status-error" style="display:none">
+                                                AJAX_ERROR
+                                            </div>
+                                            <div class="app-service-status-active" style="display:none">
+                                                {{ macros.status_icon(true, active) }}
+                                            </div>
+                                            <div class="app-service-status-inactive" style="display:none">
+                                                {{ macros.status_icon(false, inactive, true) }}
+                                            </div>
+                                            <div class="app-service-status-unknown" style="display:none">
+                                                <span class="icon is-small has-margin-right-xsmall has-text-danger">
+                                                    <i class="fa-solid fa-question"></i>
+                                                </span>
+                                                {{ unknown }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="?page={{ _app.page }}&action=details&service={{ id }}" onClick="openPopup(this.href); return false">
+                                                {{ show }}
+                                            </a>
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            <div class="app-service-status-loading">
+                                                <span class="icon is-medium has-text-grey-light has-margin-left-xsmall">
+                                                    <i class="fa-solid fa-rotate fa-spin"></i>
+                                                </span>
+                                            </div>
+
+                                            {# Start #}
+                                            <span class="app-service-button-start-no-action" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'start_disabled',
+                                                    '_url': '',
+                                                    '_tooltip': no_action_available
+                                                } %}
+                                            </span>
+                                            <span class="app-service-button-start-enabled" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'start',
+                                                    '_url': '?page=' ~ _app.page ~ '&action=start&service=' ~ id,
+                                                    '_tooltip': start_service
+                                                } %}
+                                            </span>
+                                            <span class="app-service-button-start-disabled" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'start_disabled',
+                                                    '_url': '',
+                                                    '_tooltip': service_is_running
+                                                } %}
+                                            </span>
+
+                                            {# Stop #}
+                                            <span class="app-service-button-stop-no-action" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'stop_disabled',
+                                                    '_url': '',
+                                                    '_tooltip': no_action_available
+                                                } %}
+                                            </span>
+                                            <span class="app-service-button-stop-enabled" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'stop',
+                                                    '_url': '?page=' ~ _app.page ~ '&action=stop&service=' ~ id,
+                                                    '_tooltip': stop_service
+                                                } %}
+                                            </span>
+                                            <span class="app-service-button-stop-disabled" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'stop_disabled',
+                                                    '_url': '',
+                                                    '_tooltip': service_not_running
+                                                } %}
+                                            </span>
+
+                                            {# Restart #}
+                                            <span class="app-service-button-restart-no-action" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'restart_disabled',
+                                                    '_url': '',
+                                                    '_tooltip': no_action_available
+                                                } %}
+                                            </span>
+                                            <span class="app-service-button-restart-enabled" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'restart',
+                                                    '_url': '?page=' ~ _app.page ~ '&action=restart&service=' ~ id,
+                                                    '_tooltip': restart_service
+                                                } %}
+                                            </span>
+                                            <span class="app-service-button-restart-disabled" style="display: none">
+                                                {% include 'components/icon.twig' with {
+                                                    '_type': 'restart_disabled',
+                                                    '_url': '',
+                                                    '_tooltip': service_not_running
+                                                } %}
+                                            </span>
+
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ group.items|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

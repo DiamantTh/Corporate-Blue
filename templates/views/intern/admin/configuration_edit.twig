@@ -1,0 +1,96 @@
+{% extends 'layout/intern.twig' %}
+
+{% block page_css %}
+    {% if _configure == 'web_server' %}
+        {% include 'components/vendor/codemirror_css_files.twig' %}
+    {% endif %}
+
+    {% if _configure == 'user_interface_notifications' %}
+        {% include 'components/vendor/trumbowyg_css_files.twig' %}
+    {% endif %}
+{% endblock %}
+
+
+{% block page_scripts %}
+    {% if _configure == 'web_server' %}
+        {% include 'components/vendor/codemirror_js_files.twig' %}
+        <script>
+            var editor = initCodemirror($('textarea[name="global_directives"]')[0], '20.5em');
+        </script>
+    {% endif %}
+
+    {% if _configure == 'dns_server' %}
+        <script>
+            var nameServers = {{ _name_servers_json|raw }};
+        </script>
+    {% endif %}
+
+    {% if _configure == 'applications' %}
+        <script>
+            var reloadCache = {{ _applications is empty ? 'true' : 'false' }};
+        </script>
+        <script src="/theme/bulma/assets/js/page_applications.js?{{ _globals.cache_control }}"></script>
+    {% endif %}
+
+    {% if _configure == 'system_time' %}
+        <script>
+            select2_prepareSelect('#input-time_zone');
+        </script>
+    {% endif %}
+
+    {% if _configure == 'service_status' %}
+        <script>
+            var serviceConfig = {{ _service_config_json|raw }};
+        </script>
+    {% endif %}
+
+    {% if _configure == 'service_management' %}
+        <script>
+            var customServices = {{ _custom_services_json|raw }};
+        </script>
+    {% endif %}
+
+    {% if _configure == 'user_interface_notifications' %}
+        {% include 'components/vendor/trumbowyg_js_files.twig' %}
+        <script>
+            initTrumbowygEditor('textarea[name="message"]');
+        </script>
+    {% endif %}
+
+    <script src="/theme/bulma/assets/js/page_configuration.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    {% if _help %}
+        <p class="has-margin-bottom-large">
+            {{ _help|raw }}
+        </p>
+    {% endif %}
+
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&configure={{ _configure }}" {{ _has_uploads ? 'enctype="multipart/form-data"' : '' }} method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {% include 'components/configuration/' ~ _configure ~ '.twig' ignore missing %}
+
+                {% if _has_only_back_button %}
+                    {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page } } %}
+                {% else %}
+                    {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+                {% endif %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

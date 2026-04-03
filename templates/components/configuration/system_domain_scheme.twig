@@ -1,0 +1,10 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': system_domain_scheme,
+    'help': system_domain_scheme_help,
+    'name': 'system_domain_scheme',
+    'value': _system_domain_scheme,
+    'is_required': true,
+}) }}

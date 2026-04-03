@@ -1,0 +1,85 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.label_wrapped({
+    'label': theme,
+    'help': theme_help,
+}) }}
+
+{% for item in _themes %}
+    {{ forms.radio_wrapped({
+        'options': [
+            {
+                'label': '<b>' ~ item.name ~ '</b>',
+                'name': 'theme_id',
+                'value': item.id,
+                'is_checked': item.id == _theme_id,
+            },
+        ]
+    }) }}
+    <div class="columns">
+        <div class="column has-text-centered">
+            {% if item.screenshot %}
+                <img class="image has-frame" src="{{ item.screenshot }}">
+            {% else %}
+                <div>
+                <i class="fa-regular fa-image fa-4x has-text-grey-lighter"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="column">
+            {% if item.description %}
+                <div class="has-margin-bottom-small">
+                    <p class="has-text-weight-bold">{{ description }}</p>
+                    <p class="has-margin-left-medium">{{ item.description }}<p>
+                </div>
+            {% endif %}
+            {% if item.version %}
+                <div class="has-margin-bottom-small">
+                    <p class="has-text-weight-bold">{{ version }}</p>
+                    <p class="has-margin-left-medium">{{ item.version }}</p>
+                </div>
+            {% endif %}
+            {% if item.author %}
+                <div class="has-margin-bottom-small">
+                    <p class="has-text-weight-bold">{{ author }}</p>
+                    <p class="has-margin-left-medium">{{ item.author }}<p>
+                </div>
+            {% endif %}
+            {% if item.website %}
+                <div class="has-margin-bottom-small">
+                    <p class="has-text-weight-bold">{{ website }}</p>
+                    <p class="has-margin-left-medium"><a href="{{ item.website }}" target="_blank" rel="nofollow noopener noreferrer">{{ item.website }}</a></p>
+                </div>
+            {% endif %}
+
+            {% if item.has_dark_mode %}
+                <div class="has-margin-bottom-small">
+                    <p class="has-text-weight-bold">{{ default_design_mode }}</p>
+                    <div class="has-margin-left-medium has-margin-top-xsmall">
+                        {{ forms.radio_wrapped({
+                            'options': [
+                                {
+                                    'label': default,
+                                    'name': 'theme_mode[' ~ item.id ~ ']',
+                                    'value': 'default',
+                                    'is_checked': item.id != _theme_id or _theme_mode != 'dark',
+                                },
+                                {
+                                    'label': dark_mode,
+                                    'name': 'theme_mode[' ~ item.id ~ ']',
+                                    'value': 'dark',
+                                    'is_checked': item.id == _theme_id and _theme_mode == 'dark',
+                                }
+                            ]
+                        }) }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not loop.last %}
+        <hr class="has-margin-large">
+    {% endif %}
+{% endfor %}

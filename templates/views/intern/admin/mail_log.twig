@@ -1,0 +1,114 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script id="app-log-record-template" type="text/x-handlebars-template">
+		{% verbatim %}
+            <tr>
+                <td class="has-ws-no-wrap">
+                    {{date}}
+                </td>
+                <td class="has-text-weight-bold">
+                    {{service}}
+                </td>
+                <td>
+                    {{{message}}}
+                </td>
+            </tr>
+		{% endverbatim %}
+    </script>
+
+    <script src="/theme/bulma/assets/js/page_mail_log.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ mail_log_help|raw }}
+    </p>
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_search_options': _search_options,
+
+        '_additional_elements': [
+            forms.button({
+                'label': start_real_time_monitoring,
+                'icon': 'fa-solid fa-play',
+                'class': 'app-button-start-real-time app-show-on-realtime-disabled',
+                'type': 'button'
+            }),
+            forms.button({
+                'label': refresh,
+                'icon': 'fa-solid fa-rotate',
+                'class': 'app-button-refresh app-show-on-realtime-disabled',
+                'type': 'button'
+            }),
+            forms.button({
+                'label': stop_real_time_monitoring,
+                'icon': 'fa-solid fa-stop',
+                'class': 'app-button-stop-real-time app-show-on-realtime-enabled',
+                'type': 'button'
+            }),
+            forms.button({
+                'label': clear,
+                'icon': 'fa-solid fa-broom',
+                'class': 'app-button-clear app-show-on-realtime-enabled',
+                'type': 'button'
+            })
+        ],
+    }) %}
+
+
+    {# Log records table #}
+    <div class="card">
+        <div class="card-content">
+
+            {{ macros.loading_container() }}
+
+            <div id="app-log-empty" style="display: none">
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            </div>
+
+            <div id="app-log-content-container" style="display: none">
+                {% include 'components/table_scroll_container.twig' %}
+
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells is-narrow">
+                        <thead>
+                            <tr>
+                                <th style="width: 8%">
+                                    {{ date }}
+                                </th>
+                                <th style="width: 10%">
+                                    {{ service }}
+                                </th>
+                                <th>
+                                    {{ message }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="app-log-content">
+
+                            <!-- Content added by JavaScript -->
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="42"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

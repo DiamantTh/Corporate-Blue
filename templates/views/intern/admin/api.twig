@@ -1,0 +1,204 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {# Button line #}
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <strong>
+                    {{ api_access }}:
+                </strong>
+            </div>
+            <div class="level-item">
+                {{ forms.button({
+                    'label': _api_enabled ? enabled : disabled,
+                    'style': _api_enabled ? 'primary' : 'grey',
+                    'url': '?page=' ~ _app.page ~ '&action=toggle_api'
+                }) }}
+            </div>
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': options,
+                    'style': 'primary',
+                    'class': 'is-outlined',
+                    'modal': 'app-modal-api-options'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    {# Button line #}
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': add_api_key,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-api-keys'
+    }) %}
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _api_keys is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-api-keys" action="?page={{ _app.page }}" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                <tr>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('name') }}>
+                                        {{ name }}
+                                    </th>
+                                    <th {{ macros.header_sorting('prefix') }}>
+                                        {{ api_key_prefix }}
+                                    </th>
+                                    <th {{ macros.header_sorting('ips_sort') }}>
+                                        {{ ip_addresses }}
+                                    </th>
+                                    <th {{ macros.header_sorting('created_at_sort') }}>
+                                        {{ created_at }}
+                                    </th>
+                                    <th {{ macros.header_sorting('last_access_sort') }}>
+                                        {{ last_access }}
+                                    </th>
+                                    <th class="is-narrow">
+                                        {{ actions }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in _api_keys %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id) }}
+
+                                        <td>
+                                            {{ item.name|default('—') }}
+                                        </td>
+                                        <td>
+                                            {{ item.prefix }}
+                                        </td>
+                                        <td>
+                                            {% if item.ips is empty %}
+                                                <span class="has-text-danger has-text-weight-bold">{{ unprotected }}</span>
+                                            {% else %}
+                                                <ul>
+                                                    {% for ip in item.ips %}
+                                                        <li>{{ ip }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.created_at }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.last_access|default('—') }}
+                                        </td>
+                                        <td class="is-narrow">
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'edit',
+                                                '_url': '?page=' ~ _app.page ~ '&action=edit&id=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'delete',
+                                                '_url': '?page=' ~ _app.page ~ '&action=delete&id=' ~ item.id
+                                            } %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _api_keys|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                 </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'components/call_to_action.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-api-options',
+            '_title': options,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=options',
+                'hidden': { 'submit': true },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            {{ forms.checkbox_wrapped({
+                'label': ignore_limits,
+                'help': ignore_limits_help,
+                'options': [{
+                        'label': yes,
+                        'name': 'ignore_account_limits',
+                        'value': '1',
+                        'is_checked': _ignore_account_limits
+                }]
+            }) }}
+            {{ forms.checkbox_wrapped({
+                'label': apply_policy,
+                'help': apply_policy_help,
+                'options': [{
+                        'label': yes,
+                        'name': 'apply_password_policy',
+                        'value': '1',
+                        'is_checked': _apply_password_policy
+                }]
+            }) }}
+            {{ forms.checkbox_wrapped({
+                'label': use_password_hashes,
+                'help': use_password_hashes_help,
+                'options': [{
+                        'label': yes,
+                        'name': 'use_password_hashes',
+                        'value': '1',
+                        'is_checked': _use_password_hashes
+                }]
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

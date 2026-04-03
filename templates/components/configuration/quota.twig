@@ -1,0 +1,22 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': average_file_size,
+    'help': average_file_size_help,
+    'name': 'average_file_size',
+    'type': 'number',
+    'min': 0,
+    'is_required': true,
+    'value': _average_file_size,
+    'addons': {
+        'left': {
+            'type': 'select',
+            'select': {
+                'name': 'multiplier',
+                'options': _multiplier_options,
+                'selected': _multiplier_selected
+            }
+        }
+    }
+}) }}

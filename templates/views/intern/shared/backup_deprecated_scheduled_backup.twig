@@ -1,0 +1,180 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script>
+        var isEnablePassword = {{ _is_enable_password ? 'true' : 'false' }};
+    </script>
+    <script src="/theme/bulma/assets/js/page_backup_deprecated.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page=backup_deprecated&action=schedule_backup" method="post" autocomplete="off">
+                <input type="hidden" name="submit" value="1">
+                {{ csrf_field() }}
+
+                {{ forms.label_wrapped({
+                    'label': backup_scope,
+                    'help': _is_user_backup ? backup_scope_user : backup_scope_admin,
+                }) }}
+
+                {{ forms.checkbox_wrapped({
+                    'label': backup_task_enabled,
+                    'options': {
+                        'label': yes,
+                        'name': 'is_enabled',
+                        'value': '1',
+                        'is_checked': _is_enabled
+                    }
+                }) }}
+
+                {{ forms.label_wrapped({
+                    'label': backup_interval,
+                    'help': server_timezone,
+                    'is_required': true,
+                }) }}
+
+                {{ forms.select_wrapped({
+                    'help': select_interval,
+                    'name': 'period',
+                    'options': _periods,
+                    'selected': _periods_selected,
+                }) }}
+
+                <div id="app-weekdays">
+                    {{ forms.select_wrapped({
+                        'help': day_of_week,
+                        'name': 'day_of_week',
+                        'options': _days_of_week,
+                        'selected': _days_of_week_selected,
+                    }) }}
+                </div>
+
+                <div id="app-days-of-month">
+                    {{ forms.select_wrapped({
+                        'help': day_of_month ~ '<br>' ~ days_not_work_every_month,
+                        'name': 'day_of_month',
+                        'options': _days_of_month,
+                        'selected': _days_of_month_selected,
+                    }) }}
+                </div>
+
+                {{ forms.input_wrapped({
+                    'help': time_format,
+                    'name': 'backup_time',
+                    'type': 'time',
+                    'value': _time,
+                    'is_required': true,
+                }) }}
+
+                {{ forms.radio_wrapped({
+                    'label': repository,
+                    'help': repository_help,
+                    'is_required': true,
+                    'options': [
+                        {
+                            'label': local_repository,
+                            'help': not _has_local_repository ? local_not_available,
+                            'name': 'repository',
+                            'value': 'local',
+                            'is_disabled': not _has_local_repository,
+                            'is_checked': _repository == 'local'
+                        },
+                        {
+                            'label': remote_repository,
+                            'help': not _has_remote_repository ? remote_not_available,
+                            'name': 'repository',
+                            'value': 'remote',
+                            'is_disabled': not _has_remote_repository,
+                            'is_checked': _repository == 'remote'
+                        },
+                    ]
+                }) }}
+
+                {% if _is_user_backup and _is_local_repo_limited %}
+                    {% set _append = '
+                        <br>
+                        <span id="app-local-repo-limit" style="display: none">
+                            ' ~ local_repo_file_limit ~ '
+                        </span>'
+                    %}
+                {% else %}
+                    {% set _append = '' %}
+                {% endif %}
+
+                {{ forms.input_wrapped({
+                    'label': max_files_repo,
+                    'help': max_files_repo_help ~ _append,
+                    'name': 'rotation',
+                    'type': 'number',
+                    'min': 0,
+                    'value': _rotation,
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'label': notification,
+                    'help': notification_help,
+                    'name': 'notification',
+                    'type': 'email',
+                    'value': _notification,
+                }) }}
+
+                {{ forms.checkbox_wrapped({
+                    'help': notification_on_success,
+                    'options': {
+                        'label': yes,
+                        'name': 'notification_on_success',
+                        'value': '1',
+                        'is_checked': _notification_on_success
+                    }
+                }) }}
+
+                {{ forms.checkbox_wrapped({
+                    'label': enable_password,
+                    'help': enable_password_help,
+                    'options': {
+                        'label': yes,
+                        'name': 'is_enable_password',
+                        'value': '1',
+                        'is_checked': _is_enable_password
+                    }
+                }) }}
+
+                <div id="app-password-container" style="display: none">
+                    {% include 'components/form_password.twig' with { '_leave_empty': _is_enable_password } %}
+                </div>
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_reset': true, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-settings',
+            '_title': reset_settings,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=reset_scheduled_backup',
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            }
+    } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_reset_settings }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

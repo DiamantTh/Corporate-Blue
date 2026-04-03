@@ -1,0 +1,38 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.label_wrapped({
+    'label': name_server,
+    'help': name_server_help,
+}) }}
+
+<script id="app-name-server-template" type="text/x-handlebars-template">
+    <div class="app-name-server-item">
+        {{ forms.input_wrapped({
+            'omit_id': true,
+            'type': 'text',
+            'name': 'name_servers[]',
+            'addons': {
+                'right': {
+                    'button': {
+                        'label': remove,
+                        'style': 'secondary',
+                        'class': 'app-remove-name-server'
+                    }
+                }
+            },
+        }) }}
+    </div>
+</script>
+
+<div id="app-name-server-container"><!-- Filled by JS --></div>
+
+<div class="has-text-centered has-margin-top-large">
+    {{ forms.button({
+        'label': add_name_server,
+        'type': 'button',
+        'id': 'app-add-name-server'
+    }) }}
+</div>
+
+<div class="has-margin-top-large"></div>

@@ -1,0 +1,59 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page={{ _app.page }}&action=update" method="post">
+                {{ csrf_field() }}
+
+                {{ forms.select_wrapped({
+                    'label': repository,
+                    'help': repository_troubleshooting,
+                    'name': 'id_repo',
+                    'options': _repos,
+                    'is_required': true,
+                }) }}
+
+                {{ forms.checkbox_wrapped({
+                    'label': select_tasks,
+                    'help': select_tasks_help,
+                    'is_required_fake': true,
+                    'options': [
+                        {
+                            'label': delete_pending_operations,
+                            'help': delete_pending_operations_help,
+                            'name': 'is_delete_pending',
+                            'value': '1',
+                        },
+                        {
+                            'label': delete_canceled_operations,
+                            'help': delete_canceled_operations_help,
+                            'name': 'is_delete_canceled',
+                            'value': '1',
+                        },
+                        {
+                            'label': unlock_repository,
+                            'help': unlock_repository_help,
+                            'name': 'is_unlock_repo',
+                            'value': '1',
+                        },
+                        {
+                            'label': repair_index,
+                            'help': repair_index_help,
+                            'name': 'is_repair_index',
+                            'value': '1',
+                        },
+                    ]
+                }) }}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': 'backup' }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}   
+
+{% endblock %}

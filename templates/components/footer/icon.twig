@@ -1,0 +1,9 @@
+<p>
+    Made with
+    {% if _app.footer_icon == 'heart' or _app.footer_icon == 'star-wars' %}
+        <img class="svg-footer-icon" src="theme/bulma/assets/img/{{ _app.footer_icon }}.svg?{{ _globals.cache_control }}" alt="">
+    {% else %}
+        <i class="{{ _app.footer_icon }}" style="color: #a02833"></i>
+    {% endif %}
+    in Thuringia
+</p>

@@ -1,0 +1,23 @@
+{% include 'components/tabs.twig' with {
+    'items': [
+        {
+            'icon': 'fa-solid fa-user-tie',
+            'label': administrator_accounts,
+            'url': '?page=admin_accounts_admin',
+            'is_active': _app.page == 'admin_accounts_admin'
+        },
+        {
+            'icon': 'fa-solid fa-user',
+            'label': client_accounts,
+            'url': '?page=admin_accounts_client',
+            'is_active': _app.page == 'admin_accounts_client'
+        },
+        {
+            'icon': 'fa-solid fa-users',
+            'label': client_groups,
+            'url': '?page=admin_accounts_client_groups',
+            'is_active': _app.page == 'admin_accounts_client_groups',
+            'is_pro': true
+        }
+    ]
+} %}

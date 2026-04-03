@@ -1,0 +1,25 @@
+{% set has_is_active = items|filter(item => item.is_active)|length > 0 %}
+{% set filtered_items = items|filter(item => not item.skip_if) %}
+
+<div class="tabs is-centered {{ is_boxed is not same as (false) ? 'is-boxed' }}">
+    <ul>
+        {% for item in filtered_items %}
+            <li {{ item.is_active or (loop.first and not has_is_active) ? 'class="is-active"' }}>
+                <a href="{{ item.url }}" {{ item.url starts with '#' ? '' : 'data-is-link="true"' }}>
+                    {% if item.icon %}
+                        <span class="icon is-small">
+                            <i class="{{ item.icon }}" aria-hidden="true"></i>
+                        </span>
+                    {% endif %}
+                    <span>{{ item.label }}</span>
+
+                    {% if item.is_pro and not _app.is_pro %}
+                        <span class="has-margin-left-small">
+                            {% include 'components/tags/pro.twig' %}
+                        </span>
+                    {% endif %}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

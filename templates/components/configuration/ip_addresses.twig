@@ -1,0 +1,33 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.label_wrapped({
+    'label': active_ip_addresses,
+    'help': active_ip_addresses_help,
+}) }}
+
+{% set _categories = [{'label': 'IPv4', 'items': _ips['ipv4']}, {'label': 'IPv6', 'items': _ips['ipv6']}] %}
+
+{% for _category in _categories %}
+    {{ forms.label_wrapped({
+       'label': _category.label,
+       'help': select_ip_addresses,
+    }) }}
+
+    {% if _category.items is empty %}
+        <div class="has-text-grey has-margin-bottom-large">
+            - {{ no_items_available }} -
+        </div>
+    {% else %}
+        {% for _item in _category.items %}
+            {{ forms.checkbox({
+                'name': 'ips[]',
+                'label': _item.ip,
+                'value': _item.ip,
+                'is_checked': _item.selected
+            }) }}
+        {% endfor %}
+    {% endif %}
+{% endfor %}
+
+<div class="has-margin-top-large"></div>

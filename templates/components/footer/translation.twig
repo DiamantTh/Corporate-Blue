@@ -1,0 +1,29 @@
+{% set language = _app.translation.language %}
+{% set is_abandoned = _app.translation.is_abandoned %}
+{% set translators = _app.translation.translators %}
+
+{% if is_abandoned %}
+    <p style="font-size: 0.9rem">
+        The {{ language }} language pack needs a new translator.<br>
+        Interested in helping out? <a href="https://community.keyhelp.de/viewtopic.php?t=8468" rel="nofollow noopener noreferrer" target="_blank">Get in touch</a>!
+    </p>
+{% elseif translators %}
+    <p style="font-size: 0.9rem">
+        {{ language }} translation by
+        {% for translator in translators %}
+            {% if translator.url %}
+                <a href="{{ translator.url }}" rel="nofollow noopener noreferrer" target="_blank">
+            {% endif %}
+                {{ translator.name }}
+            {% if translator.url %}
+                </a>
+            {% endif %}
+
+            {% if loop.revindex > 2 %}
+                ,
+            {% elseif loop.revindex == 2 %}
+                and
+            {% endif %}
+        {% endfor %}
+    </p>
+{% endif %}

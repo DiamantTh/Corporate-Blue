@@ -1,0 +1,227 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_white_label.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': reset_all_settings,
+                'style': 'secondary',
+                'modal': 'app-modal-reset-all'
+            }),
+        ],
+        '_bulk_actions': {
+            'reset': reset_selection
+        },
+        '_bulk_action_open_modal': {
+            'reset': 'app-modal-reset-selection',
+        },
+        '_form_id': 'form-white-label-index'
+    }) %}
+
+
+    {# Item table #}
+    <div class="card">
+        <div class="card-content">
+            {% if _white_label_languages is empty %}
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            {% else %}
+                {% include 'components/table_scroll_container.twig' %}
+                <form id="form-white-label-index" action="?page={{ _app.page }}&action=reset" method="post">
+                    {{ csrf_field() }}
+
+                    <div class="table-container">
+                       <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                           <thead>
+                               <tr>
+                                   {{ macros.header_checkbox() }}
+
+                                   <th>
+                                      {{ language }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ page_title }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ favicon }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ logo_intern_short }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ logo_extern_short }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ logo_email_short }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      CSS
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      JS
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ footer }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ help_links }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                      {{ user_interface_short }}
+                                   </th>
+                                   <th class="is-narrow has-ws-no-wrap">
+                                       {{ actions }}
+                                   </th>
+                               </tr>
+                           </thead>
+                           <tbody>
+                               {% for item in _white_label_languages %}
+                                   <tr {{ item.is_all_languages ? 'class="is-selected"' }}>
+
+                                       {{ macros.row_checkbox(item.language_code) }}
+
+                                       <td>
+                                           {{ item.is_all_languages ? '<strong>' }}
+                                           {{ item.language }}
+                                           {{ item.is_all_languages ? '</strong>' }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_page_title) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_favicon) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_logo_intern) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_logo_extern) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_logo_email) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_css) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_js) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_footer) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_help_links) }}
+                                       </td>
+                                       <td>
+                                           {{ macros.setting_status_icon(item.has_user_interface_settings) }}
+                                       </td>
+                                       <td class="has-ws-no-wrap">
+                                           {% include 'components/icon.twig' with {
+                                               '_type': 'edit',
+                                               '_url': '?page=admin_white_label&action=edit&language=' ~ item.language_code
+                                           } %}
+                                           <span class="app-reset-selection" data-reset-language="{{ item.language_code }}">
+                                               {% include 'components/icon.twig' with {
+                                                   '_type': 'reset',
+                                                   '_url': 'javascript:void(0)'
+                                               } %}
+                                           </span>
+                                       </td>
+                                   </tr>
+                               {% endfor %}
+                           </tbody>
+                           <tfoot>
+                               <tr>
+                                   <td colspan="42">
+                                       {{ _white_label_languages|length|i18n_format }} {{ items_total }}
+                                   </td>
+                               </tr>
+                           </tfoot>
+                       </table>
+                    </div>
+                </form>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {# Back #}
+    {% include 'components/call_to_action.twig' with { '_back': { 'target': 'admin_configuration' } } %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Reset single #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-single',
+            '_title': reset_selection,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=reset',
+                'hidden': {
+                    'id': '___unset___',
+                },
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_reset_selection }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+    {# Reset selection #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-selection',
+            '_title': reset_selection,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-white-label-index' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_reset_selection }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+    {# Reset all #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-all',
+            '_title': reset_settings,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=reset_all',
+                'hidden': {
+                    'submit': true,
+                }
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_reset_settings }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

@@ -1,0 +1,17 @@
+<div class="cpu-load" data-load-level="{{ _load.level }}">
+
+
+    <span class="cpu-load-percent has-text-weight-bold app-cpu-load-percent">
+        {{ _load.percent|default(0)|i18n_format_percent }}
+    </span>
+
+    <span class="has-margin-left-small has-ws-no-wrap">
+    (
+        <ul class="horizontal-separated-list">
+            <li><span class="app-cpu-load-1">{{ _load.minute_1|default(0)|i18n_format(2) }}</span></li>
+            <li><span class="app-cpu-load-5">{{ _load.minute_5|default(0)|i18n_format(2) }}</span></li>
+            <li><span class="app-cpu-load-15">{{ _load.minute_15|default(0)|i18n_format(2) }}</span></li>
+        </ul>
+    )
+    </span>
+</div>

@@ -1,0 +1,408 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_database_status.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <div class="has-margin-bottom-large">
+        {{ database_status_help|raw }}
+    </div>
+
+    <div class="has-margin-bottom-large">
+        {{ forms.button({
+            'label': reset_status,
+            'style': 'secondary',
+            'modal': 'app-modal-reset-status'
+        }) }}
+    </div>
+
+
+    {# Tabs #}
+    {% include 'components/tabs.twig' with {
+        'items': [
+            {
+                'icon': 'fa-solid fa-gear',
+                'label': general,
+                'url': '#tab-general',
+            },
+            {
+                'icon': 'fa-solid fa-chart-simple',
+                'label': all_status_values,
+                'url': '#tab-all-status-values',
+            },
+            {
+                'icon': 'fa-solid fa-sliders',
+                'label': all_system_variables,
+                'url': '#tab-all-system-variables',
+            }
+        ]
+    } %}
+
+
+    {# Content #}
+    <div class="tabs-content">
+
+        <div id="tab-general" class="tabs-panel is-active">
+            <div class="columns is-multiline">
+
+                <div class="column is-full is-three-fifths-fullhd">
+                    {% embed "components/card.twig" with {
+                        'header': {
+                            'icon': 'fa-solid fa-chart-simple',
+                            'title': performance_metrics,
+                        },
+                    } %}
+                        {% block content %}
+                            {% import "macros/macros.twig" as macros %}
+                            {% import "macros/forms.twig" as forms %}
+
+                            <div class="has-margin-left-small has-margin-bottom-medium">
+                                <strong>{{ uptime }}:</strong> {{ _status.uptime|seconds_to_time }}
+                            </div>
+                            <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                                <colgroup>
+                                    <col>
+                                    <col style="width: 20%">
+                                    <col style="width: 20%">
+                                    <col style="width: 20%">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>{{ indicator }}</th>
+                                        <th>{{ state }}</th>
+                                        <th>{{ usage }}</th>
+                                        <th>{{ details }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for _metric in _status.metrics %}
+                                        <tr>
+                                            <td>{{ _metric.label }}</td>
+                                            <td>{{ macros.status_icon(_metric.is_fine, [okay, attention]) }}</td>
+                                            <td>{{ _metric.rate|i18n_format_percent }}</td>
+                                            <td>{{ _metric.details }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endblock %}
+                    {% endembed %}
+                </div>
+
+                <div class="column is-full is-two-fifths-fullhd">
+                    {% embed "components/card.twig" with {
+                        'header': {
+                            'icon': 'fa-solid fa-globe',
+                            'title': network_traffic,
+                        },
+                    } %}
+                        {% block content %}
+                            <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                                <colgroup>
+                                    <col>
+                                    <col style="width: 20%">
+                                    <col style="width: 20%">
+                                    <col style="width: 20%">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>{{ network_traffic }}</th>
+                                        <th>#</th>
+                                        <th>ø {{ day }}</th>
+                                        <th>ø {{ second }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ received }}</td>
+                                        <td>{{ _status.traffic.bytes_received.value|bytes }}</td>
+                                        <td>{{ _status.traffic.bytes_received.avg_day|bytes }}</td>
+                                        <td>{{ _status.traffic.bytes_received.avg_second|bytes }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ sent }}</td>
+                                        <td>{{ _status.traffic.bytes_sent.value|bytes }}</td>
+                                        <td>{{ _status.traffic.bytes_sent.avg_day|bytes }}</td>
+                                        <td>{{ _status.traffic.bytes_sent.avg_second|bytes }}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="is-summary">
+                                    <tr>
+                                        <th>{{ total }}</th>
+                                        <th>{{ _status.traffic.total.value|bytes }}</th>
+                                        <th>{{ _status.traffic.total.avg_day|bytes }}</th>
+                                        <th>{{ _status.traffic.total.avg_second|bytes }}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        {% endblock %}
+                    {% endembed %}
+
+                    {% embed "components/card.twig" with {
+                        'margin': 'large',
+                        'header': {
+                            'icon': 'fa-solid fa-diagram-project',
+                            'title': queries,
+                        },
+                    } %}
+                        {% block content %}
+                            <table class="table is-fullwidth is-striped is-hoverable is-narrow">
+                                <colgroup>
+                                    <col>
+                                    <col style="width: 20%">
+                                    <col style="width: 20%">
+                                    <col style="width: 20%">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>{{ queries }}</th>
+                                        <th>#</th>
+                                        <th>ø {{ day }}</th>
+                                        <th>ø {{ second }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ by_clients }}</td>
+                                        <td>{{ _status.queries.clients.value|i18n_format_large }}</td>
+                                        <td>{{ _status.queries.clients.avg_day|i18n_format_large }}</td>
+                                        <td>{{ _status.queries.clients.avg_second|i18n_format_large }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ by_system }}</td>
+                                        <td>{{ _status.queries.system.value|i18n_format_large }}</td>
+                                        <td>{{ _status.queries.system.avg_day|i18n_format_large }}</td>
+                                        <td>{{ _status.queries.system.avg_second|i18n_format_large }}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="is-summary">
+                                    <tr>
+                                        <th>{{ total }}</th>
+                                        <th>{{ _status.queries.total.value|i18n_format_large }}</td>
+                                        <th>{{ _status.queries.total.avg_day|i18n_format_large }}</th>
+                                        <th>{{ _status.queries.total.avg_second|i18n_format_large }}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        {% endblock %}
+                    {% endembed %}
+                </div>
+            </div>
+
+
+            {% embed "components/card.twig" with {
+                'margin': 'medium',
+                'header': {
+                    'icon': 'fa-solid fa-list',
+                    'title': process_list,
+                },
+            } %}
+                {% block content %}
+                    {% import "macros/macros.twig" as macros %}
+                    {% import "macros/forms.twig" as forms %}
+
+                    {% if _process_list is empty %}
+                        <div class="has-text-centered has-text-grey">
+                            - {{ no_items_available }} -
+                        </div>
+                    {% else %}
+                        {% include 'components/table_scroll_container.twig' %}
+                        <div class="table-container">
+                            <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                                <thead>
+                                    <tr>
+                                        <th {{ macros.header_sorting('id') }}>
+                                            {{ process_id }}
+                                        </th>
+                                        <th {{ macros.header_sorting('username') }}>
+                                            {{ username }}
+                                        </th>
+                                        <th {{ macros.header_sorting('host') }}>
+                                            {{ host }}
+                                        </th>
+                                        <th {{ macros.header_sorting('database') }}>
+                                            {{ database }}
+                                        </th>
+                                        <th {{ macros.header_sorting('command') }}>
+                                            {{ command }}
+                                        </th>
+                                        <th {{ macros.header_sorting('time') }}>
+                                            {{ run_time }}
+                                        </th>
+                                        <th {{ macros.header_sorting('state') }}>
+                                            {{ state }}
+                                        </th>
+                                        <th {{ macros.header_sorting('info') }}>
+                                            {{ info }}
+                                        </th>
+                                        <th {{ macros.header_sorting('progress') }}>
+                                            {{ progress }}
+                                        </th>
+                                        <th class="is-narrow">
+                                            {{ actions }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in _process_list %}
+                                        <tr>
+                                            <td style="display: none">
+                                                <input type="text" name="process_id" value="{{ item.id }}">
+                                                <input type="text" name="username" value="{{ item.username }}">
+                                                <input type="text" name="host" value="{{ item.host }}">
+                                                <input type="text" name="database" value="{{ item.database }}">
+                                            </td>
+                                            <td>{{ item.id }}</td>
+                                            <td>{{ item.username }}</td>
+                                            <td>{{ item.host }}</td>
+                                            <td>{{ item.database }}</td>
+                                            <td>{{ item.command }}</td>
+                                            <td>{{ item.time|seconds_to_time(false) }}</td>
+                                            <td>{{ item.state }}</td>
+                                            <td>{{ item.info }}</td>
+                                            <td>{{ item.progress|i18n_format_percent }}</td>
+                                            <td class="has-ws-no-wrap">
+                                                <span class="app-kill-process">
+                                                    {% include 'components/icon.twig' with {
+                                                        '_type': 'kill',
+                                                        '_label': kill_process,
+                                                        '_url': 'javascript:void(0)'
+                                                    } %}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="42">
+                                            {{ _process_list|length|i18n_format }} {{ items_total }}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    {% endif %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+
+
+        {% set _other_tabs = [{
+            'id'   : 'tab-all-status-values',
+            'items': _all_status_values,
+        },{
+            'id'   : 'tab-all-system-variables',
+            'items': _all_system_variables,
+        }] %}
+
+        {% for _tab in _other_tabs %}
+            <div id="{{ _tab.id }}" class="tabs-panel">
+                <div class="card">
+                    <div class="card-content">
+                        {% if _tab.items is empty %}
+                            <div class="has-text-centered has-text-grey">
+                                - {{ no_items_available }} -
+                            </div>
+                        {% else %}
+                            {% include 'components/table_scroll_container.twig' %}
+                            <div class="table-container">
+                                <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50%">{{ variable_name }}</th>
+                                            <th>{{ value }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for _key, _value in _tab.items %}
+                                            <tr>
+                                                <td>{{ _key }}</td>
+                                                <td style="word-break: break-all;">{{ _value }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="42">
+                                                {{ _tab.items|length|i18n_format }} {{ items_total }}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {# Kill process #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-kill-process-id',
+            '_title': kill_process,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=kill',
+                'hidden': { 'process_id': '' },
+            },
+            '_buttons': {
+                'submit': { 'label': okay },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ confirm_process_killing }}
+            </p>
+            <table class="table is-centered has-margin-top-medium">
+                <tr>
+                    <th>{{ process_id }}</th>
+                    <td class="app-kill-process-id"></td>
+                </tr>
+                <tr>
+                    <th>{{ username }}</th>
+                    <td class="app-kill-username"></td>
+                </tr>
+                <tr>
+                    <th>{{ host }}</th>
+                    <td class="app-kill-host"></td>
+                </tr>
+                <tr>
+                    <th>{{ database }}</th>
+                    <td class="app-kill-database"></td>
+                </tr>
+            </table>
+        {% endblock %}
+    {% endembed %}
+
+    {# Reset status #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-status',
+            '_title': reset_status,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=reset_status',
+            },
+            '_buttons': {
+                'submit': { 'label': okay },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ confirm_reset_status|raw }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_css %}
+{% include 'components/vendor/codemirror_css_files.twig' %}
+{% endblock %}
+
+
+{% block page_scripts %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% include 'components/vendor/codemirror_js_files.twig' with { '_modes': ['xml', 'htmlmixed', 'javascript', 'css'] } %}
+
+    <script id="app-button-template" type="text/x-handlebars-template">
+        <div class="columns has-margin-bottom-none">
+            <div class="column">
+                {{ forms.input_wrapped({
+                    'omit_id': true,
+                    'help': label,
+                    'name': 'label',
+                    'type': 'text',
+                }) }}
+            </div>
+            <div class="column has-mobile-top-padding-none">
+                {{ forms.input_wrapped({
+                    'omit_id': true,
+                    'help': 'URL',
+                    'name': 'url',
+                    'type': 'url',
+                    'value': 'https://'
+                }) }}
+            </div>
+            <div class="column is-narrow has-mobile-top-padding-none">
+                <div class="has-margin-top-large is-hidden-mobile"></div>
+                {{ forms.button({
+                    'label': remove,
+                    'style': 'secondary',
+                    'type': 'button',
+                    'class': 'app-remove-button'
+                }) }}
+            </div>
+        </div>
+    </script>
+
+    <script src="/theme/bulma/assets/js/page_white_label_edit.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {% embed "components/card.twig" with { 'content': { 'is_centered': true } } %}
+        {% block content %}
+            {% import "macros/macros.twig" as macros %}
+            {% import "macros/forms.twig" as forms %}
+
+            <form action="?page=admin_white_label&action=edit" enctype="multipart/form-data" method="post">
+                <input type="hidden" name="submit" value="1">
+                <input type="hidden" name="language" value="{{ _language }}">
+                {{ csrf_field() }}
+
+                {{ forms.label_wrapped({
+                    'label': language,
+                    'value': _language_long,
+                }) }}
+
+                {{ forms.input_wrapped({
+                    'label': page_title,
+                    'name': 'page_title',
+                    'type': 'text',
+                    'value': _page_title
+                }) }}
+
+                {% for itemGroup in _images %}
+                    {{ forms.label_wrapped({
+                        'label': itemGroup.label,
+                        'help': itemGroup.help
+                    }) }}
+
+                    <div class="columns">
+                        {% for item in itemGroup.modes %}
+                            {% set _label = '' %}
+                            {% if itemGroup.modes|length > 1 %}
+                                {% set _label = loop.index0 == 0 ? default_mode : dark_mode %}
+                            {% endif %}
+
+                            <div class="column">
+                                <div class="app-image-container">
+                                    <input class="app-has-image" name="has_{{ item.name }}" type="hidden" value="{{ item.image ? '1' : '0' }}">
+
+                                    {{ forms.upload_wrapped({
+                                        'help': _label,
+                                        'name': item.name,
+                                        'button_label': choose_file,
+                                        'accept': 'image/*'
+                                    }) }}
+
+                                    <div class="app-image-and-button" style="display: {{ item.image ? 'block' : 'none' }};">
+                                        {{ forms.button({
+                                            'label': remove_image,
+                                            'style': 'secondary',
+                                            'type': 'button',
+                                            'class': 'app-remove-image is-small',
+                                        }) }}
+
+                                        <div class="has-margin-y-medium has-text-centered">
+                                            <img class="app-image has-frame" src="{{ item.image }}" style="max-height: 5em;">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        {% endfor %}
+
+                        {% if itemGroup.modes|length == 1 %}
+                            <div class="column"></div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+
+                {# Footer #}
+                {{ forms.textarea_wrapped({
+                    'label': footer,
+                    'help': footer_help,
+                    'name': 'footer',
+                    'value': _footer,
+                    'is_auto_resize': false,
+                    'i18n': { 'search': search, 'replace': replace, 'full_screen': full_screen, 'exit_full_screen': exit_full_screen }
+                }) }}
+
+                <div class="has-margin-bottom-medium">
+                    {{ forms.button({
+                        'label': preview,
+                        'id': 'app-btn-preview-footer',
+                        'style': 'primary',
+                        'type': 'button',
+                    }) }}
+                </div>
+
+                {# CSS #}
+                {{ forms.textarea_wrapped({
+                    'label': additional_css,
+                    'help': css_help,
+                    'name': 'css',
+                    'value': _css,
+                    'is_auto_resize': false,
+                    'i18n': { 'search': search, 'replace': replace, 'full_screen': full_screen, 'exit_full_screen': exit_full_screen }
+                }) }}
+
+                <div class="has-margin-bottom-medium">
+                    {{ forms.button({
+                        'label': preview,
+                        'id': 'app-btn-preview-css',
+                        'style': 'primary',
+                        'type': 'button',
+                    }) }}
+                </div>
+
+                {# Javascript #}
+                {{ forms.textarea_wrapped({
+                    'label': additional_js,
+                    'help': js_help,
+                    'name': 'js',
+                    'value': _js,
+                    'is_auto_resize': false,
+                    'i18n': { 'search': search, 'replace': replace, 'full_screen': full_screen, 'exit_full_screen': exit_full_screen }
+                }) }}
+
+                <div class="has-margin-bottom-medium">
+                    {{ forms.button({
+                        'label': preview,
+                        'id': 'app-btn-preview-js',
+                        'style': 'primary',
+                        'type': 'button',
+                    }) }}
+                </div>
+
+                {# Trusted sources #}
+                {{ forms.textarea_wrapped({
+                    'label': trusted_sources,
+                    'help': trusted_sources_help,
+                    'name': 'trusted_sources',
+                    'value': _trusted_sources,
+                }) }}
+
+
+                {# User interface settings #}
+                {{ forms.checkbox_wrapped({
+                    'label': user_interface,
+                    'options': [
+                        {
+                            'label': use_control_panel,
+                            'name': 'is_control_panel',
+                            'value': '1',
+                            'is_checked': _is_control_panel
+                        },
+                        {
+                            'label': hide_keyweb_product_ads,
+                            'name': 'is_hide_keyweb_ads',
+                            'value': '1',
+                            'is_checked': _is_hide_keyweb_ads
+                        },
+                        {
+                            'label': hide_changelog,
+                            'name': 'is_hide_changelog',
+                            'value': '1',
+                            'is_checked': _is_hide_changelog
+                        },
+                        {
+                            'label': hide_news,
+                            'name': 'is_hide_news',
+                            'value': '1',
+                            'is_checked': _is_hide_news
+                        }
+                    ]
+                }) }}
+
+                {# Help / Links #}
+                <input type="hidden" name="help_links" value="{{ _help_links }}">
+
+                {% for area in ['admin', 'client'] %}
+                    <div class="app-help-links-area-container" data-area="{{ area }}">
+                        {{ forms.radio_wrapped({
+                            'label': help_links ~ ' (' ~ (area == 'admin' ? admin_area : client_area) ~ ')',
+                            'options': [
+                                {
+                                    'label': default,
+                                    'name': 'help_links_' ~ area,
+                                    'value': 'default'
+                                },
+                                {
+                                    'label': hide_menu,
+                                    'name': 'help_links_' ~ area,
+                                    'value': 'hide'
+                                },
+                                {
+                                    'label': custom_settings,
+                                    'name': 'help_links_' ~ area,
+                                    'value': 'custom'
+                                },
+                            ]
+                        }) }}
+                        <div class="app-with-custom" style="display: none;">
+                            <div class="app-link-container">
+                                <!-- Content added by JavaScript -->
+                            </div>
+
+                            <div class="has-text-centered has-margin-bottom-medium">
+                                {{ forms.button({
+                                    'label': add_link,
+                                    'type': 'button',
+                                    'class': 'app-add-link'
+                                }) }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% include 'components/call_to_action.twig' with { '_back': { 'target': _app.page }, '_confirm': true } %}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

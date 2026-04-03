@@ -1,0 +1,26 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': maintenance_mode,
+    'help': maintenance_mode_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_maintenance_mode_enabled',
+        'value': '1',
+        'is_checked': _is_maintenance_mode_enabled
+    }
+}) }}
+{{ forms.textarea_wrapped({
+    'label': maintenance_mode_excluded_ips,
+    'help': maintenance_mode_excluded_ips_help,
+    'name': 'maintenance_mode_excluded_ips',
+    'value': _maintenance_mode_excluded_ips,
+}) }}
+
+{{ forms.label_wrapped({
+    'label': important_note,
+    'help': maintenance_mode_note_help
+}) }}
+
+<code>keyhelp-toolbox</code>

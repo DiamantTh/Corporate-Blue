@@ -1,0 +1,42 @@
+{% extends 'layout/base.twig' %}
+
+
+{% block body_content %}
+<main>
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-6-tablet is-6-desktop is-4-widescreen is-4-fullhd">
+                        <div class="box">
+                            <figure class="has-margin-y-medium">
+                                {% if _white_label.logo_extern_url %}
+                                    <div class="has-text-centered">
+                                        <img src="{{ _white_label.logo_extern_url }}&{{ _globals.cache_control }}" style="max-height: 10rem" alt="logo">
+                                    </div>
+                                {% else %}
+                                    <img src="theme/bulma/assets/img/dark/keyhelp{{ _app.is_pro ? '-pro' }}.svg?{{ _globals.cache_control }}" alt="logo">
+                                {% endif %}
+                            </figure>
+
+                            {% include 'components/events.twig' %}
+
+                            <div class="has-margin-top-medium"></div>
+
+                            {% block content %}{% endblock %}
+                        </div>
+
+                        <div class="has-text-centered is-size-7 has-text-grey-lighter">
+                            {% if _white_label.footer %}
+                                {{ _white_label.footer|raw }}
+                            {% else %}
+                                {% include 'components/footer/copyright.twig' %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

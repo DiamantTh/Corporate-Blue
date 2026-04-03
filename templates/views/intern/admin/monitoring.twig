@@ -1,0 +1,131 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script>
+        var graphDataPoints = {{ _graph_data_points|raw }}
+    </script>
+    <script type="module" src="/theme/bulma/assets/vendor/chartjs/chartjs-adapter-date-fns.bundle.min.js?{{ _globals.cache_control }}"></script>
+    <script type="module" src="/theme/bulma/assets/js/page_monitoring.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help|raw }}
+    </p>
+
+
+    {# Options #}
+    <div class="level has-margin-bottom-medium">
+        <div class="level-left">
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                {{ forms.button({
+                    'label': options,
+                    'style': 'primary',
+                    'class': 'is-outlined',
+                    'modal': 'app-modal-options'
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    {# Viewing options #}
+    <form action="?page={{ _app.page }}&action=update_timeframe" method="post" autocomplete="off">
+        {{ csrf_field() }}
+
+        {% include 'components/viewing_options.twig' with ({
+            '_additional_elements': [
+                forms.select({
+                    'name': 'timeframe',
+                    'options': _timeframe_options,
+                    'selected': _timeframe_selected,
+                    'button': {
+                        'type': 'submit',
+                        'label': change_display_period,
+                        'class': 'app-button-with-loading-animation',
+                    }
+                })
+            ],
+        }) %}
+    </form>
+
+    {% if _graphs is empty %}
+        <div class="card">
+            <div class="card-content">
+                <div class="has-text-centered has-text-grey">
+                    - {{ no_items_available }} -
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% for category in _graphs %}
+
+            {% embed "components/card.twig" with {
+                'margin': 'large',
+                'collapse': {
+                    'is_enabled': true,
+                    'cookie_name': category.id,
+                },
+                'header': {
+                    'icon': category.icon,
+                    'title': category.label,
+                },
+            } %}
+                {% block content %}
+                    <div class="columns is-multiline is-variable is-8">
+                        {% for graph in category.graphs %}
+                            <div class="column is-half">
+                                <p class="has-margin-bottom-medium">
+                                    <strong>{{ graph.label }}</strong><br>
+                                    {{ graph.description }}
+                                </p>
+
+                                <div style="position: relative; height: 300px; width: 100%">
+                                    <canvas class="app-chart" data-chart-datasets="{{ graph.datasets }}" data-chart-y-axis="{{ graph.y_axis }}"></canvas>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endblock %}
+            {% endembed %}
+
+        {% endfor %}
+    {% endif %}
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-options',
+            '_title': options,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=update_options',
+                'hidden': { 'submit': true },
+            },
+            '_buttons': {
+                'submit': {},
+                'cancel': {},
+            } } %}
+        {% block body %}
+            {% import "macros/forms.twig" as forms %}
+
+            {{ forms.select_wrapped({
+                'label': update_interval,
+                'help': update_interval_help,
+                'name': 'update_interval',
+                'options': _update_interval_options,
+                'selected': _update_interval_selected,
+            }) }}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

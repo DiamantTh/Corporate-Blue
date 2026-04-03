@@ -1,0 +1,180 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+<p>
+    {{ license_help|raw }}
+</p>
+
+<div class="has-text-centered has-margin-y-xlarge">
+    {{ activated_product }}
+    <h1 class="is-4 title">
+        {{ _app.is_pro ? keyhelp_professional : keyhelp_standard }}
+    </h1>
+</div>
+
+{% if _has_license %}
+    {% embed "components/card.twig" with {
+        'is_card_on_card': true,
+        'header': {
+            'icon': 'fa-solid fa-medal',
+            'title': keyhelp_professional_license,
+        },
+    } %}
+        {% block header_buttons %}
+            <span data-open-modal="app-modal-license-key">
+                {% include 'components/icon.twig' with {
+                    '_type': 'edit',
+                    '_url': 'javascript:void(0)'
+                } %}
+            </span>
+
+            <span data-open-modal="app-modal-license-key-delete">
+                {% include 'components/icon.twig' with {
+                    '_type': 'delete',
+                    '_url': 'javascript:void(0)'
+                } %}
+            </span>
+        {% endblock %}
+
+        {% block content %}
+            <div class="table-container">
+                <table class="table is-fullwidth is-hoverable is-striped has-valigned-cells">
+                    <tr>
+                        <th>{{ license_key }}</th>
+                        <td>{{ _license_key }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ validity }}</th>
+                        <td class="has-text-weight-bold">
+                            {% if _is_valid_or_grace_period %}
+                                <span class="has-text-success">{{ valid }}</span>
+                                {% if _is_grace_period %}
+                                    {% include 'components/icon.twig' with {
+                                        '_type': 'attention',
+                                        '_tooltip': grace_period_help,
+                                        '_color': 'has-text-warning'
+                                    } %}
+                                {% endif %}
+                            {% else %}
+                                <span class="has-text-danger">{{ invalid }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ expire_date }}</th>
+                        <td>
+                            {% if _expire_date %}
+                                {{ _expire_date }}
+
+                                {% if _is_expired %}
+                                    {% include 'components/icon.twig' with {
+                                        '_type': 'attention',
+                                        '_tooltip': expired
+                                    } %}
+                                {% elseif _is_expiring_soon %}
+                                    {% include 'components/icon.twig' with {
+                                        '_type': 'attention',
+                                        '_tooltip': expires_soon,
+                                        '_color': 'has-text-warning'
+                                    } %}
+                                {% endif %}
+                            {% else %}
+                                &#x2014;
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ registered_device_data }}</th>
+                        <td>
+                            <div>
+                                {{ ip_address }}: {{ _device_ip_address }}
+                                {% if not _has_valid_ip_address %}
+                                    {% include 'components/icon.twig' with {
+                                        '_type': 'attention',
+                                        '_tooltip': not_match_server_data
+                                    } %}
+                                {% endif %}
+                            </div>
+                            <div>
+                                {{ mac_address }}: {{ _device_mac_address }}
+                                {% if not _has_valid_mac_address %}
+                                    {% include 'components/icon.twig' with {
+                                        '_type': 'attention',
+                                        '_tooltip': not_match_server_data
+                                    } %}
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ last_update }}</th>
+                        <td>
+                            {{ _last_update }}
+                            {% if not _has_valid_last_update %}
+                                {% include 'components/icon.twig' with {
+                                    '_type': 'attention',
+                                    '_tooltip': license_requires_update
+                                } %}
+                            {% elseif _is_last_update_expiring_soon %}
+                                {% include 'components/icon.twig' with {
+                                    '_type': 'attention',
+                                    '_tooltip': license_requires_update_warn,
+                                    '_color': 'has-text-warning'
+                                } %}
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        {% endblock %}
+    {% endembed %}
+
+{% elseif not _is_keyweb_server %}
+    <div class="has-text-centered has-margin-bottom-xlarge">
+        {{ forms.button({
+            'label': add_license_key,
+            'style': 'primary',
+            'type': 'button',
+            'modal': 'app-modal-license-key'
+        }) }}
+    </div>
+{% endif %}
+
+{###########################################################################################################
+    Modals
+###########################################################################################################}
+
+{% embed "components/modal/modal.twig" with {
+        '_id': 'app-modal-license-key',
+        '_title': _has_license ? edit_license_key : add_license_key,
+        '_buttons': {
+            'submit': {},
+            'cancel': {},
+        } } %}
+    {% block body %}
+        {% import "macros/forms.twig" as forms %}
+        {{ forms.input_wrapped({
+            'label': license_key,
+            'name': 'license_key',
+            'type': 'text',
+            'placeholder': 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX',
+            'value': _license_key,
+            'is_required': true,
+        }) }}
+    {% endblock %}
+{% endembed %}
+
+{% embed "components/modal/modal.twig" with {
+        '_id': 'app-modal-license-key-delete',
+        '_title': delete_license,
+        '_buttons': {
+            'submit': { 'label': yes, 'url': '?page=' ~ _app.page ~ '&configure=' ~ _configure ~ '&delete_license=1' },
+            'cancel': {},
+        } } %}
+    {% block body %}
+        <p class="has-text-centered">
+            {{ are_you_sure_delete_single }}
+        </p>
+    {% endblock %}
+{% endembed %}

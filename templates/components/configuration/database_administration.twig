@@ -1,0 +1,27 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': db_administration_is_enabled,
+    'options': {
+        'label': yes,
+        'name': 'is_enabled',
+        'value': '1',
+        'is_checked': _is_enabled
+    }
+}) }}
+
+{{ forms.select_wrapped({
+    'label': db_administration_client,
+    'name': 'db_administration_client',
+    'options': _db_administration_clients,
+    'selected': _db_administration_clients_selected,
+}) }}
+
+{{ forms.input_wrapped({
+    'label': custom_access_url,
+    'help': custom_access_url_help,
+    'name': 'custom_access_url',
+    'value': _custom_access_url,
+    'type': 'url',
+}) }}

@@ -1,0 +1,183 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block page_scripts %}
+    <script src="/theme/bulma/assets/js/page_domain.js?{{ _globals.cache_control }}"></script>
+{% endblock %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    {# Intro #}
+    <p class="has-margin-bottom-large">
+        {{ help }}
+    </p>
+
+    {# Button line #}
+    {% if _usage|length == 2 %}
+        {% set _usage = [ _usage[0]|merge({'label': domains}), _usage[1]|merge({'label': subdomains}) ] %}
+    {% elseif _usage|length == 1 %}
+        {% set _usage = [ _usage[0]|merge({'label': subdomains}) ] %}
+    {% else %}
+        {% set _usage = false %}
+    {% endif %}
+
+    {% include 'components/index_page_button_line.twig' with ({
+        '_usage': _usage,
+        '_buttons': [
+            forms.button({
+                'label': add_domain,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=' ~ (_app.area == 'admin' ? 'select_owner' : 'add')
+            })
+        ],
+        '_bulk_actions': {
+            'delete': delete_selection
+        },
+        '_form_id': 'form-domains'
+    }) %}
+
+    {# Viewing options #}
+    {% include 'components/viewing_options.twig' with ({
+        '_search_options': _search_options,
+
+        '_customize_view_elements': [
+            _app.area == 'admin' ? forms.checkbox_wrapped({
+                'label': group_by_clients,
+                'options': [{
+                    'label': yes,
+                    'name': 'group_by_clients',
+                    'value': '1',
+                    'is_checked': _group_by_clients
+                }]
+            }),
+            forms.checkbox_wrapped({
+                'label': show_columns,
+                'options': [
+                    {
+                        'label': system_domains,
+                        'name': 'show_system_domains',
+                        'value': '1',
+                        'is_checked': _show_system_domains
+                    },{
+                        'label': subdomains,
+                        'name': 'show_subdomains',
+                        'value': '1',
+                        'is_checked': _show_subdomains
+                    },{
+                        'label': domain_target,
+                        'name': 'show_domain_target',
+                        'value': '1',
+                        'is_checked': _show_domain_target
+                    },{
+                        'label': email_sending_receiving,
+                        'name': 'show_email_sending_receiving',
+                        'value': '1',
+                        'is_checked': _show_email_sending_receiving
+                    },{
+                        'label': traffic ~ ' / ' ~ month,
+                        'name': 'show_traffic',
+                        'value': '1',
+                        'is_checked': _show_traffic
+                    },{
+                        'label': security,
+                        'name': 'show_security',
+                        'value': '1',
+                        'is_checked': _show_security
+                    },{
+                        'label': php_version,
+                        'name': 'show_php_version',
+                        'value': '1',
+                        'is_checked': _show_php_version
+                    }
+                ]
+            })
+        ],
+    }) %}
+
+
+    {# Item table #}
+    {% if _domains is empty %}
+        <div class="card">
+            <div class="card-content">
+                    <div class="has-text-centered has-text-grey">
+                        - {{ no_items_available }} -
+                    </div>
+            </div>
+        </div>
+    {% else %}
+
+        <form id="form-domains" action="?page={{ _app.page }}" method="post">
+            {{ csrf_field() }}
+            {% if _app.area == 'admin' and _group_by_clients %}
+                {# Group domain by clients #}
+
+                {% for client in _clients %}
+
+                    {% embed "components/card.twig" with {
+                        'margin': 'large',
+                        'collapse': {
+                            'is_enabled': true,
+                            'cookie_name': client.username,
+                        },
+                        'header': {
+                            'icon': 'fa-solid fa-earth-americas',
+                            'title': client.username,
+                        },
+                    } %}
+                        {% block header_buttons %}
+                            {% if client.notes %}
+                                <div class="app-tooltip-mandatory" data-tippy-content="{{ client.notes|nl2br }}">
+                                    <span class="icon is-medium has-text-grey-light">
+                                        <i class="fa-solid fa-message"></i>
+                                    </span>
+                                </div>
+                            {% endif %}
+
+                            {% include 'components/icon.twig' with {
+                                '_type': 'user_edit',
+                                '_url': '?page=admin_accounts_client&action=edit&id=' ~ client.id
+                            } %}
+
+                            {% include 'components/icon.twig' with {
+                                '_type': 'login',
+                                '_url': '?page=intern&action=switch_to_client&id=' ~ client.id ~ '&return_to_page=' ~ _app.page
+                            } %}
+                        {% endblock %}
+
+                        {% block content %}
+                            {% include 'components/domain_list.twig' with {
+                                '_domains': client.domains,
+                                '_total_traffic': client.traffic
+                            } %}
+                        {% endblock %}
+                    {% endembed %}
+
+                {% endfor %}
+
+            {% else %}
+                {# Simple domain list #}
+
+                <div class="card">
+                    <div class="card-content">
+                        {% include 'components/domain_list.twig' with {
+                            '_domains': _domains,
+                            '_total_traffic': _total_traffic
+                        } %}
+                    </div>
+                </div>
+            {% endif %}
+        </form>
+
+    {% endif %}
+
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% include 'components/modal/dkim.twig' %}
+
+{% endblock %}

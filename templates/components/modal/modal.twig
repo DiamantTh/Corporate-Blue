@@ -1,0 +1,36 @@
+{% import "macros/forms.twig" as forms %}
+
+{% set button_defaults = {
+    'submit': { 'label': save, 'class': 'app-button-with-loading-animation', 'style': 'primary' },
+    'cancel': { 'label': cancel, 'class': 'app-modal-close', 'type': 'button' }
+} %}
+
+{% if _form %}
+<form action="{{ _form.action }}" method="post" {{ _form.is_upload ? 'enctype="multipart/form-data"' }}>
+    {% for key, value in _form.hidden %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+    {{ csrf_field() }}
+{% endif %}
+
+<div id="{{ _id|default('app-modal-id') }}" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{{ _title|default('Title') }}</p>
+            <button class="delete app-modal-close" type="button"></button>
+        </header>
+        <div class="modal-card-body">
+            {% block body %}{% endblock %}
+        </div>
+        <footer class="modal-card-foot">
+            {% for key, settings in _buttons %}
+                {{ forms.button(button_defaults[key]|default({})|merge(settings)) }}
+            {% endfor %}
+        </footer>
+    </div>
+</div>
+
+{% if _form %}
+</form>
+{% endif %}

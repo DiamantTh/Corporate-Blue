@@ -1,0 +1,33 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': ip_anonymization,
+    'help': ip_anonymization_help,
+    'options': [
+        {
+            'label': anonymize_all,
+            'help': anonymize_all_help,
+            'name': 'is_anonymize_all',
+            'value': '1',
+            'is_checked': _is_anonymize_all
+        },
+        {
+            'label': anonymize_panel,
+            'name': 'is_anonymize_panel',
+            'value': '1',
+            'is_checked': _is_anonymize_panel
+        }
+    ]
+}) }}
+
+{{ forms.checkbox_wrapped({
+    'label': anonymize_awstats,
+    'help': anonymize_awstats_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_anonymize_awstats',
+        'value': '1',
+        'is_checked': _is_anonymize_awstats
+    }
+}) }}

@@ -1,0 +1,71 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.radio_wrapped({
+    'label': configuration_type,
+    'options': [
+        {
+            'label': default_configuration,
+            'help': default_configuration_help,
+            'name': 'use_custom',
+            'value': '0',
+            'is_checked': not _use_custom,
+        },
+        {
+            'label': custom_configuration,
+            'name': 'use_custom',
+            'value': '1',
+            'is_checked': _use_custom,
+        },
+    ]
+}) }}
+
+{% for key in ['default', 'custom'] %}
+    <div class="app-show-with-{{ key }}" style="display:none">
+        {{ forms.radio_wrapped({
+            'label': minimal_tls_version,
+            'options': [
+                {
+                    'label': 'TLS 1.3',
+                    'help': tls_1_3_help,
+                    'name': key == 'default' ? 'unused' : 'min_protocol',
+                    'value': 'TLSv1.3',
+                    'is_checked': (key == 'default' ? _default_min_protocol : _min_protocol) == 'TLSv1.3',
+                    'is_disabled': key == 'default',
+                },
+                {
+                    'label': 'TLS 1.2',
+                    'help': tls_1_2_help,
+                    'name': key == 'default' ? 'unused' : 'min_protocol',
+                    'value': 'TLSv1.2',
+                    'is_checked': (key == 'default' ? _default_min_protocol : _min_protocol) == 'TLSv1.2',
+                    'is_disabled': key == 'default',
+                },
+                {
+                    'label': 'TLS 1.1',
+                    'help': tls_1_1_help,
+                    'name': key == 'default' ? 'unused' : 'min_protocol',
+                    'value': 'TLSv1.1',
+                    'is_checked': (key == 'default' ? _default_min_protocol : _min_protocol) == 'TLSv1.1',
+                    'is_disabled': key == 'default',
+                },
+                {
+                    'label': 'TLS 1',
+                    'help': tls_1_help,
+                    'name': key == 'default' ? 'unused' : 'min_protocol',
+                    'value': 'TLSv1',
+                    'is_checked': (key == 'default' ? _default_min_protocol : _min_protocol) == 'TLSv1',
+                    'is_disabled': key == 'default',
+                },
+            ]
+        }) }}
+
+        {{ forms.textarea_wrapped({
+            'label': tls_ciphers,
+            'name': key == 'default' ? 'unused' : 'ciphers',
+            'value': key == 'default' ? _default_ciphers : _ciphers,
+            'rows': 4,
+            'is_disabled': key == 'default',
+        }) }}
+    </div>
+{% endfor %}

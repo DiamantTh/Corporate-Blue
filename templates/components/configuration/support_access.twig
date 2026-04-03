@@ -1,0 +1,13 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.checkbox_wrapped({
+    'label': support_access,
+    'help': support_access_help,
+    'options': {
+        'label': enabled,
+        'name': 'is_support_access_enabled',
+        'value': '1',
+        'is_checked': _is_support_access_enabled
+    }
+}) }}

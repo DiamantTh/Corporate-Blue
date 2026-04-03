@@ -1,0 +1,40 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': cleanup_sessions,
+    'help': cleanup_empty,
+    'name': 'cleanup_sessions',
+    'value': _cleanup_sessions,
+    'type': 'number',
+    'min': 0,
+    'addons': {
+        'left': {
+            'type': 'select',
+            'select': {
+                'name': 'cleanup_sessions_multiplier',
+                'options': _interval_units,
+                'selected': _cleanup_sessions_multiplier
+            }
+        },
+    }
+}) }}
+
+{{ forms.input_wrapped({
+    'label': cleanup_files,
+    'help': cleanup_empty,
+    'name': 'cleanup_files',
+    'value': _cleanup_files,
+    'type': 'number',
+    'min': 0,
+    'addons': {
+        'left': {
+            'type': 'select',
+            'select': {
+                'name': 'cleanup_files_multiplier',
+                'options': _interval_units,
+                'selected': _cleanup_files_multiplier
+            }
+        },
+    }
+}) }}

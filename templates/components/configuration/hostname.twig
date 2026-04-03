@@ -1,0 +1,10 @@
+{% import "macros/macros.twig" as macros %}
+{% import "macros/forms.twig" as forms %}
+
+{{ forms.input_wrapped({
+    'label': hostname,
+    'help': hostname_help,
+    'name': 'hostname',
+    'value': _new_hostname ? _new_hostname : _hostname,
+    'is_required': true,
+}) }}

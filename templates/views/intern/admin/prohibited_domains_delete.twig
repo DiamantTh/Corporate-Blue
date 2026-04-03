@@ -1,0 +1,15 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_config': {
+            'name': {
+                'label': domain_name
+            },
+        },
+        '_items': _prohibited_domains
+    } %}
+{% endblock %}

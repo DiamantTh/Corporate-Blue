@@ -1,0 +1,107 @@
+{% apply spaceless %}
+    {#
+        Available variables:
+
+        _type           Determines appearance and color of the icon.
+        _tooltip        Adds a tooltip to the icon, (is omitted, if _label is present).
+        _label          Displays a label next to the icon.
+        _url            If present, adds a link tag with the specified URL.
+        _is_new_tab     If true, add target="_blank" to links.
+
+
+        Remarks:
+
+        The spacer is not aligned as other icons and therfore need more vertical space than an icon.
+        We need to add a style="vertical-align: bottom" to make it align with the other icons
+    #}
+
+    {% set icons = {
+        status_okay:       { class: 'fa-regular fa-circle-check',       color: 'has-text-success',    tooltip: icon_tooltip_status_okay },
+        status_error:      { class: 'fa-solid fa-triangle-exclamation', color: 'has-text-danger',     tooltip: icon_tooltip_status_error },
+        status_processing: { class: 'fa-solid fa-wrench',               color: 'has-text-info',       tooltip: icon_tooltip_status_processing },
+        status_delete:     { class: 'fa-solid fa-trash',                color: 'has-text-grey',       tooltip: icon_tooltip_status_deletion },
+        status_unknown:    { class: 'fa-solid fa-question',             color: 'has-text-grey',       tooltip: icon_tooltip_status_unknown },
+        status_active:     { class: 'fa-solid fa-play',                 color: 'has-text-success',    tooltip: active },
+        status_inactive:   { class: 'fa-solid fa-pause',                color: 'has-text-grey',       tooltip: inactive },
+        edit:              { class: 'fa-solid fa-pen',                  color: '',                    tooltip: icon_tooltip_edit },
+        delete:            { class: 'fa-solid fa-circle-minus',         color: 'has-text-danger',     tooltip: icon_tooltip_delete },
+        delete_contents:   { class: 'fa-solid fa-broom',                color: 'has-text-danger',     tooltip: icon_tooltip_delete_contents },
+        user_edit:         { class: 'fa-solid fa-user-pen',             color: '',                    tooltip: icon_tooltip_user_edit},
+        dns:               { class: 'fa-solid fa-earth-americas',       color: 'has-text-grey-light', tooltip: icon_tooltip_dns },
+        dns_active:        { class: 'fa-solid fa-earth-americas',       color: '',                    tooltip: icon_tooltip_dns_active },
+        dns_disabled:      { class: 'fa-solid fa-earth-americas',       color: 'has-text-grey-light', tooltip: icon_tooltip_dns_disabled,        stack_class: 'fa-solid fa-slash', stack_color: 'has-text-danger' },
+        login:             { class: 'fa-solid fa-right-to-bracket',     color: '',                    tooltip: icon_tooltip_login },
+        webmail:           { class: 'fa-solid fa-envelope',             color: '',                    tooltip: icon_tooltip_webmail,             is_new_tab: true },
+        database:          { class: 'fa-solid fa-database',             color: '',                    tooltip: icon_tooltip_db_administration,   is_new_tab: true },
+        start:             { class: 'fa-solid fa-play',                 color: '',                    tooltip: '' },
+        start_disabled:    { class: 'fa-solid fa-play',                 color: 'has-text-grey-light', tooltip: '' },
+        stop:              { class: 'fa-solid fa-stop',                 color: 'has-text-danger',     tooltip: '' },
+        stop_disabled:     { class: 'fa-solid fa-stop',                 color: 'has-text-grey-light', tooltip: '' },
+        restart:           { class: 'fa-solid fa-rotate',               color: '',                    tooltip: '' },
+        restart_disabled:  { class: 'fa-solid fa-rotate',               color: 'has-text-grey-light', tooltip: '' },
+        reset:             { class: 'fa-solid fa-rotate-left',          color: 'has-text-danger',     tooltip: icon_tooltip_reset },
+        attention:         { class: 'fa-solid fa-triangle-exclamation', color: 'has-text-danger',     tooltip: icon_tooltip_attention },
+        download:          { class: 'fa-solid fa-download',             color: '',                    tooltip: icon_tooltip_download },
+        file_permissions:  { class: 'fa-solid fa-key',                  color: '',                    tooltip: '' },
+        file_rename:       { class: 'fa-solid fa-file-signature',       color: '',                    tooltip: '' },
+        file_import:       { class: 'fa-solid fa-file-import',          color: '',                    tooltip: '' },
+        create_archive:    { class: 'fa-solid fa-box-archive',          color: '',                    tooltip: '' },
+        kill:              { class: 'fa-solid fa-skull-crossbones',     color: 'has-text-danger',     tooltip: '' },
+        configure:         { class: 'fa-solid fa-gear',                 color: '',                    tooltip: icon_tooltip_configure },
+        logs:              { class: 'fa-solid fa-table-list',           color: '',                    tooltip: icon_tooltip_logs },
+        extract:           { class: 'fa-solid fa-box-open',             color: '',                    tooltip: '' },
+        show:              { class: 'fa-solid fa-eye',                  color: '',                    tooltip: icon_tooltip_show },
+        run:               { class: 'fa-solid fa-play',                 color: '',                    tooltip: icon_tooltip_run_now },
+        restore:           { class: 'fa-solid fa-clock-rotate-left',    color: 'has-text-success',    tooltip: icon_tooltip_restore },
+        refresh:           { class: 'fa-solid fa-rotate',               color: '',                    tooltip: icon_tooltip_restore },
+        plus:              { class: 'fa-solid fa-square-plus',          color: '',                    tooltip: icon_tooltip_add },
+        file_manager:      { class: 'fa-solid fa-folder-open',          color: '',                    tooltip: icon_tooltip_file_manager },
+        info:              { class: 'fa-solid fa-circle-info',          color: 'has-text-grey-light', tooltip: '' },
+        header:            { class: 'fa-solid fa-window-maximize',      color: 'has-text-grey-light', tooltip: '' },
+        globe:             { class: 'fa-solid fa-globe',                color: 'has-text-grey-light', tooltip: '' },
+        clock:             { class: 'fa-solid fa-clock',                color: 'has-text-grey-light', tooltip: '' },
+        user_config:       { class: 'fa-solid fa-user-gear',            color: 'has-text-grey-light', tooltip: '' },
+        spacer:            {  },
+    } %}
+
+    {% set class        = icons[_type].class %}
+    {% set color        = _color|default(icons[_type].color) %}
+    {% set tooltip      = _tooltip|default(icons[_type].tooltip) %}
+    {% set has_tooltip  = _tooltip or (not _label and tooltip) %}
+    {% set is_new_tab   = _is_new_tab or icons[_type].is_new_tab %}
+    {% set is_stacked   = icons[_type].stack_class ? true : false %}
+    {% set stack_class  = icons[_type].stack_class %}
+    {% set stack_color  = icons[_type].stack_color %}
+    {% set aria_label   = _label ? _label : (tooltip ? tooltip : _type) %}
+
+    {% if _url %}
+        <a class="{{ color }}"
+           href="{{ _url }}"
+           {% if is_new_tab %}target="_blank" rel="nofollow noopener noreferrer"{% endif %}
+           aria-label="{{ aria_label|escape('html') }}">
+    {% endif %}
+
+    {% if has_tooltip %}
+        <span class="app-tooltip"
+              data-tippy-content="{{ tooltip|escape('html') }}"
+              {% if not _url %}aria-label="{{ aria_label|escape('html') }}"{% endif %}>
+    {% endif %}
+
+        <span class="icon is-medium {{ is_stacked ? 'fa-stack' }} {{ not _url ? color }}" {% if _type == 'spacer' %}style="vertical-align: bottom"{% endif %}>
+            {% if is_stacked %}
+                <i class="{{ class }} fa-stack-1x"></i>
+                <i class="{{ stack_class }} {{ stack_color }} fa-stack-1x"></i>
+            {% else %}
+                <i class="{{ class }}"></i>
+            {% endif %}
+        </span>
+        {{ _label ? _label }}
+
+    {% if has_tooltip %}
+        </span>
+    {% endif %}
+
+    {% if _url %}
+        </a>
+    {% endif %}
+{% endapply %}

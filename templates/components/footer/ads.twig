@@ -1,0 +1,17 @@
+{% set links = [
+    { 'href': 'https://www.keyweb.de/de/hosting/webhosting',            'label': 'Webhosting' },
+    { 'href': 'https://www.keyweb.de/de/hosting/cms-hosting',           'label': 'CMS Hosting' },
+    { 'href': 'https://www.keyweb.de/de/hosting/shop-hosting',          'label': 'Shop Hosting' },
+    { 'href': 'https://www.keyweb.de/de/server/root-virtual-server',    'label': 'Root vServer' },
+    { 'href': 'https://www.keyweb.de/de/server/vps',                    'label': 'VPS Server' },
+    { 'href': 'https://www.keyweb.de/de/server/dedicated-root-server/', 'label': 'Dedicated Root Server' },
+    { 'href': 'https://www.keyweb.de/de/cloud/',                        'label': 'Cloud' },
+    { 'href': 'https://www.keyweb.de/de/cloud/keydisc',                 'label': 'Backup' }
+] %}
+
+<p style="font-size: 0.9rem">
+    {% for link in links %}
+        <a href="{{ link.href }}" rel="nofollow noopener noreferrer" target="_blank">{{ link.label }}</a>
+        {% if not loop.last %} | {% endif %}
+    {% endfor %}
+</p>

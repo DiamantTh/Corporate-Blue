@@ -1,0 +1,393 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% import "macros/macros.twig" as macros %}
+    {% import "macros/forms.twig" as forms %}
+
+    <form id="form-stop-sessions" action="?page=admin_active_sessions" method="post">
+        {{ csrf_field() }}
+
+{#######################################################################################################################
+    Panel sessions
+#######################################################################################################################}
+
+        <h2 class="title is-5 has-margin-bottom-small">
+            {{ control_panel_sessions }}
+        </h2>
+
+        <p class="has-margin-bottom-medium">
+            {{ session_idle_time }}: {{ _panel_session_idle_time }}
+        </p>
+
+        {% include 'components/index_page_button_line.twig' with ({
+            '_bulk_actions': {
+                'stop_sessions': stop_sessions,
+            },
+            '_bulk_action_open_modal': {
+                'stop_sessions': 'app-modal-stop-sessions'
+            },
+            '_form_id': 'form-stop-sessions',
+        }) %}
+
+        <div class="card">
+            <div class="card-content">
+                {% if _panel_sessions is empty %}
+                    <div class="has-text-centered has-text-grey">
+                        - {{ no_items_available }} -
+                    </div>
+                {% else %}
+                    {% include 'components/table_scroll_container.twig' %}
+                        <div class="table-container">
+                            <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                                <thead>
+                                    {{ macros.header_checkbox() }}
+
+                                    <th {{ macros.header_sorting('username', 'panel') }}>
+                                        {{ username }}
+                                    </th>
+                                    <th {{ macros.header_sorting('role', 'panel') }}>
+                                        {{ user_role }}
+                                    </th>
+                                    <th {{ macros.header_sorting('ip_address', 'panel') }}>
+                                        {{ ip_address }}
+                                    </th>
+                                    <th {{ macros.header_sorting('login_timestamp', 'panel') }}>
+                                        {{ login_time }}
+                                    </th>
+                                    <th {{ macros.header_sorting('idle_time', 'panel') }}>
+                                        {{ idle_time }}
+                                    </th>
+                                </thead>
+                                <tbody>
+                                    {% for item in _panel_sessions %}
+                                        <tr>
+                                            {{ item.id ? macros.row_checkbox(item.id, 'keyhelp_session_ids') : '<td></td>' }}
+
+                                            <td>
+                                                {% if item.original_username %}
+                                                    <span class="has-text-grey-light">{{ item.original_username }}</span>
+                                                    <small>
+                                                        <span class="icon is-small has-text-grey-light">
+                                                            <i class="fa-solid fa-angle-right"></i>
+                                                        </span>
+                                                    </small>
+                                                {% endif %}
+                                                {{ item.username }}
+                                            </td>
+                                            <td>
+                                                {{ item.role }}
+                                            </td>
+                                            <td>
+                                                {{ macros.link_to_whois(item.ip_address) }}
+                                            </td>
+                                            <td class="has-ws-no-wrap">
+                                                {{ item.login_time }}
+                                            </td>
+                                            <td>
+                                                {{ item.idle_time }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="42">
+                                            {{ _panel_sessions|length|i18n_format }} {{ items_total }}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                {% endif %}
+            </div>
+        </div>
+
+{#######################################################################################################################
+    System sessions
+#######################################################################################################################}
+
+        <div class="has-margin-top-large"></div>
+
+        <h2 class="title is-5 has-margin-bottom-medium">
+            {{ system_user_sessions }}
+        </h2>
+
+        <div class="card">
+            <div class="card-content">
+                {% if _system_user_sessions is empty %}
+                    <div class="has-text-centered has-text-grey">
+                        - {{ no_items_available }} -
+                    </div>
+                {% else %}
+                    {% include 'components/table_scroll_container.twig' %}
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                {{ macros.header_checkbox() }}
+
+                                <th {{ macros.header_sorting('username', 'system') }}>
+                                    {{ username }}
+                                </th>
+                                <th {{ macros.header_sorting('session_type', 'system') }}>
+                                    {{ session_type }}
+                                </th>
+                                <th {{ macros.header_sorting('ip_address', 'system') }}>
+                                    {{ ip_address }}
+                                </th>
+                                <th {{ macros.header_sorting('login_timestamp', 'system') }}>
+                                    {{ login_time }}
+                                </th>
+                                <th {{ macros.header_sorting('idle_time', 'system') }}>
+                                    {{ idle_time }}
+                                </th>
+                                <th {{ macros.header_sorting('jcpu_timestamp', 'system') }}>
+                                    JCPU
+                                </th>
+                                <th {{ macros.header_sorting('pcpu_timestamp', 'system') }}>
+                                    PCPU
+                                </th>
+                                <th {{ macros.header_sorting('current_process', 'system') }}>
+                                    {{ current_process }}
+                                </th>
+                            </thead>
+                            <tbody>
+                                {% for item in _system_user_sessions %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id, 'system_session_ids') }}
+
+                                        <td>
+                                            {{ item.username }}
+                                        </td>
+                                        <td>
+                                            {{ item.session_type }}
+                                        </td>
+                                        <td>
+                                            {{ macros.link_to_whois(item.ip_address) }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.login_time }}
+                                        </td>
+                                        <td>
+                                            {{ item.idle_time }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.jcpu_time }}
+                                        </td>
+                                        <td class="has-ws-no-wrap">
+                                            {{ item.pcpu_time }}
+                                        </td>
+                                        <td>
+                                            {{ item.current_process }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _system_user_sessions|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+{#######################################################################################################################
+    Email server sessions
+#######################################################################################################################}
+
+        <div class="has-margin-top-large"></div>
+
+        <h2 class="title is-5 has-margin-bottom-medium">
+            {{ email_server_sessions }}
+        </h2>
+
+        <div class="card">
+            <div class="card-content">
+                {% if _dovecot_sessions is empty %}
+                    <div class="has-text-centered has-text-grey">
+                        - {{ no_items_available }} -
+                    </div>
+                {% else %}
+                    {% include 'components/table_scroll_container.twig' %}
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                {{ macros.header_checkbox() }}
+
+                                <th {{ macros.header_sorting('username', 'dovecot') }}>
+                                    {{ username }}
+                                </th>
+                                <th {{ macros.header_sorting('protocol', 'dovecot') }}>
+                                    {{ protocol }}
+                                </th>
+                                <th {{ macros.header_sorting('connection_count', 'dovecot') }}>
+                                    {{ connection_count }}
+                                </th>
+                                <th {{ macros.header_sorting('ip_addresses', 'dovecot') }}>
+                                    {{ ip_address }}
+                                </th>
+                            </thead>
+                            <tbody>
+                                {% for item in _dovecot_sessions %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id, 'dovecot_session_ids') }}
+
+                                        <td>
+                                            {{ item.username }}
+                                        </td>
+                                        <td>
+                                            {{ item.protocol }}
+                                        </td>
+                                        <td>
+                                            {{ item.connection_count }}
+                                        </td>
+                                        <td>
+                                            {% for ip in item.ip_addresses %}
+                                                {{ macros.link_to_whois(ip) }}{{ not loop.last ? ', ' }}
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _dovecot_sessions|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+{#######################################################################################################################
+    FTP sessions
+#######################################################################################################################}
+
+        <div class="has-margin-top-large"></div>
+
+        <h2 class="title is-5 has-margin-bottom-small">
+            {{ ftp_sessions }}
+        </h2>
+
+        <p class="has-margin-bottom-medium">
+            {{ ftp_server_uptime }}: {{ _ftp_server_uptime }}
+        </p>
+
+        <div class="card">
+            <div class="card-content">
+                {% if _ftp_sessions is empty %}
+                    <div class="has-text-centered has-text-grey">
+                        - {{ no_items_available }} -
+                    </div>
+                {% else %}
+                    {% include 'components/table_scroll_container.twig' %}
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                            <thead>
+                                {{ macros.header_checkbox() }}
+
+                                <th {{ macros.header_sorting('username', 'ftp') }}>
+                                    {{ username }}
+                                </th>
+                                <th {{ macros.header_sorting('protocol', 'ftp') }}>
+                                    {{ protocol }}
+                                </th>
+                                <th {{ macros.header_sorting('ip_address', 'ftp') }}>
+                                    {{ ip_address }}
+                                </th>
+                                <th {{ macros.header_sorting('login_timestamp', 'ftp') }}>
+                                    {{ login_time }}
+                                </th>
+                                <th {{ macros.header_sorting('idle_time', 'ftp') }}>
+                                    {{ idle_time }}
+                                </th>
+                                <th {{ macros.header_sorting('status', 'ftp') }}>
+                                    {{ status }}
+                                </th>
+                                <th {{ macros.header_sorting('progress', 'ftp') }}>
+                                    {{ progress }}
+                                </th>
+                                <th {{ macros.header_sorting('speed_bytes', 'ftp') }}>
+                                    {{ speed }}
+                                </th>
+                                <th {{ macros.header_sorting('location', 'ftp') }}>
+                                    {{ location }}
+                                </th>
+                            </thead>
+                            <tbody>
+                                {% for item in _ftp_sessions %}
+                                    <tr>
+                                        {{ macros.row_checkbox(item.id, 'ftp_session_ids') }}
+
+                                        <td>
+                                            {{ item.username }}
+                                        </td>
+                                        <td>
+                                            {{ item.protocol }}
+                                        </td>
+                                        <td>
+                                            {{ macros.link_to_whois(item.ip_address) }}
+                                        </td>
+                                        <td>
+                                            {{ item.login_time }}
+                                        </td>
+                                        <td>
+                                            {{ item.idle_time }}
+                                        </td>
+                                        <td>
+                                            {{ item.status }}
+                                        </td>
+                                        <td>
+                                            {{ item.progress }}
+                                        </td>
+                                        <td>
+                                            {{ item.speed }}
+                                        </td>
+                                        <td>
+                                            {{ item.location }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="42">
+                                        {{ _ftp_sessions|length|i18n_format }} {{ items_total }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </form>
+
+{#######################################################################################################################
+    Modals
+#######################################################################################################################}
+
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-stop-sessions',
+            '_title': stop_sessions,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-stop-sessions' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

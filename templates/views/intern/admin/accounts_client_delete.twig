@@ -1,0 +1,42 @@
+{% extends 'layout/intern.twig' %}
+
+
+{% block content %}
+    {% include 'components/delete_items.twig' with {
+        '_action': '?page=' ~ _app.page ~ '&action=delete',
+        '_back_page': _app.page,
+        '_config': {
+            'username': {
+                'label': username
+            },
+            'company': {
+                'label': company
+            },
+            'contact_name': {
+                'label': contact_name
+            },
+            'client_id': {
+                'label': client_id
+            },
+            'notes': {
+                'label': notes,
+                'is_nl2br': true
+            },
+            'disk_space': {
+                'label': disk_space
+            },
+            'domains': {
+                'label': domains,
+                'is_url': true,
+            },
+            'permissions': {
+                'label': permissions,
+            },
+            'certificates': {
+                'label': ssl_certificates,
+                'help': ssl_certificates_help
+            },
+        },
+        '_items': _clients
+    } %}
+{% endblock %}
