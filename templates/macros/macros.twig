@@ -4,8 +4,9 @@
 {% set is_percent = params.current is null and params.max is null %}
 {% set percent_formatted = params.percent|i18n_format_percent %}
 {% set size = params.is_large ? 'is-small' : 'is-xsmall' %}
+{% set load_level = params.percent <= params.low|default('79') ? 'low' : params.percent <= params.high|default('89') ? 'medium' : 'high' %}
 
-<div class="usage-indicator has-ws-no-wrap app-tooltip" data-tippy-content="{{ percent_formatted }}">
+<div class="usage-indicator has-ws-no-wrap app-tooltip" data-tippy-content="{{ percent_formatted }}" data-load="{{ load_level }}">
     <div class="level has-margin-bottom-xsmall is-mobile">
         <div class="level-left has-margin-right-large">
             <p class="level-item has-text-weight-bold">
@@ -23,7 +24,6 @@
         </div>
     </div>
 
-    {% set load_level = params.percent <= params.low|default('79') ? 'low' : params.percent <= params.high|default('89') ? 'medium' : 'high' %}
     <progress class="progress {{ size }}" data-load-level="{{ load_level }}" value="{{ params.percent }}" max="100">
         {{ percent_formatted }}
     </progress>

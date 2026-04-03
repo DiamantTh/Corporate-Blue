@@ -35,9 +35,43 @@ body                                { color: #c8d8f0 !important; }
 #header                             { background: #0e1e30 !important; border-bottom: 1px solid #2c4060 !important; }
 
 /* ── Progress Bars ───────────────────────────────────────── */
-progress[data-load-level="low"]::-webkit-progress-value   { background-color: #3273DC; }
-progress[data-load-level="medium"]::-webkit-progress-value { background-color: #FFAA00; }
-progress[data-load-level="high"]::-webkit-progress-value  { background-color: #FF2B56; }
+progress.progress { -webkit-appearance: none; -moz-appearance: none; appearance: none; height: 8px; border-radius: 10px; overflow: hidden; border: none; }
+progress.progress::-webkit-progress-bar   { border-radius: 10px; }
+progress.progress::-webkit-progress-value { border-radius: 10px; }
+progress[data-load-level="low"]    { background-color: #182848; color: #4a90e8; }
+progress[data-load-level="medium"] { background-color: #28200a; color: #ffc030; }
+progress[data-load-level="high"]   { background-color: #280a10; color: #ff3a5c; }
+progress[data-load-level="low"]::-webkit-progress-bar    { background-color: #182848; }
+progress[data-load-level="medium"]::-webkit-progress-bar { background-color: #28200a; }
+progress[data-load-level="high"]::-webkit-progress-bar   { background-color: #280a10; }
+progress[data-load-level="low"]::-webkit-progress-value    { background: linear-gradient(90deg, #1459c0, #4a90e8); box-shadow: 0 0 8px rgba(74,144,232,.55); }
+progress[data-load-level="medium"]::-webkit-progress-value { background: linear-gradient(90deg, #b07800, #ffc030); box-shadow: 0 0 8px rgba(255,192,48,.45); }
+progress[data-load-level="high"]::-webkit-progress-value   { background: linear-gradient(90deg, #b0182a, #ff3a5c); box-shadow: 0 0 8px rgba(255,58,92,.45); }
+progress.is-success::-webkit-progress-value { background: linear-gradient(90deg, #1a7030, #2cd060); }
+progress.is-warning::-webkit-progress-value { background: linear-gradient(90deg, #b07800, #ffc030); }
+progress.is-danger::-webkit-progress-value  { background: linear-gradient(90deg, #b0182a, #ff3a5c); }
+
+/* ── Color Utilities ─────────────────────────────────────── */
+.has-text-black, .has-text-black-bis, .has-text-black-ter { color: #c8d8f0; }
+.has-text-dark, .has-text-grey-darker, .has-text-grey-dark { color: #90b4d4; }
+.has-text-grey                     { color: #8ab0d0; }
+.has-text-light                    { color: #c8d8f0; }
+.has-text-link                     { color: #5a94e8; }
+.has-text-info                     { color: #60aadf; }
+.has-text-success                  { color: #3cc870; }
+.has-text-warning                  { color: #f0c040; }
+.has-text-danger                   { color: #f06070; }
+.horizontal-separated-list li      { color: rgba(200,220,245,.75); }
+
+/* ── Usage Indicators ────────────────────────────────────── */
+.usage-indicator                    { padding: 2px 0 4px; border-left: 2px solid transparent; padding-left: 6px; }
+.usage-indicator[data-load="low"]   { border-left-color: rgba(74,144,232,.35); }
+.usage-indicator[data-load="medium"]{ border-left-color: rgba(255,192,48,.35); }
+.usage-indicator[data-load="high"]  { border-left-color: rgba(255,58,92,.4); }
+.usage-indicator .level-item.has-text-weight-bold { color: #6888a8; font-size: .75rem; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+.usage-indicator .level-right .level-item    { color: #a0bcd8; font-size: .82rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.usage-indicator[data-load="medium"] .level-right .level-item { color: #ffc030; }
+.usage-indicator[data-load="high"] .level-right .level-item   { color: #ff5070; }
 
 /* ── Cards ───────────────────────────────────────────────── */
 .card         { border-radius: 8px; }
