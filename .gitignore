@@ -2,8 +2,6 @@
 _preview.html
 _preview_admin.html
 _preview_client.html
-# Raw HTML exports (local only)
-*elcas*
 # Preview server artifacts
 .DS_Store
 *.swp
