@@ -76,7 +76,7 @@ The preview includes:
 Place the `corporate-blue/` folder in your KeyHelp themes directory:
 
 ```
-/etc/keyhelp/themes/corporate-blue/
+/home/keyhelp/www/keyhelp/theme/corporate-blue/
 ```
 
 KeyHelp will detect it automatically via `_settings.json`.
