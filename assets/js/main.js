@@ -253,11 +253,13 @@
         const $this = $(this);
         const $select = $('#input-bulk_action');
         const actionId = $select.val();
+        const disableLoadingSpinner = () => setTimeout(() => $this.removeClass('is-loading'), 0);
 
         // No action selected
         if (!actionId)
         {
             console.warn('No action selected.');
+            disableLoadingSpinner();
             return;
         }
 
@@ -267,6 +269,7 @@
         if ($form.length === 0)
         {
             console.warn('No form available');
+            disableLoadingSpinner();
             return;
         }
 
@@ -274,6 +277,7 @@
         if ($form.find('input[type="checkbox"]:checked').length === 0)
         {
             console.warn('No checkboxes checked.');
+            disableLoadingSpinner();
             return;
         }
 

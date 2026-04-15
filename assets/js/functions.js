@@ -620,12 +620,12 @@ function isElementOverflowing(element)
      */
     function toggleVisibilityByCheckbox(trigger, element, triggerNegate = false, durationIn = 200, durationOut = 200)
     {
-        var $trigger = $(trigger);
-        var $element = $(element);
+        const $trigger = $(trigger);
+        const $element = $(element);
 
         $trigger.on('change', function() {
-            var $this = $(this);
-            var condition = triggerNegate ? !$this.prop('checked') : $this.prop('checked');
+            const $this = $(this);
+            const condition = triggerNegate ? !$this.prop('checked') : $this.prop('checked');
             condition ? $element.show(durationIn) : $element.hide(durationOut);
         }).trigger('change');
     }
