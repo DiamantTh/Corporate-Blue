@@ -6,15 +6,27 @@
 
 {% if _is_finished %}
     <p>
-        <b>{{ runtime }}:</b> {{ _runtime }}
+        <b>{{ runtime }}:</b> {{ _runtime|seconds_to_time(false) }}
         <br>
         <b>{{ return_status_code }}:</b> {{ _exit_code }} ({{ _exit_code == 0 ? success : error }})
         <br>
-        <b>{{ output }}:</b>
-        {% if _output is empty %}
-            {{ no_output }}
-        {% else %}
-            <pre style="color: inherit" class="has-padding-bottom-none">{{ _output }}</pre>
-        {% endif %}
+
+        {% set streams = [
+            { 'label': output, 'content': _output },
+            { 'label': error_output, 'content': _error_output }
+        ] %}
+
+        {% for stream in streams %}
+            <b>{{ stream.label }}:</b>
+            {% if stream.content is empty %}
+                <i>- {{ empty }} -</i>
+            {% else %}
+                <pre style="color: inherit" class="has-padding-bottom-none">{{ stream.content }}</pre>
+            {% endif %}
+
+            {% if not loop.last %}
+                <br>
+            {% endif %}
+        {% endfor %}
     </p>
 {% endif %}

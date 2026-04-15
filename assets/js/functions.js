@@ -620,12 +620,12 @@ function isElementOverflowing(element)
      */
     function toggleVisibilityByCheckbox(trigger, element, triggerNegate = false, durationIn = 200, durationOut = 200)
     {
-        var $trigger = $(trigger);
-        var $element = $(element);
+        const $trigger = $(trigger);
+        const $element = $(element);
 
         $trigger.on('change', function() {
-            var $this = $(this);
-            var condition = triggerNegate ? !$this.prop('checked') : $this.prop('checked');
+            const $this = $(this);
+            const condition = triggerNegate ? !$this.prop('checked') : $this.prop('checked');
             condition ? $element.show(durationIn) : $element.hide(durationOut);
         }).trigger('change');
     }
@@ -660,6 +660,35 @@ function isElementOverflowing(element)
                 if (selector) {
                     $(selector).show(durationIn);
                 }
+            }
+        }).trigger('change');
+    }
+
+    /**
+     * Toggles the visibility of given selectors (valueSelectorRelations) based on the selected option.
+     *
+     * @param   string|jQuery Object  selector      A CSS selector for the <select> element
+     * @param   object                valueSelectorRelations    { value1: '#selector1', 'value2': '.selector2', ... }
+     * @param   int                   durationIn
+     * @param   int                   durationOut
+     * @returns undefined
+     */
+    function toggleVisibilityBySelect(selector, valueSelectorRelations, durationIn = 200, durationOut = 200)
+    {
+        const $select = $(selector);
+
+        $select.on('change', function() {
+            const selectedValue = $(this).val();
+
+            // Hide all.
+            Object.values(valueSelectorRelations).forEach(s => {
+                $(s).hide(durationOut);
+            });
+
+            // Show the corresponding element.
+            const target = valueSelectorRelations[selectedValue];
+            if (target) {
+                $(target).show(durationIn);
             }
         }).trigger('change');
     }

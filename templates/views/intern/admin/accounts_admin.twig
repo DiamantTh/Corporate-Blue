@@ -49,7 +49,7 @@
                                     <th {{ macros.header_sorting('is_main_admin') }}>
                                         {{ main_administrator }}
                                     </th>
-                                    <th {{ macros.header_sorting('last_login_sort') }}>
+                                    <th {{ macros.header_sorting('last_login') }}>
                                         {{ last_login }}
                                     </th>
                                     {% if _user.is_main_admin %}
@@ -72,7 +72,7 @@
                                             {{ macros.status_icon(item.is_main_admin, [yes, no], true) }}
                                         </td>
                                         <td class="is-narrow">
-                                            {{ item.last_login|default('—') }}
+                                            {{ item.last_login ? item.last_login|i18n_date_time : '—' }}
                                         </td>
                                         {% if _user.is_main_admin %}
                                             <td class="is-narrow">

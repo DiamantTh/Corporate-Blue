@@ -58,7 +58,7 @@
                                     <th {{ macros.header_sorting('description') }}>
                                         {{ description }}
                                     </th>
-                                    <th {{ macros.header_sorting('last_run_sort') }}>
+                                    <th {{ macros.header_sorting('last_run') }}>
                                         {{ last_run }}
                                     </th>
                                     <th class="is-narrow">
@@ -90,7 +90,7 @@
                                             {{ item.description }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.last_run_at|default('—') }}
+                                            {{ item.last_run > 0 ? item.last_run|i18n_date_time : '—' }}
                                         </td>
                                         <td class="is-narrow">
                                             {% include 'components/icon.twig' with {

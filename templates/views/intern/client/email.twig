@@ -14,7 +14,7 @@
     <p class="has-margin-bottom-large">
         {{ help|raw }}
         <br><br>
-        {{ _total_size_text|raw }}
+        {{ total_consumption|format(_total_size|bytes|strong)|raw }}
     </p>
 
     {# Button line #}
@@ -253,7 +253,7 @@
                                             {{ main_domain.items|length|i18n_format }} {{ items_total }}
                                         </td>
                                         <td class="has-text-right">
-                                            {{ main_domain.total_size }} / {{ main_domain.total_size_max }}
+                                            {{ main_domain.total_size|bytes }} / {{ main_domain.total_size_max|bytes }}
                                         </td>
                                         <td colspan="42">
                                         </td>

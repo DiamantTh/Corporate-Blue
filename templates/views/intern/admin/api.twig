@@ -80,10 +80,10 @@
                                     <th {{ macros.header_sorting('ips_sort') }}>
                                         {{ ip_addresses }}
                                     </th>
-                                    <th {{ macros.header_sorting('created_at_sort') }}>
+                                    <th {{ macros.header_sorting('created_at') }}>
                                         {{ created_at }}
                                     </th>
-                                    <th {{ macros.header_sorting('last_access_sort') }}>
+                                    <th {{ macros.header_sorting('last_access') }}>
                                         {{ last_access }}
                                     </th>
                                     <th class="is-narrow">
@@ -114,10 +114,10 @@
                                             {% endif %}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.created_at }}
+                                            {{ item.created_at|i18n_date_time }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.last_access|default('—') }}
+                                            {{ item.last_access ? item.last_access|i18n_date_time : '—' }}
                                         </td>
                                         <td class="is-narrow">
                                             {% include 'components/icon.twig' with {
