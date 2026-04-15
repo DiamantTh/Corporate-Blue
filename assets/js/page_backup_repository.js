@@ -1,4 +1,18 @@
 //======================================================================================================================
+// Show / Hide rotation mode settings
+//======================================================================================================================
+
+    toggleVisibilityBySelect('select[name="rotation_mode"]', {
+        'by_count': '#app-rotation-by-count',
+        'by_time':  '#app-rotation-by-time',
+    });
+
+    toggleVisibilityByCheckbox('input[name="time_period_daily"]',   '#app-rotation-daily-count');
+    toggleVisibilityByCheckbox('input[name="time_period_weekly"]',  '#app-rotation-weekly-count');
+    toggleVisibilityByCheckbox('input[name="time_period_monthly"]', '#app-rotation-monthly-count');
+    toggleVisibilityByCheckbox('input[name="time_period_yearly"]',  '#app-rotation-yearly-count');
+
+//======================================================================================================================
 // Select backup storage type
 //======================================================================================================================
 
