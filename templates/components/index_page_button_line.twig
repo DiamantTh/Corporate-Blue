@@ -40,11 +40,17 @@
                         'label': apply,
                         'type': 'button',
                         'style': 'primary',
-                        'class': 'app-update-action-submit-form',
+                        'class': 'app-update-action-submit-form app-button-with-loading-animation',
                         'data': data
                     }
                 }) }}
             </div>
         {% endif %}
+
+        {% for _button in _buttons_right %}
+            <div class="level-item">
+               {{ _button }}
+            </div>
+        {% endfor %}
     </div>
 </div>

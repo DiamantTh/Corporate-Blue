@@ -2,7 +2,7 @@
     "name": "Corporate Blue",
     "description": "Corporate Blue theme with ECharts, Tailwind CSS and unified dark style. Based on the Default Theme by Alexander Mahr / Keyweb AG.",
     "author": "DiamantTh (based on Default Theme by Alexander Mahr / Keyweb AG)",
-    "version": "25.3",
+    "version": "26.0",
     "website": "https:\/\/www.keyhelp.de",
     "path_to_templates": "templates\/",
     "has_dark_mode": false

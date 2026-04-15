@@ -31,43 +31,47 @@
         </div>
     </div>
 
-    <div class="level">
-        <div class="level-left">
-        </div>
-        <div class="level-right">
-            <div class="level-item">
-                {{ forms.button({
-                    'label': add_custom_message,
-                    'style': 'primary',
-                    'url': '?page=' ~ _app.page ~ '&action=add'
-                }) }}
-            </div>
-            <div class="level-item">
-                {{ forms.button({
-                    'label': reset_all_settings,
-                    'style': 'secondary',
-                    'class': 'app-reset-all'
-                }) }}
-            </div>
-        </div>
-    </div>
+    {% include 'components/index_page_button_line.twig' with ({
+        '_buttons': [
+            forms.button({
+                'label': add_custom_message,
+                'style': 'primary',
+                'url': '?page=' ~ _app.page ~ '&action=add'
+            })
+        ],
+        '_buttons_right': [
+            forms.button({
+                'label': reset_all_settings,
+                'style': 'secondary',
+                'modal': 'app-modal-reset-all'
+            }),
+        ],
+        '_bulk_actions': {
+            'reset': reset_selection
+        },
+        '_bulk_action_open_modal': {
+            'reset': 'app-modal-reset-selection',
+        },
+        '_form_id': 'form-email-notifications-index'
+    }) %}
 
+    <form id="form-email-notifications-index" action="?page={{ _app.page }}&action=reset" method="post">
+        {{ csrf_field() }}
 
-    {% for group in _notification_groups %}
-        <h2 class="title is-5 has-margin-bottom-small {{ not loop.first ? 'has-margin-top-large' }}">
-            {{ group.label }}
-        </h2>
+        {% for group in _notification_groups %}
+            <h2 class="title is-5 has-margin-bottom-small {{ not loop.first ? 'has-margin-top-large' }}">
+                {{ group.label }}
+            </h2>
 
-        <div class="card">
-            <div class="card-content">
-                {% include 'components/table_scroll_container.twig' %}
-                <form id="form-email-notifications-index" action="?page={{ _app.page }}&action=delete" method="post">
-                    {{ csrf_field() }}
-
+            <div class="card">
+                <div class="card-content">
+                    {% include 'components/table_scroll_container.twig' %}
                     <div class="table-container">
                         <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
                             <thead>
                                 <tr>
+                                    {{ macros.header_checkbox() }}
+
                                     <th {{ macros.header_sorting('event_label') }}>
                                         {{ event }}
                                     </th>
@@ -91,6 +95,9 @@
                             <tbody>
                                 {% for item in group.items %}
                                     <tr>
+
+                                        {{ macros.row_checkbox(item.event_type, 'reset_event_types') }}
+
                                         <td style="display: none">
                                             <input type="text" name="event_type" value="{{ item.event_type }}">
                                             <input type="text" name="event_label" value="{{ item.event_label }}">
@@ -162,7 +169,7 @@
                                                 '_url': '?page=' ~ _app.page ~ '&action=add&event_type=' ~ item.event_type
                                             } %}
 
-                                            <span class="app-reset-notification">
+                                            <span class="app-reset-notification" data-reset-event-type="{{ item.event_type }}">
                                                 {% include 'components/icon.twig' with {
                                                     '_type': 'reset',
                                                     '_url': 'javascript:void(0)'
@@ -181,10 +188,10 @@
                             </tfoot>
                         </table>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </form>
 
     {# Back #}
     {% include 'components/call_to_action.twig' with { '_back': { 'target': 'admin_configuration' } } %}
@@ -263,19 +270,54 @@
     {% endembed %}
 
 
-    {# Reset notification settings #}
+    {# Reset single #}
     {% embed "components/modal/modal.twig" with {
-            '_id': 'app-modal-reset-settings',
-            '_title': reset_settings,
+            '_id': 'app-modal-reset-single',
+            '_title': reset_selection,
             '_form': {
-                'action': '?page=' ~ _app.page ~ '&action=reset_notification',
+                'action': '?page=' ~ _app.page ~ '&action=reset',
                 'hidden': {
-                    'submit': true,
-                    'event_type': ''
+                    'reset_event_type': '___unset___',
                 },
             },
             '_buttons': {
-                'submit': {},
+                'submit': { 'label': yes },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_reset_selection }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+    {# Reset selection #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-selection',
+            '_title': reset_selection,
+            '_buttons': {
+                'submit': { 'label': yes, 'data': { 'submit-form': 'form-email-notifications-index' } },
+                'cancel': {},
+            } } %}
+        {% block body %}
+            <p class="has-text-centered">
+                {{ are_you_sure_reset_selection }}
+            </p>
+        {% endblock %}
+    {% endembed %}
+
+    {# Reset all #}
+    {% embed "components/modal/modal.twig" with {
+            '_id': 'app-modal-reset-all',
+            '_title': reset_settings,
+            '_form': {
+                'action': '?page=' ~ _app.page ~ '&action=reset',
+                'hidden': {
+                    'reset_all': true,
+                }
+            },
+            '_buttons': {
+                'submit': { 'label': yes },
                 'cancel': {},
             } } %}
         {% block body %}

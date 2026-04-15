@@ -123,7 +123,7 @@
                             <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
                                 <thead>
                                     <tr>
-                                        <th {{ macros.header_sorting('started_on_sort') }}>
+                                        <th {{ macros.header_sorting('started_on') }}>
                                             {{ started_on }}
                                         </th>
                                         <th {{ macros.header_sorting('status_sort') }}>
@@ -135,7 +135,7 @@
                                     {% for item in _recent_tasks %}
                                         <tr class="{{ loop.index > _items_to_show ? 'is-hidden'}}">
                                             <td class="has-ws-no-wrap">
-                                                {{ item.started_on }}
+                                                {{ item.started_on|i18n_date_time }}
                                                 {% if item.launch_type == 'auto' %}
                                                     <br>
                                                     <span class="has-text-grey-light">

@@ -42,14 +42,97 @@
 
                 {% include 'components/form_password.twig' with { '_leave_empty': _action == 'edit' } %}
 
-                {{ forms.input_wrapped({
-                    'label': max_snapshots,
-                    'help': max_snapshots_help,
-                    'name': 'max_snapshots',
-                    'type': 'number',
-                    'value': _max_snapshots,
-                    'min': 1,
+                {{ forms.select_wrapped({
+                    'label': snapshot_rotation,
+                    'help': snapshot_rotation_help,
+                    'name': 'rotation_mode',
+                    'options': {
+                        'disabled': disabled,
+                        'by_count': by_count,
+                        'by_time': by_time_period,
+                    },
+                    'selected': _rotation_mode,
                 }) }}
+
+                <div id="app-rotation-by-count" style="display: none">
+                    {{ forms.input_wrapped({
+                        'help': max_snapshots,
+                        'name': 'max_snapshots',
+                        'type': 'number',
+                        'value': _max_snapshots > 0 ? _max_snapshots,
+                        'min': 1,
+                    }) }}
+                </div>
+
+                <div id="app-rotation-by-time" style="display: none">
+                    <div class="field has-margin-bottom-medium">
+                        <p class="has-margin-bottom-small has-text-grey"><small>{{ time_period_help }}</small></p>
+
+                        {{ forms.checkable({
+                            'type': 'checkbox',
+                            'label': time_period_daily,
+                            'name': 'time_period_daily',
+                            'value': '1',
+                            'is_checked': _daily_snapshots is not empty,
+                        }) }}
+                        <div id="app-rotation-daily-count" style="display: none">
+                            {{ forms.input_wrapped({
+                                'name': 'daily_snapshots',
+                                'type': 'number',
+                                'value': _daily_snapshots,
+                                'min': 1,
+                            }) }}
+                        </div>
+
+                        {{ forms.checkable({
+                            'type': 'checkbox',
+                            'label': time_period_weekly,
+                            'name': 'time_period_weekly',
+                            'value': '1',
+                            'is_checked': _weekly_snapshots is not empty,
+                        }) }}
+                        <div id="app-rotation-weekly-count" style="display: none">
+                            {{ forms.input_wrapped({
+                                'name': 'weekly_snapshots',
+                                'type': 'number',
+                                'value': _weekly_snapshots,
+                                'min': 1,
+                            }) }}
+                        </div>
+
+                        {{ forms.checkable({
+                            'type': 'checkbox',
+                            'label': time_period_monthly,
+                            'name': 'time_period_monthly',
+                            'value': '1',
+                            'is_checked': _monthly_snapshots is not empty,
+                        }) }}
+                        <div id="app-rotation-monthly-count" style="display: none">
+                            {{ forms.input_wrapped({
+                                'name': 'monthly_snapshots',
+                                'type': 'number',
+                                'value': _monthly_snapshots,
+                                'min': 1,
+                            }) }}
+                        </div>
+
+                        {{ forms.checkable({
+                            'type': 'checkbox',
+                            'label': time_period_yearly,
+                            'name': 'time_period_yearly',
+                            'value': '1',
+                            'is_checked': _yearly_snapshots is not empty,
+                        }) }}
+                        <div id="app-rotation-yearly-count" style="display: none">
+                            {{ forms.input_wrapped({
+                                'name': 'yearly_snapshots',
+                                'type': 'number',
+                                'value': _yearly_snapshots,
+                                'min': 1,
+                            }) }}
+                        </div>
+                    </div>
+                </div>
 
                 <hr class="has-margin-large">
 

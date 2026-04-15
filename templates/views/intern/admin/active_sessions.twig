@@ -17,7 +17,7 @@
         </h2>
 
         <p class="has-margin-bottom-medium">
-            {{ session_idle_time }}: {{ _panel_session_idle_time }}
+            {{ session_idle_time }}: {{ _panel_session_idle_time|seconds_to_time }}
         </p>
 
         {% include 'components/index_page_button_line.twig' with ({
@@ -85,7 +85,7 @@
                                                 {{ item.login_time }}
                                             </td>
                                             <td>
-                                                {{ item.idle_time }}
+                                                {{ item.idle_time|seconds_to_time(false) }}
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -135,16 +135,16 @@
                                 <th {{ macros.header_sorting('ip_address', 'system') }}>
                                     {{ ip_address }}
                                 </th>
-                                <th {{ macros.header_sorting('login_timestamp', 'system') }}>
+                                <th {{ macros.header_sorting('login_time', 'system') }}>
                                     {{ login_time }}
                                 </th>
                                 <th {{ macros.header_sorting('idle_time', 'system') }}>
                                     {{ idle_time }}
                                 </th>
-                                <th {{ macros.header_sorting('jcpu_timestamp', 'system') }}>
+                                <th {{ macros.header_sorting('jcpu_time', 'system') }}>
                                     JCPU
                                 </th>
-                                <th {{ macros.header_sorting('pcpu_timestamp', 'system') }}>
+                                <th {{ macros.header_sorting('pcpu_time', 'system') }}>
                                     PCPU
                                 </th>
                                 <th {{ macros.header_sorting('current_process', 'system') }}>
@@ -166,16 +166,16 @@
                                             {{ macros.link_to_whois(item.ip_address) }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.login_time }}
+                                            {{ item.login_time > 0 ? item.login_time|i18n_date_time }}
                                         </td>
                                         <td>
-                                            {{ item.idle_time }}
+                                            {{ item.idle_time|seconds_to_time(false) }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.jcpu_time }}
+                                            {{ item.jcpu_time < 1 ? '< ' ~ 1|seconds_to_time(false) : item.jcpu_time|seconds_to_time(false) }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.pcpu_time }}
+                                            {{ item.pcpu_time < 1 ? '< ' ~ 1|seconds_to_time(false) : item.pcpu_time|seconds_to_time(false) }}
                                         </td>
                                         <td>
                                             {{ item.current_process }}
@@ -278,7 +278,7 @@
         </h2>
 
         <p class="has-margin-bottom-medium">
-            {{ ftp_server_uptime }}: {{ _ftp_server_uptime }}
+            {{ ftp_server_uptime }}: {{ _ftp_server_uptime|seconds_to_time }}
         </p>
 
         <div class="card">
@@ -303,7 +303,7 @@
                                 <th {{ macros.header_sorting('ip_address', 'ftp') }}>
                                     {{ ip_address }}
                                 </th>
-                                <th {{ macros.header_sorting('login_timestamp', 'ftp') }}>
+                                <th {{ macros.header_sorting('login_time', 'ftp') }}>
                                     {{ login_time }}
                                 </th>
                                 <th {{ macros.header_sorting('idle_time', 'ftp') }}>
@@ -315,7 +315,7 @@
                                 <th {{ macros.header_sorting('progress', 'ftp') }}>
                                     {{ progress }}
                                 </th>
-                                <th {{ macros.header_sorting('speed_bytes', 'ftp') }}>
+                                <th {{ macros.header_sorting('speed', 'ftp') }}>
                                     {{ speed }}
                                 </th>
                                 <th {{ macros.header_sorting('location', 'ftp') }}>
@@ -337,19 +337,19 @@
                                             {{ macros.link_to_whois(item.ip_address) }}
                                         </td>
                                         <td>
-                                            {{ item.login_time }}
+                                            {{ item.login_time > 0 ? item.login_time|i18n_date_time }}
                                         </td>
                                         <td>
-                                            {{ item.idle_time }}
+                                            {{ item.idle_time|seconds_to_time(false) }}
                                         </td>
                                         <td>
                                             {{ item.status }}
                                         </td>
                                         <td>
-                                            {{ item.progress }}
+                                            {{ item.progress > 0 ? item.progress|i18n_format_percent }}
                                         </td>
                                         <td>
-                                            {{ item.speed }}
+                                            {{ item.speed > 0 ? item.speed|bytes ~ '/s' }}
                                         </td>
                                         <td>
                                             {{ item.location }}

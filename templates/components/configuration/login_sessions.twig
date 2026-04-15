@@ -52,7 +52,7 @@
 
 {{ forms.textarea_wrapped({
     'label': restrict_admin_access,
-    'help': restrict_admin_access_help,
+    'help': restrict_admin_access_help ~ '<br>' ~ ip_input_help,
     'name': 'administrative_access',
     'value': _administrative_access,
 }) }}

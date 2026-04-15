@@ -291,7 +291,7 @@
                                                 <b>{{ item.name }}</b>
                                             </td>
                                             <td class="has-ws-no-wrap">
-                                                {{ item.created_at }}
+                                                {{ item.created_at|i18n_date_time }}
                                             </td>
                                             <td class="is-narrow">
                                                 <span class="app-update-webauthn-authenticator">
@@ -371,7 +371,7 @@
                                                     </ul>
                                                 </td>
                                                 <td class="has-ws-no-wrap">
-                                                    {{ item.created_at }}
+                                                    {{ item.created_at|i18n_date_time }}
                                                 </td>
                                                 <td class="is-narrow">
                                                     <span class="app-delete-ssh-key">
