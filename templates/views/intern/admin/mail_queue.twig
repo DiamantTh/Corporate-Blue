@@ -16,7 +16,7 @@
     </p>
 
     <p class="has-margin-bottom-medium">
-        <strong>{{ messages_in_queue }}:</strong> {{ _messages_in_queue }}
+        <strong>{{ messages_in_queue }}:</strong> {{ _messages_in_queue|i18n_format }}
     </p>
 
     {# Button line #}
@@ -27,6 +27,8 @@
                 'style': 'primary',
                 'modal': 'app-modal-process-queue',
             }),
+        ],
+        '_buttons_right': [
             forms.button({
                 'label': delete_all,
                 'style': 'secondary',
@@ -72,10 +74,10 @@
                                     <th {{ macros.header_sorting('recipients_sort') }}>
                                         {{ recipients }}
                                     </th>
-                                    <th {{ macros.header_sorting('arrival_data_timestamp') }}>
+                                    <th {{ macros.header_sorting('arrival_date') }}>
                                         {{ arrival_date }}
                                     </th>
-                                    <th {{ macros.header_sorting('age_timestamp') }}>
+                                    <th {{ macros.header_sorting('age_in_seconds') }}>
                                         {{ age }}
                                     </th>
                                     <th {{ macros.header_sorting('size') }}>
@@ -120,10 +122,10 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {{ item.arrival_date }}
+                                            {{ item.arrival_date|i18n_date_time }}
                                         </td>
                                         <td>
-                                            {{ item.age }}
+                                            {{ item.age_in_seconds|seconds_to_time }}
                                         </td>
                                         <td class="has-ws-no-wrap">
                                             {{ item.size|bytes }}

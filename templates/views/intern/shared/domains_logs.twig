@@ -212,7 +212,7 @@
                                                     {{ item.filename }}
                                                 </td>
                                                 <td class="has-ws-no-wrap">
-                                                    {{ item.modified }}
+                                                    {{ item.modified_time|i18n_date_time }}
                                                 </td>
                                                 <td class="has-ws-no-wrap">
                                                     {{ item.size|bytes }}

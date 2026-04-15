@@ -9,7 +9,7 @@
     <p class="has-margin-bottom-large">
         {{ help }}
         <br><br>
-        {{ _total_size_text|raw }}
+        {{ total_consumption|format(_total_size|bytes|strong)|raw }}
     </p>
 
     {# Button line #}
@@ -130,7 +130,7 @@
                                         {{ _database_items|length|i18n_format }} {{ items_total }}
                                     </td>
                                     <td>
-                                        {{ _total_size }}
+                                        {{ _total_size|bytes }}
                                     </td>
                                     <td colspan="42">
                                     </td>

@@ -80,7 +80,7 @@
 
                     {{ forms.textarea_wrapped({
                         'label': sources,
-                        'help': sources_destinations_help,
+                        'help': ip_input_help,
                         'placeholder': any_host,
                         'name': 'sources',
                         'value': _sources|join("\n")
@@ -174,7 +174,7 @@
                     <div class="app-input-source" style="display: none">
                         {{ forms.textarea_wrapped({
                             'label': sources,
-                            'help': sources_destinations_help,
+                            'help': ip_input_help,
                             'placeholder': any_host,
                             'name': 'sources',
                             'value': _sources|join("\n")
@@ -184,7 +184,7 @@
                     <div class="app-input-destination" style="display: none">
                         {{ forms.textarea_wrapped({
                             'label': destinations,
-                            'help': sources_destinations_help,
+                            'help': ip_input_help,
                             'placeholder': any_host,
                             'name': 'destinations',
                             'value': _destinations|join("\n")

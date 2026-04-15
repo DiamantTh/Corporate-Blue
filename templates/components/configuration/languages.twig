@@ -34,10 +34,10 @@
                     </td>
                     <td class="is-narrow">
                         {{ macros.tag(
-                                item.translated_share_formatted,
+                                item.translated_share|i18n_format_percent(0),
                                 item.translated_share > 90 ? 'is-success' : (item.translated_share > 70 ? 'is-warning' : 'is-danger'),
                                 '',
-                                translation_coverage|format(item.translated_share_formatted)
+                                translation_coverage|format(item.translated_share|i18n_format_percent(0))
                         ) }}
                     </td>
                     <td>
