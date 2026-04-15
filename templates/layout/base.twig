@@ -132,12 +132,12 @@
         .checkbox, .radio { color: rgba(192,216,240,.85) !important; }
 
         /* ── Buttons ─────────────────────────────────────────────────────── */
-        .button:not(.is-primary):not(.is-link):not(.is-info):not(.is-success):not(.is-warning):not(.is-danger) {
+        .button:not(:is(.is-primary, .is-link, .is-info, .is-success, .is-warning, .is-danger)) {
             background-color: #112640 !important;
             border-color: #2c4060 !important;
             color: rgba(192,216,240,.9) !important;
         }
-        .button:not(.is-primary):not(.is-link):not(.is-info):not(.is-success):not(.is-warning):not(.is-danger):hover {
+        .button:not(:is(.is-primary, .is-link, .is-info, .is-success, .is-warning, .is-danger)):hover {
             background-color: #1a3558 !important;
             border-color: #3273DC !important;
             color: #fff !important;
