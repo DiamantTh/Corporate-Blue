@@ -8,7 +8,7 @@ A dark, corporate-styled theme for [KeyHelp](https://www.keyhelp.de) control pan
 - **Corporate Blue palette** — deep navy sidebar, midnight header, layered card system
 - **ECharts integration** — dashboard charts (CPU/RAM/Traffic) shipped locally, no CDN
 - **Tailwind CSS** (prefix `tw-`) — available alongside Bulma for new UI elements, no CDN
-- **Button system** — 8 variants with distinct dark-adjusted backgrounds (link/dark/danger/warning/success/info/primary/outlined)
+- **Button system** — 8 variants with distinct dark-adjusted backgrounds (link/dark/danger/warning/success/info/primary/outlined); selectors simplified via CSS `:is()` pseudo-class
 - **Tag system** — all Bulma tag variants re-colored for the dark palette
 - **No dark-mode toggle** — `has_dark_mode: false`; the theme is always dark
 
@@ -38,14 +38,26 @@ corporate-blue/
 │   │   ├── style-dark.css     # Dark CSS (kept for compatibility, same overrides)
 │   │   ├── style-rtl.css      # RTL variant
 │   │   └── style-dark-rtl.css # Dark RTL variant
+│   ├── fonts/
+│   │   └── fontawesome/       # Font Awesome 7 web fonts (local, no CDN)
 │   ├── img/
 │   │   ├── keyhelp.svg        # Standard logo (light background)
 │   │   └── dark/
 │   │       └── keyhelp.svg    # Dark logo (used always in this theme)
 │   ├── js/                    # Page-specific JS files
 │   └── vendor/
+│       ├── bulma/             # Bulma CSS framework (local, no CDN)
+│       ├── chartjs/           # Chart.js (local, no CDN)
+│       ├── codemirror/        # CodeMirror editor (local, no CDN)
 │       ├── echarts/           # ECharts 5.x (local, no CDN)
-│       └── tailwind/          # Tailwind CSS 3.x (local, no CDN)
+│       ├── fontawesome/       # Font Awesome 7 CSS (local, no CDN)
+│       ├── handlebars/        # Handlebars.js (local, no CDN)
+│       ├── jquery/            # jQuery (local, no CDN)
+│       ├── perfect-scrollbar/ # Perfect Scrollbar (local, no CDN)
+│       ├── select2/           # Select2 (local, no CDN)
+│       ├── tailwind/          # Tailwind CSS 3.x (local, no CDN)
+│       ├── tippy/             # Tippy.js tooltips (local, no CDN)
+│       └── trumbowyg/         # Trumbowyg rich-text editor (local, no CDN)
 └── templates/
     └── layout/
         ├── base.twig          # Base layout (CSS/JS includes, inline overrides)
@@ -85,7 +97,7 @@ KeyHelp will detect it automatically via `_settings.json`.
 
 - **Default Theme** by Alexander Mahr / Keyweb AG — [keyhelp.de](https://www.keyhelp.de)
 - **Bulma** CSS framework
-- **Font Awesome** icons
+- **Font Awesome** 7 icons (local, no CDN)
 
 ## Author
 
@@ -93,4 +105,4 @@ DiamantTh — based on the Default Theme by Alexander Mahr / Keyweb AG
 
 ## Version
 
-`25.3` — Compatible with KeyHelp 25.x
+`26.0` — Compatible with KeyHelp 26.x
