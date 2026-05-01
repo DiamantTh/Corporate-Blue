@@ -1,0 +1,71 @@
+name: Release
+
+# Manuell auslösbar — funktioniert sowohl in GitHub Actions als auch in
+# Gitea Actions (gleiche Syntax). Optional zusätzlich auf Tag-Push.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release-Version (leer = aus _settings.json)"
+        required: false
+        default: ""
+      draft:
+        description: "Release als Draft erstellen"
+        type: boolean
+        required: false
+        default: false
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Release-Tarball
+        id: build
+        run: |
+          set -euo pipefail
+          chmod +x ./build-release.sh
+          if [[ -n "${{ inputs.version }}" ]]; then
+            ./build-release.sh "${{ inputs.version }}"
+            VERSION="${{ inputs.version }}"
+          else
+            ./build-release.sh
+            VERSION="$(grep -oE '"version"[[:space:]]*:[[:space:]]*"[^"]+"' _settings.json \
+                       | head -n1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "archive=dist/corporate-blue-v${VERSION}.tar.bz2" >> "$GITHUB_OUTPUT"
+
+      - name: Checksum
+        run: |
+          cd dist
+          sha256sum "corporate-blue-v${{ steps.build.outputs.version }}.tar.bz2" \
+            > "corporate-blue-v${{ steps.build.outputs.version }}.tar.bz2.sha256"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: corporate-blue-v${{ steps.build.outputs.version }}
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Create Release
+        # Bei workflow_dispatch UND bei tag-push veröffentlichen.
+        # softprops/action-gh-release ist auch in Gitea Actions verfügbar.
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.build.outputs.version }}
+          name: Corporate Blue v${{ steps.build.outputs.version }}
+          draft: ${{ inputs.draft || false }}
+          generate_release_notes: true
+          files: |
+            dist/corporate-blue-v${{ steps.build.outputs.version }}.tar.bz2
+            dist/corporate-blue-v${{ steps.build.outputs.version }}.tar.bz2.sha256

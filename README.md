@@ -110,4 +110,4 @@ DiamantTh — based on the Default Theme by Alexander Mahr / Keyweb AG
 
 ## Version
 
-`25.3` — Compatible with KeyHelp 25.x
+`1.0.1` — Compatible with KeyHelp 25.x
