@@ -2,6 +2,10 @@
 _preview.html
 _preview_admin.html
 _preview_client.html
+_preview-*.html
+
+# Node / Tailwind build
+node_modules/
 # Preview server artifacts
 .DS_Store
 *.swp

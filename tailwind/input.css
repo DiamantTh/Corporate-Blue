@@ -1,0 +1,290 @@
+/* =============================================================================
+ *  Corporate Blue — Tailwind v4 Input
+ * -----------------------------------------------------------------------------
+ *  Token-System "Cyan-Indigo": warmer Indigo-Untergrund + Cyan als einziger
+ *  Akzent. Status-Töne (Success/Warning/Danger) bewusst getrennt vom Akzent.
+ *
+ *  Build:  npm run build:css   (-> ./assets/css/tw.css)
+ *  Watch:  npm run watch:css
+ *
+ *  Quellen für content-Scan: alle Twig-Templates + JS-Files mit Klassen-Strings.
+ * ============================================================================= */
+
+@import "tailwindcss";
+
+@source "../templates/**/*.twig";
+@source "../assets/js/**/*.js";
+
+@theme {
+    /* --- Hintergründe (dunkel, indigo-stichig) ----------------------------- */
+    --color-cb-bg:            #0B0E14;
+    --color-cb-bg-elevated:   #131628;
+    --color-cb-card:          #1A1F3D;
+    --color-cb-card-hover:    #252B55;
+    --color-cb-card-active:   #2F366B;
+    --color-cb-input:         #11152A;
+
+    /* --- Borders ----------------------------------------------------------- */
+    --color-cb-border:        #2D3561;
+    --color-cb-border-subtle: #1F2444;
+    --color-cb-border-strong: #3D4680;
+
+    /* --- Text -------------------------------------------------------------- */
+    --color-cb-heading:       #F8FAFC;
+    --color-cb-text:          #CBD5E1;
+    --color-cb-text-muted:    #94A3B8;
+    --color-cb-text-subtle:   #64748B;
+    --color-cb-text-on-accent:#020617;
+
+    /* --- Akzent (Cyan) ----------------------------------------------------- */
+    --color-cb-accent:        #22D3EE;
+    --color-cb-accent-hover:  #67E8F9;
+    --color-cb-accent-active: #0891B2;
+
+    /* --- Status ------------------------------------------------------------ */
+    --color-cb-success:        #34D399;
+    --color-cb-success-bg:     #052E1F;
+    --color-cb-success-border: #065F46;
+    --color-cb-warning:        #FBBF24;
+    --color-cb-warning-bg:     #3A2A05;
+    --color-cb-warning-border: #92400E;
+    --color-cb-danger:         #F87171;
+    --color-cb-danger-bg:      #3A0A0F;
+    --color-cb-danger-border:  #991B1B;
+
+    /* --- Typo / Radius / Shadow ------------------------------------------- */
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+    --radius-cb-sm: 4px;
+    --radius-cb:    6px;
+    --radius-cb-lg: 8px;
+    --radius-cb-xl: 12px;
+
+    --shadow-cb-card:    0 1px 0 rgb(255 255 255 / 0.04) inset,
+                         0 4px 12px rgb(0 0 0 / 0.35);
+    --shadow-cb-overlay: 0 8px 32px rgb(0 0 0 / 0.55);
+
+    --ring-cb-focus:     0 0 0 3px rgb(34 211 238 / 0.45);
+}
+
+/* =============================================================================
+ *  Base-Layer — globale Defaults für die Seite
+ * ============================================================================= */
+@layer base {
+    html, body {
+        background-color: var(--color-cb-bg);
+        color: var(--color-cb-text);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2, h3, h4, h5, h6 { color: var(--color-cb-heading); }
+    a { color: var(--color-cb-accent); text-decoration: none; }
+    a:hover { color: var(--color-cb-accent-hover); }
+
+    *:focus-visible {
+        outline: none;
+        box-shadow: var(--ring-cb-focus);
+        border-radius: var(--radius-cb-sm);
+    }
+
+    /* native scrollbar — dezent indigo */
+    * { scrollbar-width: thin; scrollbar-color: var(--color-cb-border-strong) transparent; }
+    *::-webkit-scrollbar { width: 10px; height: 10px; }
+    *::-webkit-scrollbar-thumb { background: var(--color-cb-border-strong); border-radius: 999px; }
+    *::-webkit-scrollbar-thumb:hover { background: var(--color-cb-accent-active); }
+}
+
+/* =============================================================================
+ *  Component-Layer — wiederverwendbare Klassen, die in Twig-Macros referenziert
+ *  werden. Alles bleibt komponierbar mit Tailwind-Utilities.
+ * ============================================================================= */
+@layer components {
+
+    /* ---- Card ------------------------------------------------------------ */
+    .cb-card {
+        background-color: var(--color-cb-card);
+        border: 1px solid var(--color-cb-border);
+        border-radius: var(--radius-cb-lg);
+        box-shadow: var(--shadow-cb-card);
+        padding: 1.125rem 1.25rem;
+    }
+    .cb-card-flush { padding: 0; overflow: hidden; }
+    .cb-card-header {
+        padding: 0.875rem 1.125rem;
+        border-bottom: 1px solid var(--color-cb-border);
+        display: flex; align-items: center; gap: 0.75rem;
+    }
+    .cb-card-header > .cb-title { color: var(--color-cb-heading); font-weight: 600; }
+    .cb-card-body { padding: 1.125rem 1.25rem; }
+
+    /* ---- Buttons --------------------------------------------------------- */
+    .cb-btn {
+        display: inline-flex; align-items: center; gap: 0.375rem;
+        padding: 0.4375rem 0.875rem;
+        border-radius: var(--radius-cb);
+        border: 1px solid transparent;
+        font-size: 0.8125rem; font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .cb-btn-primary { background-color: var(--color-cb-accent); color: var(--color-cb-text-on-accent); }
+    .cb-btn-primary:hover { background-color: var(--color-cb-accent-hover); }
+    .cb-btn-primary:active { background-color: var(--color-cb-accent-active); }
+
+    .cb-btn-outline {
+        background-color: rgb(34 211 238 / 0.12);
+        color: var(--color-cb-accent);
+        border-color: rgb(34 211 238 / 0.45);
+    }
+    .cb-btn-outline:hover { background-color: rgb(34 211 238 / 0.20); }
+
+    .cb-btn-ghost {
+        background-color: transparent;
+        color: var(--color-cb-text);
+        border-color: var(--color-cb-border-strong);
+    }
+    .cb-btn-ghost:hover { background-color: var(--color-cb-card-hover); }
+
+    .cb-btn-danger { background-color: var(--color-cb-danger); color: #fff; }
+    .cb-btn-danger:hover { background-color: #ef4444; }
+
+    /* ---- Inputs ---------------------------------------------------------- */
+    .cb-input, .cb-select, .cb-textarea {
+        width: 100%;
+        background-color: var(--color-cb-input);
+        color: var(--color-cb-text);
+        border: 1px solid var(--color-cb-border);
+        border-radius: var(--radius-cb);
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        font-family: inherit;
+        transition: border-color 0.12s, background-color 0.12s, box-shadow 0.12s;
+    }
+    .cb-input::placeholder { color: var(--color-cb-text-subtle); }
+    .cb-input:focus, .cb-select:focus, .cb-textarea:focus {
+        outline: none;
+        border-color: var(--color-cb-accent);
+        background-color: var(--color-cb-card);
+        box-shadow: var(--ring-cb-focus);
+    }
+    .cb-input:disabled { color: var(--color-cb-text-subtle); border-color: var(--color-cb-border-subtle); }
+    .cb-input[readonly] {
+        background-color: var(--color-cb-bg-elevated);
+        color: var(--color-cb-accent);
+        font-family: var(--font-mono);
+    }
+    .cb-label {
+        display: block;
+        color: var(--color-cb-text-muted);
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-bottom: 0.3125rem;
+    }
+    .cb-field { margin-bottom: 0.875rem; }
+
+    /* ---- Tags / Pills ---------------------------------------------------- */
+    .cb-tag {
+        display: inline-flex; align-items: center; gap: 0.3125rem;
+        padding: 0.1875rem 0.5625rem;
+        border-radius: 999px;
+        font-size: 0.6875rem; font-weight: 600;
+        border: 1px solid;
+    }
+    .cb-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background-color: currentColor; }
+    .cb-tag-success { color: var(--color-cb-success); background-color: var(--color-cb-success-bg); border-color: var(--color-cb-success-border); }
+    .cb-tag-warning { color: var(--color-cb-warning); background-color: var(--color-cb-warning-bg); border-color: var(--color-cb-warning-border); }
+    .cb-tag-danger  { color: var(--color-cb-danger);  background-color: var(--color-cb-danger-bg);  border-color: var(--color-cb-danger-border); }
+    .cb-tag-info    { color: var(--color-cb-accent);  background-color: rgb(34 211 238 / 0.12); border-color: rgb(34 211 238 / 0.45); }
+    .cb-tag-neutral { color: var(--color-cb-text-muted); background-color: var(--color-cb-bg-elevated); border-color: var(--color-cb-border); }
+
+    /* ---- Notifications --------------------------------------------------- */
+    .cb-notif {
+        display: flex; gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-cb);
+        border: 1px solid;
+        margin-bottom: 0.625rem;
+    }
+    .cb-notif > .cb-notif-icon { flex-shrink: 0; width: 1.125rem; height: 1.125rem; }
+    .cb-notif > .cb-notif-body  { color: var(--color-cb-text); font-size: 0.75rem; margin: 0; }
+    .cb-notif > .cb-notif-title { color: var(--color-cb-heading); font-weight: 600; font-size: 0.8125rem; margin: 0 0 0.125rem; }
+    .cb-notif-success { background-color: var(--color-cb-success-bg); border-color: var(--color-cb-success-border); color: var(--color-cb-success); }
+    .cb-notif-warning { background-color: var(--color-cb-warning-bg); border-color: var(--color-cb-warning-border); color: var(--color-cb-warning); }
+    .cb-notif-danger  { background-color: var(--color-cb-danger-bg);  border-color: var(--color-cb-danger-border);  color: var(--color-cb-danger); }
+    .cb-notif-info    { background-color: rgb(34 211 238 / 0.12); border-color: rgb(34 211 238 / 0.45); color: var(--color-cb-accent); }
+
+    /* ---- Tables ---------------------------------------------------------- */
+    .cb-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+    .cb-table thead th {
+        text-align: left;
+        padding: 0.625rem 0.875rem;
+        color: var(--color-cb-text-muted);
+        font-weight: 600;
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-bottom: 1px solid var(--color-cb-border);
+        background-color: var(--color-cb-bg-elevated);
+    }
+    .cb-table tbody td { padding: 0.6875rem 0.875rem; border-bottom: 1px solid var(--color-cb-border-subtle); }
+    .cb-table tbody tr { transition: background-color 0.1s; }
+    .cb-table tbody tr:hover { background-color: var(--color-cb-card-hover); }
+    .cb-table tbody tr.is-active {
+        background-color: var(--color-cb-card-active);
+        box-shadow: inset 3px 0 0 var(--color-cb-accent);
+    }
+
+    /* ---- Progress -------------------------------------------------------- */
+    .cb-progress { height: 6px; background-color: var(--color-cb-input); border-radius: 999px; overflow: hidden; }
+    .cb-progress > span { display: block; height: 100%; background-color: var(--color-cb-accent); border-radius: 999px; }
+    .cb-progress.is-warning > span { background-color: var(--color-cb-warning); }
+    .cb-progress.is-danger  > span { background-color: var(--color-cb-danger); }
+
+    /* ---- Modal / Overlay ------------------------------------------------- */
+    .cb-modal {
+        background-color: var(--color-cb-card);
+        border: 1px solid var(--color-cb-border);
+        border-radius: var(--radius-cb-xl);
+        box-shadow: var(--shadow-cb-overlay);
+        padding: 1.25rem 1.5rem;
+    }
+    .cb-modal-overlay {
+        position: fixed; inset: 0;
+        background-color: rgb(0 0 0 / 0.65);
+        backdrop-filter: blur(2px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 1000;
+    }
+
+    /* ---- Sidebar / Layout ------------------------------------------------ */
+    .cb-sidebar {
+        background-color: var(--color-cb-bg-elevated);
+        border-right: 1px solid var(--color-cb-border-subtle);
+        min-height: 100vh;
+    }
+    .cb-sidebar-brand {
+        padding: 1rem 1.25rem;
+        color: var(--color-cb-heading);
+        font-weight: 700;
+        font-size: 1rem;
+        border-bottom: 1px solid var(--color-cb-border-subtle);
+    }
+    .cb-nav { list-style: none; margin: 0; padding: 0.75rem 0; }
+    .cb-nav a {
+        display: flex; align-items: center; gap: 0.625rem;
+        padding: 0.5625rem 1.25rem;
+        color: var(--color-cb-text-muted);
+        border-left: 3px solid transparent;
+        transition: background-color 0.12s, color 0.12s;
+    }
+    .cb-nav a:hover { background-color: var(--color-cb-card-hover); color: var(--color-cb-text); }
+    .cb-nav a.is-active {
+        background-color: var(--color-cb-card-active);
+        color: var(--color-cb-heading);
+        border-left-color: var(--color-cb-accent);
+    }
+}
