@@ -81,6 +81,23 @@ Place the `corporate-blue/` folder in your KeyHelp themes directory:
 
 KeyHelp will detect it automatically via `_settings.json`.
 
+## Release-Build
+
+Manuelles Release-Tarball (plattform-neutral, läuft lokal genauso wie
+in GitHub Actions oder Gitea Actions):
+
+```bash
+./build-release.sh              # Version aus _settings.json
+./build-release.sh 1.0.1        # Version explizit
+```
+
+Ergebnis liegt in `dist/corporate-blue-v<version>.tar.bz2`.
+Das Skript verwendet eine **Whitelist** (`_settings.json`, `_preview.html`,
+`_screenshot.png`, `unicode_reference`, `README.md`, `assets/`, `templates/`)
+und verifiziert am Ende, dass die Pflicht-Bestandteile (`_settings.json`,
+`templates/`, `assets/`) auch wirklich im Archiv liegen — damit so etwas wie
+ein Release ohne `_settings.json` nicht mehr passieren kann.
+
 ## Based On
 
 - **Default Theme** by Alexander Mahr / Keyweb AG — [keyhelp.de](https://www.keyhelp.de)

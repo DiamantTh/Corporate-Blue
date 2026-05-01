@@ -9,3 +9,6 @@ _preview_client.html
 # IDE
 .vscode/
 .idea/
+# Release-Build-Output
+dist/
+
