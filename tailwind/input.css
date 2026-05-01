@@ -299,3 +299,581 @@
         border-left-color: var(--color-cb-accent);
     }
 }
+
+/* =============================================================================
+ *  Bulma-Skin-Layer — reskinnt das parallel geladene Bulma mit Cyan-Indigo-Tokens
+ *  ohne dass intern-Templates angefasst werden müssen.
+ *
+ *  Strategie:
+ *  - Alle Layout-Primitives (level, columns, container, hero) bleiben unberührt
+ *  - Farben, Borders, Backgrounds, Radii, Shadows, Type werden überschrieben
+ *  - Scoping: body (intern hat kein cb-root, daher global - aber nur für Klassen,
+ *    die auf TW-Pages nicht vorkommen, oder per :where() niedrige Spezifität)
+ *  - Sobald intern komplett auf cb-* migriert ist, kann dieser Block raus.
+ * ============================================================================= */
+@layer components {
+
+    /* ---- Body / Hintergrund ---------------------------------------------- */
+    body.default-mode { background-color: var(--color-cb-bg) !important; color: var(--color-cb-text); font-family: var(--font-sans); }
+    body.default-mode h1, body.default-mode h2, body.default-mode h3,
+    body.default-mode h4, body.default-mode h5, body.default-mode h6,
+    body.default-mode .title { color: var(--color-cb-heading); }
+    body.default-mode .subtitle { color: var(--color-cb-text-muted); }
+    body.default-mode strong, body.default-mode b { color: var(--color-cb-heading); }
+    body.default-mode hr { background-color: var(--color-cb-border-subtle); height: 1px; border: 0; }
+    body.default-mode a:not(.button):not(.tag):not(.dropdown-item):not(.navbar-item):not(.menu-list a) { color: var(--color-cb-accent); }
+    body.default-mode a:not(.button):not(.tag):hover { color: var(--color-cb-accent-hover); }
+    body.default-mode .has-text-grey,
+    body.default-mode .has-text-grey-dark,
+    body.default-mode .has-text-grey-darker { color: var(--color-cb-text-muted) !important; }
+    body.default-mode .has-text-grey-light,
+    body.default-mode .has-text-grey-lighter { color: var(--color-cb-text-subtle) !important; }
+    body.default-mode .has-text-link,
+    body.default-mode .has-text-info,
+    body.default-mode .has-text-primary { color: var(--color-cb-accent) !important; }
+    body.default-mode .has-text-success { color: var(--color-cb-success) !important; }
+    body.default-mode .has-text-warning { color: var(--color-cb-warning) !important; }
+    body.default-mode .has-text-danger  { color: var(--color-cb-danger) !important; }
+    body.default-mode .has-background-white,
+    body.default-mode .has-background-light { background-color: var(--color-cb-bg-elevated) !important; }
+
+    /* ---- Header / Top-Nav ------------------------------------------------ */
+    body.default-mode #header {
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-bottom: 1px solid var(--color-cb-border-subtle) !important;
+        box-shadow: 0 1px 0 rgb(0 0 0 / 0.4);
+    }
+    body.default-mode #top-nav { padding: 0.5rem 1rem; }
+    body.default-mode #header img { max-height: 2.25rem; }
+    body.default-mode #clock { color: var(--color-cb-text-muted); font-variant-numeric: tabular-nums; }
+    body.default-mode #header .has-text-grey { color: var(--color-cb-text-muted) !important; }
+    body.default-mode #header .level-item .icon .has-text-link { color: var(--color-cb-accent) !important; }
+    body.default-mode #header .fa-stack .fa-square { color: transparent !important; }
+    body.default-mode #header .fa-stack .fa-inverse { color: var(--color-cb-accent) !important; }
+    body.default-mode #app-sidebar-toggle .icon i { color: var(--color-cb-accent) !important; }
+
+    /* ---- User-Menu Dropdown ---------------------------------------------- */
+    body.default-mode #user-menu {
+        position: absolute;
+        right: 1rem; top: 4rem;
+        min-width: 16rem;
+        background-color: var(--color-cb-card);
+        border: 1px solid var(--color-cb-border);
+        border-radius: var(--radius-cb-lg);
+        box-shadow: var(--shadow-cb-overlay);
+        padding: 0.375rem 0;
+        z-index: 60;
+    }
+    body.default-mode #user-menu .dropdown-item {
+        color: var(--color-cb-text);
+        padding: 0.5rem 0.875rem;
+        display: flex; align-items: center; gap: 0.625rem;
+        font-size: 0.8125rem;
+    }
+    body.default-mode #user-menu .dropdown-item:hover {
+        background-color: var(--color-cb-card-hover);
+        color: var(--color-cb-heading);
+    }
+    body.default-mode #user-menu .dropdown-divider {
+        background-color: var(--color-cb-border-subtle);
+        height: 1px;
+        margin: 0.25rem 0;
+    }
+
+    /* ---- Sidebar --------------------------------------------------------- */
+    body.default-mode #sidebar {
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-right: 1px solid var(--color-cb-border-subtle);
+        padding: 0.75rem 0;
+    }
+    body.default-mode #sidebar #sidebar-navigation { margin-left: 0 !important; padding: 0 0.5rem; }
+    body.default-mode #sidebar .menu-label {
+        color: var(--color-cb-text-muted) !important;
+        text-transform: uppercase;
+        font-size: 0.6875rem;
+        letter-spacing: 0.06em;
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.25rem !important;
+        cursor: pointer;
+        border-radius: var(--radius-cb-sm);
+        display: flex; align-items: center;
+    }
+    body.default-mode #sidebar .menu-label:hover { background-color: var(--color-cb-card-hover); color: var(--color-cb-text) !important; }
+    body.default-mode #sidebar .menu-label .icon { color: var(--color-cb-accent); margin-right: 0.5rem; }
+    body.default-mode #sidebar .menu-list { margin-bottom: 0.75rem; }
+    body.default-mode #sidebar .menu-list a {
+        color: var(--color-cb-text-muted) !important;
+        padding: 0.4375rem 0.75rem 0.4375rem 1.75rem;
+        font-size: 0.8125rem;
+        border-radius: var(--radius-cb-sm);
+        border-left: 2px solid transparent;
+        transition: background-color 0.12s, color 0.12s;
+    }
+    body.default-mode #sidebar .menu-list a:hover {
+        background-color: var(--color-cb-card-hover) !important;
+        color: var(--color-cb-text) !important;
+    }
+    body.default-mode #sidebar .menu-list a.is-active {
+        background-color: var(--color-cb-card-active) !important;
+        color: var(--color-cb-heading) !important;
+        border-left-color: var(--color-cb-accent) !important;
+    }
+    body.default-mode #sidebar .menu-list a small .icon { color: var(--color-cb-text-subtle) !important; }
+
+    body.default-mode #sidebar-overlay {
+        background-color: rgb(0 0 0 / 0.6) !important;
+    }
+
+    /* ---- Content / Footer ------------------------------------------------ */
+    body.default-mode #content-wrapper #content { padding: 1.25rem 1.5rem; }
+    body.default-mode .content-title h1.title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.625rem;
+        border-bottom: 1px solid var(--color-cb-border-subtle);
+    }
+    body.default-mode #footer {
+        background-color: transparent;
+        border-top: 1px solid var(--color-cb-border-subtle);
+        padding: 1.25rem 1rem;
+        color: var(--color-cb-text-subtle);
+        font-size: 0.75rem;
+    }
+    body.default-mode #footer a { color: var(--color-cb-text-muted); }
+    body.default-mode #footer a:hover { color: var(--color-cb-accent); }
+
+    /* ---- Breadcrumbs ----------------------------------------------------- */
+    body.default-mode .breadcrumb { font-size: 0.75rem; }
+    body.default-mode .breadcrumb ul { color: var(--color-cb-text-subtle); }
+    body.default-mode .breadcrumb a { color: var(--color-cb-text-muted) !important; padding: 0 0.5em; }
+    body.default-mode .breadcrumb a:hover { color: var(--color-cb-accent) !important; }
+    body.default-mode .breadcrumb li.is-active a,
+    body.default-mode .breadcrumb li:last-child a { color: var(--color-cb-heading) !important; cursor: default; }
+    body.default-mode .breadcrumb li + li::before { color: var(--color-cb-text-subtle); }
+
+    /* ---- Card ------------------------------------------------------------ */
+    body.default-mode .card,
+    body.default-mode .box {
+        background-color: var(--color-cb-card) !important;
+        border: 1px solid var(--color-cb-border) !important;
+        border-radius: var(--radius-cb-lg) !important;
+        box-shadow: var(--shadow-cb-card) !important;
+        color: var(--color-cb-text);
+    }
+    body.default-mode .card-header {
+        background-color: transparent !important;
+        border-bottom: 1px solid var(--color-cb-border) !important;
+        box-shadow: none !important;
+        border-radius: var(--radius-cb-lg) var(--radius-cb-lg) 0 0;
+        min-height: 3rem;
+        align-items: center;
+    }
+    body.default-mode .card-header-title {
+        color: var(--color-cb-heading) !important;
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 0.75rem 1.125rem;
+    }
+    body.default-mode .card-header-icon { color: var(--color-cb-accent); }
+    body.default-mode .card-content { padding: 1rem 1.125rem; }
+    body.default-mode .card-footer {
+        border-top: 1px solid var(--color-cb-border) !important;
+        background-color: var(--color-cb-bg-elevated);
+    }
+    body.default-mode .card-footer-item {
+        color: var(--color-cb-text-muted);
+        border-right-color: var(--color-cb-border) !important;
+        font-size: 0.8125rem;
+    }
+    body.default-mode .card-footer-item:hover { color: var(--color-cb-accent); background-color: var(--color-cb-card-hover); }
+
+    /* ---- Buttons --------------------------------------------------------- */
+    body.default-mode .button {
+        background-color: var(--color-cb-bg-elevated);
+        border-color: var(--color-cb-border-strong);
+        color: var(--color-cb-text);
+        border-radius: var(--radius-cb);
+        font-weight: 500;
+        transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+    }
+    body.default-mode .button:hover { background-color: var(--color-cb-card-hover); border-color: var(--color-cb-accent); color: var(--color-cb-heading); }
+    body.default-mode .button.is-primary,
+    body.default-mode .button.is-link {
+        background-color: var(--color-cb-accent) !important;
+        border-color: var(--color-cb-accent) !important;
+        color: var(--color-cb-text-on-accent) !important;
+    }
+    body.default-mode .button.is-primary:hover,
+    body.default-mode .button.is-link:hover {
+        background-color: var(--color-cb-accent-hover) !important;
+        border-color: var(--color-cb-accent-hover) !important;
+    }
+    body.default-mode .button.is-info {
+        background-color: rgb(34 211 238 / 0.18) !important;
+        border-color: rgb(34 211 238 / 0.45) !important;
+        color: var(--color-cb-accent) !important;
+    }
+    body.default-mode .button.is-success {
+        background-color: var(--color-cb-success) !important;
+        border-color: var(--color-cb-success) !important;
+        color: #022c22 !important;
+    }
+    body.default-mode .button.is-warning {
+        background-color: var(--color-cb-warning) !important;
+        border-color: var(--color-cb-warning) !important;
+        color: #1f1300 !important;
+    }
+    body.default-mode .button.is-danger {
+        background-color: var(--color-cb-danger) !important;
+        border-color: var(--color-cb-danger) !important;
+        color: #fff !important;
+    }
+    body.default-mode .button.is-light {
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-color: var(--color-cb-border) !important;
+        color: var(--color-cb-text) !important;
+    }
+    body.default-mode .button.is-text { background-color: transparent !important; color: var(--color-cb-accent) !important; }
+    body.default-mode .button.is-outlined { background-color: transparent !important; }
+    body.default-mode .button[disabled],
+    body.default-mode .button.is-static {
+        background-color: var(--color-cb-bg-elevated) !important;
+        color: var(--color-cb-text-subtle) !important;
+        border-color: var(--color-cb-border-subtle) !important;
+        opacity: 0.7;
+    }
+
+    /* ---- Inputs ---------------------------------------------------------- */
+    body.default-mode .input,
+    body.default-mode .textarea,
+    body.default-mode .select select {
+        background-color: var(--color-cb-input) !important;
+        border-color: var(--color-cb-border) !important;
+        color: var(--color-cb-text) !important;
+        border-radius: var(--radius-cb) !important;
+        box-shadow: none !important;
+        font-size: 0.8125rem;
+    }
+    body.default-mode .input::placeholder,
+    body.default-mode .textarea::placeholder { color: var(--color-cb-text-subtle) !important; }
+    body.default-mode .input:focus,
+    body.default-mode .textarea:focus,
+    body.default-mode .select select:focus,
+    body.default-mode .input.is-focused,
+    body.default-mode .textarea.is-focused,
+    body.default-mode .select select.is-focused {
+        border-color: var(--color-cb-accent) !important;
+        background-color: var(--color-cb-card) !important;
+        box-shadow: var(--ring-cb-focus) !important;
+    }
+    body.default-mode .input[readonly],
+    body.default-mode .textarea[readonly] {
+        background-color: var(--color-cb-bg-elevated) !important;
+        color: var(--color-cb-accent) !important;
+        font-family: var(--font-mono);
+    }
+    body.default-mode .input[disabled],
+    body.default-mode .textarea[disabled],
+    body.default-mode .select select[disabled] {
+        color: var(--color-cb-text-subtle) !important;
+        border-color: var(--color-cb-border-subtle) !important;
+        opacity: 0.7;
+    }
+    body.default-mode .label { color: var(--color-cb-text-muted) !important; font-weight: 500; font-size: 0.75rem; }
+    body.default-mode .help { color: var(--color-cb-text-subtle); }
+    body.default-mode .help.is-danger { color: var(--color-cb-danger); }
+    body.default-mode .select:not(.is-multiple):not(.is-loading)::after { border-color: var(--color-cb-accent) !important; }
+    body.default-mode .checkbox:hover, body.default-mode .radio:hover { color: var(--color-cb-text); }
+    body.default-mode .control.has-icons-left .icon,
+    body.default-mode .control.has-icons-right .icon { color: var(--color-cb-text-subtle); }
+
+    /* ---- Tables ---------------------------------------------------------- */
+    body.default-mode .table {
+        background-color: transparent !important;
+        color: var(--color-cb-text);
+        border-collapse: collapse;
+    }
+    body.default-mode .table thead th {
+        color: var(--color-cb-text-muted) !important;
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-bottom: 1px solid var(--color-cb-border) !important;
+        border-color: var(--color-cb-border) !important;
+        font-weight: 600;
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    body.default-mode .table th { color: var(--color-cb-heading) !important; border-color: var(--color-cb-border-subtle) !important; }
+    body.default-mode .table td {
+        border-color: var(--color-cb-border-subtle) !important;
+        color: var(--color-cb-text);
+        vertical-align: middle;
+    }
+    body.default-mode .table tbody tr:hover { background-color: var(--color-cb-card-hover) !important; }
+    body.default-mode .table.is-striped tbody tr:nth-child(even) { background-color: rgb(255 255 255 / 0.02); }
+    body.default-mode .table.is-bordered td,
+    body.default-mode .table.is-bordered th { border: 1px solid var(--color-cb-border-subtle) !important; }
+    body.default-mode .table tfoot td,
+    body.default-mode .table tfoot th { border-color: var(--color-cb-border) !important; color: var(--color-cb-text-muted) !important; }
+
+    /* ---- Tags ------------------------------------------------------------ */
+    body.default-mode .tag:not(body) {
+        background-color: var(--color-cb-bg-elevated);
+        color: var(--color-cb-text-muted);
+        border: 1px solid var(--color-cb-border);
+        border-radius: 999px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        padding: 0.125rem 0.625rem;
+    }
+    body.default-mode .tag.is-primary,
+    body.default-mode .tag.is-link,
+    body.default-mode .tag.is-info {
+        background-color: rgb(34 211 238 / 0.12) !important;
+        color: var(--color-cb-accent) !important;
+        border-color: rgb(34 211 238 / 0.45) !important;
+    }
+    body.default-mode .tag.is-success {
+        background-color: var(--color-cb-success-bg) !important;
+        color: var(--color-cb-success) !important;
+        border-color: var(--color-cb-success-border) !important;
+    }
+    body.default-mode .tag.is-warning {
+        background-color: var(--color-cb-warning-bg) !important;
+        color: var(--color-cb-warning) !important;
+        border-color: var(--color-cb-warning-border) !important;
+    }
+    body.default-mode .tag.is-danger {
+        background-color: var(--color-cb-danger-bg) !important;
+        color: var(--color-cb-danger) !important;
+        border-color: var(--color-cb-danger-border) !important;
+    }
+    body.default-mode .tag.is-light {
+        background-color: var(--color-cb-bg-elevated) !important;
+        color: var(--color-cb-text) !important;
+        border-color: var(--color-cb-border) !important;
+    }
+    body.default-mode .tag.is-dark,
+    body.default-mode .tag.is-black {
+        background-color: var(--color-cb-bg) !important;
+        color: var(--color-cb-text-muted) !important;
+        border-color: var(--color-cb-border-strong) !important;
+    }
+
+    /* ---- Notifications --------------------------------------------------- */
+    body.default-mode .notification {
+        background-color: var(--color-cb-bg-elevated);
+        border: 1px solid var(--color-cb-border);
+        border-radius: var(--radius-cb);
+        color: var(--color-cb-text);
+        padding: 0.875rem 1rem;
+    }
+    body.default-mode .notification.is-info,
+    body.default-mode .notification.is-link,
+    body.default-mode .notification.is-primary {
+        background-color: rgb(34 211 238 / 0.12) !important;
+        border-color: rgb(34 211 238 / 0.45) !important;
+        color: var(--color-cb-accent) !important;
+    }
+    body.default-mode .notification.is-success {
+        background-color: var(--color-cb-success-bg) !important;
+        border-color: var(--color-cb-success-border) !important;
+        color: var(--color-cb-success) !important;
+    }
+    body.default-mode .notification.is-warning {
+        background-color: var(--color-cb-warning-bg) !important;
+        border-color: var(--color-cb-warning-border) !important;
+        color: var(--color-cb-warning) !important;
+    }
+    body.default-mode .notification.is-danger {
+        background-color: var(--color-cb-danger-bg) !important;
+        border-color: var(--color-cb-danger-border) !important;
+        color: var(--color-cb-danger) !important;
+    }
+    body.default-mode .notification .delete { background-color: rgb(0 0 0 / 0.3); }
+
+    /* ---- Modals ---------------------------------------------------------- */
+    body.default-mode .modal-background { background-color: rgb(0 0 0 / 0.7) !important; backdrop-filter: blur(2px); }
+    body.default-mode .modal-card,
+    body.default-mode .modal-content {
+        background-color: var(--color-cb-card) !important;
+        border: 1px solid var(--color-cb-border);
+        border-radius: var(--radius-cb-xl) !important;
+        box-shadow: var(--shadow-cb-overlay);
+        overflow: hidden;
+    }
+    body.default-mode .modal-card-head {
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-bottom: 1px solid var(--color-cb-border) !important;
+    }
+    body.default-mode .modal-card-title { color: var(--color-cb-heading) !important; font-size: 1rem; font-weight: 600; }
+    body.default-mode .modal-card-body { background-color: var(--color-cb-card) !important; color: var(--color-cb-text); }
+    body.default-mode .modal-card-foot {
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-top: 1px solid var(--color-cb-border) !important;
+        gap: 0.5rem;
+    }
+
+    /* ---- Tabs ------------------------------------------------------------ */
+    body.default-mode .tabs ul { border-bottom-color: var(--color-cb-border) !important; }
+    body.default-mode .tabs a {
+        color: var(--color-cb-text-muted) !important;
+        border-bottom: 2px solid transparent !important;
+        font-weight: 500;
+    }
+    body.default-mode .tabs a:hover { color: var(--color-cb-text) !important; border-bottom-color: var(--color-cb-border-strong) !important; }
+    body.default-mode .tabs li.is-active a {
+        color: var(--color-cb-accent) !important;
+        border-bottom-color: var(--color-cb-accent) !important;
+    }
+    body.default-mode .tabs.is-boxed a {
+        background-color: transparent !important;
+        border-color: transparent !important;
+    }
+    body.default-mode .tabs.is-boxed li.is-active a {
+        background-color: var(--color-cb-card) !important;
+        border-color: var(--color-cb-border) var(--color-cb-border) transparent !important;
+        color: var(--color-cb-heading) !important;
+    }
+
+    /* ---- Pagination ------------------------------------------------------ */
+    body.default-mode .pagination-link,
+    body.default-mode .pagination-previous,
+    body.default-mode .pagination-next {
+        background-color: var(--color-cb-bg-elevated);
+        border-color: var(--color-cb-border-strong) !important;
+        color: var(--color-cb-text);
+        border-radius: var(--radius-cb);
+    }
+    body.default-mode .pagination-link:hover { border-color: var(--color-cb-accent) !important; color: var(--color-cb-heading); }
+    body.default-mode .pagination-link.is-current {
+        background-color: var(--color-cb-accent) !important;
+        border-color: var(--color-cb-accent) !important;
+        color: var(--color-cb-text-on-accent) !important;
+    }
+    body.default-mode .pagination-ellipsis { color: var(--color-cb-text-subtle); }
+
+    /* ---- Progress -------------------------------------------------------- */
+    body.default-mode .progress {
+        background-color: var(--color-cb-input) !important;
+        border-radius: 999px;
+        height: 8px;
+    }
+    body.default-mode .progress::-webkit-progress-bar { background-color: var(--color-cb-input); }
+    body.default-mode .progress::-webkit-progress-value { background-color: var(--color-cb-accent); }
+    body.default-mode .progress::-moz-progress-bar { background-color: var(--color-cb-accent); }
+    body.default-mode .progress.is-success::-webkit-progress-value { background-color: var(--color-cb-success); }
+    body.default-mode .progress.is-success::-moz-progress-bar     { background-color: var(--color-cb-success); }
+    body.default-mode .progress.is-warning::-webkit-progress-value { background-color: var(--color-cb-warning); }
+    body.default-mode .progress.is-warning::-moz-progress-bar     { background-color: var(--color-cb-warning); }
+    body.default-mode .progress.is-danger::-webkit-progress-value { background-color: var(--color-cb-danger); }
+    body.default-mode .progress.is-danger::-moz-progress-bar      { background-color: var(--color-cb-danger); }
+
+    /* ---- Server-Load Progress data-load-level (Dashboards) -------------- */
+    body.default-mode progress[data-load-level="low"]::-webkit-progress-value    { background-color: var(--color-cb-accent) !important; }
+    body.default-mode progress[data-load-level="low"]::-moz-progress-bar         { background-color: var(--color-cb-accent) !important; }
+    body.default-mode progress[data-load-level="medium"]::-webkit-progress-value { background-color: var(--color-cb-warning) !important; }
+    body.default-mode progress[data-load-level="medium"]::-moz-progress-bar      { background-color: var(--color-cb-warning) !important; }
+    body.default-mode progress[data-load-level="high"]::-webkit-progress-value   { background-color: var(--color-cb-danger) !important; }
+    body.default-mode progress[data-load-level="high"]::-moz-progress-bar        { background-color: var(--color-cb-danger) !important; }
+
+    /* ---- Dropdowns ------------------------------------------------------- */
+    body.default-mode .dropdown-content {
+        background-color: var(--color-cb-card) !important;
+        border: 1px solid var(--color-cb-border);
+        border-radius: var(--radius-cb-lg);
+        box-shadow: var(--shadow-cb-overlay);
+    }
+    body.default-mode .dropdown-item { color: var(--color-cb-text) !important; }
+    body.default-mode .dropdown-item:hover { background-color: var(--color-cb-card-hover) !important; color: var(--color-cb-heading) !important; }
+    body.default-mode .dropdown-item.is-active { background-color: var(--color-cb-card-active) !important; color: var(--color-cb-accent) !important; }
+    body.default-mode .dropdown-divider { background-color: var(--color-cb-border-subtle); }
+
+    /* ---- Bulma "level" Komponente bleibt als Layout, Trenner anpassen --- */
+    body.default-mode .level.is-mobile + .level { border-top: 1px solid var(--color-cb-border-subtle); padding-top: 0.75rem; }
+
+    /* ---- Hero-Banner (extern wird sowieso TW, aber falls noch genutzt) --- */
+    body.default-mode .hero { background-color: var(--color-cb-bg-elevated); }
+
+    /* ---- Misc ------------------------------------------------------------ */
+    body.default-mode .delete,
+    body.default-mode .modal-close { background-color: rgb(255 255 255 / 0.15); }
+    body.default-mode .delete:hover,
+    body.default-mode .modal-close:hover { background-color: var(--color-cb-danger); }
+    body.default-mode .icon { color: inherit; }
+    body.default-mode .file-cta {
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-color: var(--color-cb-border-strong) !important;
+        color: var(--color-cb-text) !important;
+    }
+    body.default-mode .file-name {
+        background-color: var(--color-cb-input) !important;
+        border-color: var(--color-cb-border-strong) !important;
+        color: var(--color-cb-text-muted) !important;
+    }
+    body.default-mode .file-icon { color: var(--color-cb-accent); }
+
+    /* ---- Code / pre ------------------------------------------------------ */
+    body.default-mode pre, body.default-mode code {
+        background-color: var(--color-cb-bg-elevated) !important;
+        color: var(--color-cb-text);
+        border-radius: var(--radius-cb-sm);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+    }
+    body.default-mode kbd {
+        background-color: var(--color-cb-bg-elevated);
+        color: var(--color-cb-text);
+        border: 1px solid var(--color-cb-border-strong);
+        border-radius: var(--radius-cb-sm);
+        padding: 0.125rem 0.375rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+    }
+
+    /* ---- CodeMirror (Editor) Anpassung ----------------------------------- */
+    body.default-mode .CodeMirror {
+        background-color: var(--color-cb-input) !important;
+        color: var(--color-cb-text) !important;
+        border: 1px solid var(--color-cb-border) !important;
+        border-radius: var(--radius-cb);
+    }
+    body.default-mode .CodeMirror-gutters {
+        background-color: var(--color-cb-bg-elevated) !important;
+        border-right-color: var(--color-cb-border) !important;
+    }
+    body.default-mode .CodeMirror-linenumber { color: var(--color-cb-text-subtle) !important; }
+
+    /* ---- Select2 Skin --------------------------------------------------- */
+    body.default-mode .select2-container--default .select2-selection--single,
+    body.default-mode .select2-container--default .select2-selection--multiple {
+        background-color: var(--color-cb-input) !important;
+        border-color: var(--color-cb-border) !important;
+        color: var(--color-cb-text) !important;
+        border-radius: var(--radius-cb) !important;
+        min-height: 2.25rem;
+    }
+    body.default-mode .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--color-cb-text) !important; line-height: 2.25rem; }
+    body.default-mode .select2-dropdown {
+        background-color: var(--color-cb-card) !important;
+        border-color: var(--color-cb-border) !important;
+        color: var(--color-cb-text);
+    }
+    body.default-mode .select2-results__option--highlighted[aria-selected],
+    body.default-mode .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--color-cb-card-active) !important;
+        color: var(--color-cb-accent) !important;
+    }
+
+    /* ---- Tippy-Theme (light tooltip auf Cyan-Indigo) -------------------- */
+    body.default-mode .tippy-box[data-theme~='light'] {
+        background-color: var(--color-cb-card) !important;
+        color: var(--color-cb-text) !important;
+        border: 1px solid var(--color-cb-border);
+        box-shadow: var(--shadow-cb-overlay);
+    }
+    body.default-mode .tippy-box[data-theme~='light'] .tippy-arrow { color: var(--color-cb-card); }
+}
+
