@@ -45,21 +45,6 @@
                             'is_new_tab': true,
                         }) }}
                     </div>
-
-                    {% if _deprecated_has_statistics %}
-                        <hr>
-                        <div class="has-text-centered has-margin-top-large">
-                            <p class="has-margin-bottom-medium">{{ _deprecated_text|raw }}</p>
-
-                            {{ forms.button({
-                                'label': show_statistic,
-                                'style': 'secondary',
-                                'class': 'is-outlined',
-                                'url': '/webstats/' ~ _user.username ~ '/deprecated/',
-                                'is_new_tab': true,
-                            }) }}
-                        </div>
-                    {% endif %}
                 {% endblock %}
             {% endembed %}
 
@@ -97,7 +82,7 @@
                     {% for month in _stats_by_date %}
 
                         <p class="has-margin-bottom-small">
-                            {{ month.headline|raw }}
+                            {{ month_headline|format(month.date|strong, month.total.total|bytes|strong)|raw }}
                         </p>
 
                         {% embed 'components/additional_content.twig' with {
@@ -134,16 +119,16 @@
                                                         {{ item.label }}
                                                     </th>
                                                     <td class="has-text-right has-ws-no-wrap">
-                                                        {{ item.total }}
+                                                        {{ item.total|bytes }}
                                                     </td>
                                                     <td class="has-text-right has-ws-no-wrap">
-                                                        {{ item.in }}
+                                                        {{ item.in|bytes }}
                                                     </td>
                                                     <td class="has-text-right has-ws-no-wrap">
-                                                        {{ item.out }}
+                                                        {{ item.out|bytes }}
                                                     </td>
                                                     <td class="has-text-right">
-                                                        {{ item.requests }}
+                                                        {{ item.requests|i18n_format }}
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -154,16 +139,16 @@
                                                     {{ total }}
                                                 </td>
                                                 <td class="has-text-right">
-                                                    {{ month.total.total }}
+                                                    {{ month.total.total|bytes }}
                                                 </td>
                                                 <td class="has-text-right">
-                                                    {{ month.total.in }}
+                                                    {{ month.total.in|bytes }}
                                                 </td>
                                                 <td class="has-text-right">
-                                                    {{ month.total.out }}
+                                                    {{ month.total.out|bytes }}
                                                 </td>
                                                 <td class="has-text-right">
-                                                    {{ month.total.requests }}
+                                                    {{ month.total.requests|i18n_format }}
                                                 </td>
                                             </tr>
                                         </tfoot>

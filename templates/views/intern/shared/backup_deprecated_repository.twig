@@ -63,13 +63,13 @@
                                 <tr>
                                     {{ macros.header_checkbox() }}
 
-                                    <th {{ macros.header_sorting('date_sort') }}>
+                                    <th {{ macros.header_sorting('creation_date', 'repository') }}>
                                         {{ creation_date }}
                                     </th>
-                                    <th {{ macros.header_sorting('filename') }}>
+                                    <th {{ macros.header_sorting('filename', 'repository') }}>
                                         {{ filename }}
                                     </th>
-                                    <th {{ macros.header_sorting('size') }}>
+                                    <th {{ macros.header_sorting('size', 'repository') }}>
                                         {{ size }}
                                     </th>
 
@@ -86,7 +86,7 @@
                                         {{ macros.row_checkbox(item.filename, 'files') }}
 
                                         <td class="has-ws-no-wrap">
-                                            {{ item.date }}
+                                            {{ item.creation_date|i18n_date_time }}
                                         </td>
                                         <td>
                                             <span class="icon is-medium">
@@ -95,7 +95,7 @@
                                             {{ item.filename }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.size }}
+                                            {{ item.size|bytes }}
                                         </td>
 
                                         {% if _repository == 'local' %}
@@ -115,7 +115,7 @@
                                         {{ _files|length }} {{ items }}
                                     </td>
                                     <td>
-                                        {{ _total_size }}
+                                        {{ _total_size|bytes }}
                                     </td>
                                     <td colspan="42"></td>
                                 </tr>

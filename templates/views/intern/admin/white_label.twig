@@ -16,7 +16,7 @@
     </p>
 
     {% include 'components/index_page_button_line.twig' with ({
-        '_buttons': [
+        '_buttons_right': [
             forms.button({
                 'label': reset_all_settings,
                 'style': 'secondary',
@@ -47,6 +47,21 @@
 
                     <div class="table-container">
                        <table class="table is-fullwidth is-striped is-hoverable has-valigned-cells">
+                           <colgroup>
+                                    <col>
+                                    <col>
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col style="width: 4%">
+                                    <col>
+                                </colgroup>
                            <thead>
                                <tr>
                                    {{ macros.header_checkbox() }}

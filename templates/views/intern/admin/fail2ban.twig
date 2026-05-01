@@ -54,7 +54,7 @@
 
     {# Button line #}
     {% include 'components/index_page_button_line.twig' with ({
-        '_buttons': [
+        '_buttons_right': [
             forms.button({
                 'label': unban_all,
                 'style': 'secondary',
@@ -102,7 +102,7 @@
                                         {{ blocked_by_jail }}
                                     </th>
                                     {% if not _use_speed_mode %}
-                                        <th style="width: 20%" {{ macros.header_sorting('ban_start_sort') }}>
+                                        <th style="width: 20%" {{ macros.header_sorting('ban_start') }}>
                                             {{ banned_since }}
                                         </th>
                                     {% endif %}
@@ -126,17 +126,21 @@
                                                     <table class="table is-narrow has-ws-no-wrap">
                                                         <tr>
                                                             <th>{{ ban_start_time }}</th>
-                                                            <td>{{ item.ban_start }}</td>
+                                                            <td>{{ item.ban_start|i18n_date_time }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th>{{ ban_end_time }}</th>
-                                                            <td>{{ item.ban_end }}</td>
+                                                            <td>{{ item.ban_end|i18n_date_time }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>{{ ban_duration }}</th>
+                                                            <td>{{ (item.ban_end - item.ban_start)|seconds_to_time }}</td>
                                                         </tr>
                                                     </table>
                                                 {% endset %}
 
                                                 <span class="app-tooltip" data-tippy-content="{{ _tippy_content|escape('html') }}">
-                                                    {{ item.ban_start }}
+                                                    {{ item.ban_start|i18n_date_time }}
                                                 </span>
                                             </td>
                                         {% endif %}
@@ -210,6 +214,15 @@
             } } %}
         {% block body %}
             {% import "macros/forms.twig" as forms %}
+
+            {{ forms.textarea_wrapped({
+                'label': ip_whitelist,
+                'help': ip_whitelist_help ~ '<br>' ~ ip_input_help,
+                'name': 'ip_whitelist',
+                'value': _ip_whitelist,
+                'rows': 3,
+                'max_rows': 10
+            }) }}
 
             {{ forms.checkbox_wrapped({
                 'label': speed_mode,

@@ -111,37 +111,37 @@
                                     {% endif %}
 
                                     {% if _show_disk_space %}
-                                        <th {{ macros.header_sorting('disk_space_sort') }}>
+                                        <th {{ macros.header_sorting('disk_space_current') }}>
                                             {{ disk_space }}
                                         </th>
                                     {% endif %}
 
                                     {% if _show_disk_space_allocation %}
-                                        <th {{ macros.header_sorting('disk_space_web_sort') }}>
+                                        <th {{ macros.header_sorting('disk_space_web') }}>
                                             {{ webspace }}
                                         </th>
-                                        <th {{ macros.header_sorting('disk_space_email_sort') }}>
+                                        <th {{ macros.header_sorting('disk_space_email') }}>
                                             {{ emails }}
                                         </th>
-                                        <th {{ macros.header_sorting('disk_space_db_sort') }}>
+                                        <th {{ macros.header_sorting('disk_space_db') }}>
                                             {{ databases }}
                                         </th>
                                     {% endif %}
 
                                     {% if _show_file_count %}
-                                        <th {{ macros.header_sorting('files_sort') }}>
+                                        <th {{ macros.header_sorting('files_count') }}>
                                             {{ file_count }}
                                         </th>
                                     {% endif %}
 
                                     {% if _show_traffic %}
-                                        <th {{ macros.header_sorting('traffic_sort') }}>
+                                        <th {{ macros.header_sorting('traffic_current') }}>
                                             {{ traffic }}
                                         </th>
                                     {% endif %}
 
                                     {% if _show_last_login %}
-                                        <th {{ macros.header_sorting('last_login_sort') }}>
+                                        <th {{ macros.header_sorting('last_login') }}>
                                             {{ last_login }}
                                         </th>
                                     {% endif %}
@@ -165,7 +165,7 @@
                                         <td class="is-narrow">
 
                                             {% if item.delete_on %}
-                                                <span class="app-tooltip-mandatory" data-tippy-content="<b>{{ will_be_deleted_on }}</b> {{ item.delete_on }}">
+                                                <span class="app-tooltip-mandatory" data-tippy-content="<b>{{ will_be_deleted_on }}</b> {{ item.delete_on|i18n_date }}">
                                                     <span class="icon is-medium has-text-grey-light">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </span>
@@ -181,7 +181,7 @@
                                                     </span>
                                                 </span>
                                             {% elseif item.suspend_on %}
-                                                <span class="app-tooltip-mandatory" data-tippy-content="<b>{{ will_be_suspended_on }}</b> {{ item.suspend_on }}">
+                                                <span class="app-tooltip-mandatory" data-tippy-content="<b>{{ will_be_suspended_on }}</b> {{ item.suspend_on|i18n_date }}">
                                                     <span class="icon is-medium has-text-grey-light">
                                                         <i class="fa-solid fa-lock"></i>
                                                     </span>
@@ -222,45 +222,45 @@
                                         {% if _show_disk_space %}
                                             <td>
                                                 {{ macros.usage_indicator({
-                                                    'current': item.disk_space_current,
-                                                    'max': item.disk_space_max,
-                                                    'percent': item.disk_space_percent,
+                                                    'percent': item.disk_space_usage.percent,
+                                                    'current': item.disk_space_usage.current,
+                                                    'max': item.disk_space_usage.max
                                                 }) }}
                                             </td>
                                         {% endif %}
 
                                         {% if _show_disk_space_allocation %}
                                             <td class="is-narrow has-text-right">
-                                                {{ item.disk_space_web }}
+                                                {{ item.disk_space_web|bytes }}
                                             </td>
                                             <td class="is-narrow has-text-right">
-                                                {{ item.disk_space_email }}
+                                                {{ item.disk_space_email|bytes }}
                                             </td>
                                             <td class="is-narrow has-text-right">
-                                                {{ item.disk_space_db }}
+                                                {{ item.disk_space_db|bytes }}
                                             </td>
                                         {% endif %}
                                         {% if _show_file_count %}
                                             <td>
                                                 {{ macros.usage_indicator({
-                                                    'current': item.files_current,
-                                                    'max': item.files_max,
-                                                    'percent': item.files_percent,
+                                                    'percent': item.files_usage.percent,
+                                                    'current': item.files_usage.current,
+                                                    'max': item.files_usage.max
                                                 }) }}
                                             </td>
                                         {% endif %}
                                         {% if _show_traffic %}
                                             <td>
                                                 {{ macros.usage_indicator({
-                                                    'current': item.traffic_current,
-                                                    'max': item.traffic_max,
-                                                    'percent': item.traffic_percent,
+                                                    'percent': item.traffic_usage.percent,
+                                                    'current': item.traffic_usage.current,
+                                                    'max': item.traffic_usage.max
                                                 }) }}
                                             </td>
                                         {% endif %}
                                         {% if _show_last_login %}
                                             <td class="is-narrow">
-                                                {{ item.last_login|default('—') }}
+                                                {{ item.last_login ? item.last_login|i18n_date_time : '—' }}
                                             </td>
                                         {% endif %}
                                         <td class="is-narrow">
@@ -297,31 +297,31 @@
 
                                     {% if _show_disk_space %}
                                         <td class="has-text-right">
-                                            {{ _total.disk_space.consumed }} / {{ _total.disk_space.allocated_string }}
+                                            {{ _total.disk_space.consumed|bytes }} / {{ _total.disk_space.allocated|bytes }} {{ _total.disk_space.is_unlimited ? '+ ' ~ unlimited }}
                                         </td>
                                     {% endif %}
 
                                     {% if _show_disk_space_allocation %}
                                         <td class="has-text-right">
-                                            {{ _total.disk_space_web }}
+                                            {{ _total.disk_space_web|bytes }}
                                         </td>
                                         <td class="has-text-right">
-                                            {{ _total.disk_space_email }}
+                                            {{ _total.disk_space_email|bytes }}
                                         </td>
                                         <td class="has-text-right">
-                                            {{ _total.disk_space_db }}
+                                            {{ _total.disk_space_db|bytes }}
                                         </td>
                                     {% endif %}
 
                                     {% if _show_file_count %}
                                         <td class="has-text-right">
-                                            {{ _total.files.consumed }} / {{ _total.files.allocated_string }}
+                                            {{ _total.files.consumed|i18n_format_large }} / {{ _total.files.allocated|i18n_format_large }} {{ _total.files.is_unlimited ? '+ ' ~ unlimited }}
                                         </td>
                                     {% endif %}
 
                                     {% if _show_traffic %}
                                         <td class="has-text-right">
-                                            {{ _total.traffic.consumed }} / {{ _total.traffic.allocated_string }}
+                                            {{ _total.traffic.consumed|bytes }} / {{ _total.traffic.allocated|bytes }} {{ _total.traffic.is_unlimited ? '+ ' ~ unlimited }}
                                         </td>
                                     {% endif %}
 

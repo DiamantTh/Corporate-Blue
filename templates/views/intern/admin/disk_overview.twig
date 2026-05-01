@@ -74,27 +74,27 @@
                                             <tbody>
                                                 <tr>
                                                     <th style="width: 50%">{{ size }}</th>
-                                                    <td>{{ item.size }}</td>
+                                                    <td>{{ item.size|bytes }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ reserve }}</th>
-                                                    <td>{{ item.reserve }}</td>
+                                                    <td>{{ item.reserve|bytes }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ max_available }}</th>
-                                                    <td>{{ item.max_available }}</td>
+                                                    <td>{{ item.max_available|bytes }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ free }}</th>
-                                                    <td>{{ item.free }}</td>
+                                                    <td>{{ item.free|bytes }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ used }}</th>
-                                                    <td>{{ item.used }}</td>
+                                                    <td>{{ item.used|bytes }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ usage }}</th>
-                                                    <td>{{ item.usage }}</td>
+                                                    <td>{{ item.usage|i18n_format_percent }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -117,19 +117,19 @@
                                             <tbody>
                                                 <tr>
                                                     <th style="width: 50%">{{ total }}</th>
-                                                    <td>{{ item.inodes }}</td>
+                                                    <td>{{ item.inodes|i18n_format }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ free }}</th>
-                                                    <td>{{ item.inodes_free }}</td>
+                                                    <td>{{ item.inodes_free|i18n_format }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ used }}</th>
-                                                    <td>{{ item.inodes_used }}</td>
+                                                    <td>{{ item.inodes_used|i18n_format }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>{{ usage }}</th>
-                                                    <td>{{ item.inodes_usage }}</td>
+                                                    <td>{{ item.inodes_usage|i18n_format_percent }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

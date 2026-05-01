@@ -134,7 +134,7 @@
                             <table class="table is-narrow is-nested-table">
                                 <tr>
                                     <th>{{ created_at }}</th>
-                                    <td>{{ item.created_at }}</td>
+                                    <td>{{ item.created_at|i18n_date }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ email_sending_receiving }}</th>
@@ -245,7 +245,7 @@
                                         <i class="fa-solid fa-lock"></i>
                                     </span>
                                 {% elseif item.is_lets_encrypt %}
-                                    <span class="icon is-medium has-text-info app-tooltip-mandatory" data-tippy-content="{{ lets_encrypt }}">
+                                    <span class="icon is-medium has-text-info app-tooltip-mandatory" data-tippy-content="{{ lets_encrypt_certificate }}">
                                         <i class="fa-solid fa-lock"></i>
                                     </span>
                                 {% endif %}

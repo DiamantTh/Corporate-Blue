@@ -166,24 +166,24 @@
                                                 <table class="table is-narrow">
                                                     <tr>
                                                         <th>{{ started_on }}</th>
-                                                        <td>{{ item.created_at }}</td>
+                                                        <td>{{ item.created_at|i18n_date_time }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>{{ ended_on }}</th>
-                                                        <td>{{ item.ended_at }}</td>
+                                                        <td>{{ item.ended_at|i18n_date_time }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>{{ duration }}</th>
-                                                        <td>{{ item.duration }}</td>
+                                                        <td>{{ item.duration|seconds_to_time(false) }}</td>
                                                     </tr>
                                                 </table>
                                             {% endset %}
 
                                             <span class="app-tooltip" data-tippy-content="{{ _tippy_content|escape('html') }}">
-                                                {{ item.created_at }}
+                                                {{ item.created_at|i18n_date_time }}
                                             </span>
                                         {% else %}
-                                            {{ item.created_at }}
+                                            {{ item.created_at|i18n_date_time }}
                                         {% endif %}
                                     </td>
 
@@ -198,15 +198,15 @@
                                     <td class="is-narrow">
                                         {% if item.type == 'check' and item.info %}
                                             <span class="app-tooltip" data-tippy-content="{{ repository_size_change }}">
-                                                {% include 'components/icon_backup.twig' with { '_type': item.info.increase ? 'size_increase' : 'size_decrease' } %}
-                                                {{ item.info.size }}
+                                                {% include 'components/icon_backup.twig' with { '_type': item.info.size > 0 ? 'size_increase' : 'size_decrease' } %}
+                                                {{ item.info.size|bytes }}
                                             </span>
                                         {% endif %}
                                     </td>
                                     <td class="has-ws-no-wrap">
                                         {% include 'components/icon_backup.twig' with { '_type': 'state_' ~ item.state } %}
                                         {{ item.state_label }}
-                                        {{ item.progress ? ' (' ~ item.progress ~ ')' }}
+                                        {{ item.progress ? ' (' ~ item.progress|i18n_format_percent ~ ')' }}
                                     </td>
                                     <td>
                                         {% if item.issues %}

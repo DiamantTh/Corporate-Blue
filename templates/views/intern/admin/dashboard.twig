@@ -499,26 +499,26 @@
                                             <td>
                                                 {{ macros.icon({text: webspace, color: '#3273DC'}) }}
                                             </td>
-                                            <td class="has-text-right">{{ _consumed_disk_space.web }}</td>
+                                            <td class="has-text-right">{{ _consumed_disk_space.web|bytes }}</td>
                                         </tr>
                                         <tr>
                                             <td class="is-narrow">
                                                 {{ macros.icon({text: emails, color: '#23D160'}) }}
                                             </td>
-                                            <td class="has-text-right">{{ _consumed_disk_space.email }}</td>
+                                            <td class="has-text-right">{{ _consumed_disk_space.email|bytes }}</td>
                                         </tr>
                                         <tr>
                                             <td class="is-narrow">
                                                 {{ macros.icon({text: databases, color: '#FF2B56'}) }}
                                             </td>
-                                            <td class="has-text-right">{{ _consumed_disk_space.db }}</td>
+                                            <td class="has-text-right">{{ _consumed_disk_space.db|bytes }}</td>
                                         </tr>
                                     </tbody>
                                     <tfoot class="is-summary">
                                         <tr>
                                             <td></td>
                                             <th class="has-text-right">
-                                                {{ _consumed_disk_space.total }}
+                                                {{ _consumed_disk_space.total|bytes }}
                                             </th>
                                         </tr>
                                     </tfoot>
@@ -549,31 +549,31 @@
                                             <td class="is-narrow">
                                                 {{ macros.icon({text: 'HTTP', color: '#3273DC'}) }}
                                             </td>
-                                            <td class="has-text-right">{{ _consumed_traffic.http }}</td>
+                                            <td class="has-text-right">{{ _consumed_traffic.http|bytes }}</td>
                                         </tr>
                                         <tr>
                                             <td class="is-narrow">
                                                 {{ macros.icon({text: 'FTP', color: '#23D160'}) }}
                                             </td>
-                                            <td class="has-text-right">{{ _consumed_traffic.ftp }}</td>
+                                            <td class="has-text-right">{{ _consumed_traffic.ftp|bytes }}</td>
                                         </tr>
                                         <tr>
                                             <td class="is-narrow">
                                                 {{ macros.icon({text: 'POP3/IMAP', color: '#FF2B56'}) }}
                                             </td>
-                                            <td class="has-text-right">{{ _consumed_traffic.pop3_imap }}</td>
+                                            <td class="has-text-right">{{ _consumed_traffic.pop3_imap|bytes }}</td>
                                         </tr>
                                         <tr>
                                             <td class="is-narrow">
                                                 {{ macros.icon({text: 'SMTP', color: '#FFAA00'}) }}
                                             </td>
-                                            <td class="has-text-right">{{ _consumed_traffic.smtp }}</td>
+                                            <td class="has-text-right">{{ _consumed_traffic.smtp|bytes }}</td>
                                         </tr>
                                     </tbody>
                                     <tfoot class="is-summary">
                                         <tr>
                                             <td></td>
-                                            <th class="has-text-right">{{ _consumed_traffic.total }}</th>
+                                            <th class="has-text-right">{{ _consumed_traffic.total|bytes }}</th>
                                         </tr>
                                     </tfoot>
                                 </table>

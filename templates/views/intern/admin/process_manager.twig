@@ -159,7 +159,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <b>{{ _available_memory }}</b>
+                                    <b>{{ _available_memory|bytes }}</b>
                                 </td>
                             </tr>
                         </table>
@@ -175,17 +175,17 @@
                             <tr>
                                 <th>{{ total }}</th>
                                 <td><b>{{ _summary.total.memory_usage|i18n_format_percent }}</b></td>
-                                <td><b>{{ _summary.total.memory_human_readable }}</b></td>
+                                <td><b>{{ _summary.total.memory_usage_in_byte|bytes }}</b></td>
                             </tr>
                             <tr>
                                 <th>{{ by_system }}</th>
                                 <td>{{ _summary.system.memory_usage|i18n_format_percent }}</td>
-                                <td>{{ _summary.system.memory_human_readable }}</td>
+                                <td>{{ _summary.system.memory_usage_in_byte|bytes }}</td>
                             </tr>
                             <tr>
                                 <th>{{ by_clients }}</th>
                                 <td>{{ _summary.clients.memory_usage|i18n_format_percent }}</td>
-                                <td>{{ _summary.clients.memory_human_readable }}</td>
+                                <td>{{ _summary.clients.memory_usage_in_byte|bytes }}</td>
                             </tr>
                         </table>
                     {% endblock %}
@@ -258,16 +258,16 @@
                                         {{ item.process_count }}
                                     </td>
                                     <td>
-                                        {{ item.cpu_usage }}
+                                        {{ item.cpu_usage|i18n_format_percent }}
                                     </td>
                                     <td>
-                                        {{ item.memory_usage }}
+                                        {{ item.memory_usage|i18n_format_percent }}
                                     </td>
                                     <td>
-                                        {{ item.memory_human_readable }}
+                                        {{ item.memory_usage_in_byte|bytes }}
                                     </td>
                                     <td>
-                                        {{ item.cpu_time }}
+                                        {{ item.cpu_time|seconds_to_time(false) }}
                                     </td>
                                     <td class="has-ws-no-wrap">
                                         {% if item.username != 'root' %}
@@ -385,16 +385,16 @@
                                         {{ item.state_meaning }}
                                     </td>
                                     <td>
-                                        {{ item.cpu_usage }}
+                                        {{ item.cpu_usage|i18n_format_percent }}
                                     </td>
                                     <td>
-                                        {{ item.memory_usage }}
+                                        {{ item.memory_usage|i18n_format_percent }}
                                     </td>
                                     <td>
-                                        {{ item.memory_human_readable }}
+                                        {{ item.memory_usage_in_byte|bytes }}
                                     </td>
                                     <td>
-                                        {{ item.cpu_time }}
+                                        {{ item.cpu_time|seconds_to_time(false) }}
                                     </td>
                                     <td>
                                         {{ item.command }}

@@ -55,10 +55,10 @@
                                     <th {{ macros.header_sorting('snapshot_count') }}>
                                         {{ snapshots }}
                                     </th>
-                                    <th {{ macros.header_sorting('size_sort') }} colspan="2">
+                                    <th {{ macros.header_sorting('size') }} colspan="2">
                                         {{ size }}
                                     </th>
-                                    <th {{ macros.header_sorting('created_at_sort') }}>
+                                    <th {{ macros.header_sorting('created_at') }}>
                                         {{ created_at }}
                                     </th>
                                     <th class="is-narrow">
@@ -102,25 +102,23 @@
                                             {{ item.storage_type_label }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.snapshot_count }}{{ item.max_snapshots ? ' / ' ~ item.max_snapshots }}
+                                            {{ item.snapshot_count }}{{ item.max_snapshots > 0 ? ' / ' ~ item.max_snapshots }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.size }}
-                                        </td>
-                                        <td class="is-narrow">
+                                            {{ item.size|bytes }}
                                             {% set _tippy_content %}
                                                 <table class="table is-narrow is-nested-table">
                                                     <tr>
                                                         <th>{{ on_file_system }}</th>
-                                                        <td class="has-ws-no-wrap">{{ item.size }}</td>
+                                                        <td class="has-ws-no-wrap">{{ item.size|bytes }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>{{ after_restore_of_all_snapshots}}</th>
-                                                        <td class="has-ws-no-wrap">{{ item.size_after_restore }}</td>
+                                                        <td class="has-ws-no-wrap">{{ item.size_after_restore|bytes }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>{{ saved_storage_space }}</th>
-                                                        <td class="has-ws-no-wrap">{{ item.saved_space }}</td>
+                                                        <td class="has-ws-no-wrap">{{ item.saved_space_bytes|bytes }} / {{ item.saved_space_share|i18n_format_percent }}</td>
                                                     </tr>
                                                 </table>
                                             {% endset %}
@@ -132,7 +130,7 @@
                                             </div>
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.created_at }}
+                                            {{ item.created_at|i18n_date_time }}
                                         </td>
                                         <td class="is-narrow">
                                             {% include 'components/icon.twig' with {
@@ -149,6 +147,12 @@
                                             {% include 'components/icon.twig' with {
                                                 '_type': 'restore',
                                                 '_url': '?page=backup_restore&action=select&id_repository=' ~ item.id
+                                            } %}
+
+                                            {% include 'components/icon.twig' with {
+                                                '_type': 'repair',
+                                                '_tooltip': troubleshooting,
+                                                '_url': '?page=backup_troubleshooting&id_repository=' ~ item.id
                                             } %}
 
                                             {% include 'components/icon.twig' with {

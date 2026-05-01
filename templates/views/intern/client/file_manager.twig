@@ -147,7 +147,7 @@
                                             {{ item.is_dir ? '' : item.size|bytes }}
                                         </td>
                                         <td class="has-ws-no-wrap">
-                                            {{ item.modified_time }}
+                                            {{ item.modified_time|i18n_date_time }}
                                         </td>
                                         <td class="has-ws-no-wrap">
                                             {{ item.permissions|chunk_split(3, ' ') }}
@@ -384,7 +384,7 @@
                         'value': 'file',
                     },
                     {
-                        'label': symbolic_link,
+                        'label': shortcut,
                         'name': 'type',
                         'value': 'link',
                     },

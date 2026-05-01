@@ -16,7 +16,7 @@
     </p>
 
     <p class="has-margin-bottom-medium">
-        {{ last_update }}: {{ _last_update }}
+        {{ last_update }}: {{ _last_update == 0 ? no_data_gathered : _last_update|i18n_date_time }}
     </p>
 
     <div class="has-margin-bottom-large">
@@ -66,16 +66,16 @@
                                 <th {{ macros.header_sorting('total') }}>
                                     {{ total }}
                                 </th>
-                                <th {{ macros.header_sorting('http') }}>
+                                <th {{ macros.header_sorting('http') }} colspan="3">
                                     HTTP
                                 </th>
-                                <th {{ macros.header_sorting('ftp') }}>
+                                <th {{ macros.header_sorting('ftp') }} colspan="3">
                                     FTP
                                 </th>
-                                <th {{ macros.header_sorting('pop3_imap') }}>
+                                <th {{ macros.header_sorting('pop3_imap') }} colspan="3">
                                     POP3 / IMAP
                                 </th>
-                                <th {{ macros.header_sorting('smtp') }}>
+                                <th {{ macros.header_sorting('smtp') }} colspan="3">
                                     SMTP
                                 </th>
                             </tr>
@@ -94,39 +94,39 @@
                                     </td>
                                     <td>
                                         {{ macros.usage_indicator({
-                                            'current': item.total,
-                                            'max': item.total_max,
+                                            'current': item.total|bytes,
+                                            'max': item.total_max|bytes_unlimited,
                                             'percent': item.total_percent,
                                         }) }}
                                     </td>
                                     {% for protocol in item.protocols %}
                                         <td class="has-ws-no-wrap">
-                                            <ul class="horizontal-separated-list">
-                                                <li>{{ protocol.total }}</li>
-                                                <li>{{ protocol.share }}</li>
-                                            </ul>
-                                            <p class="has-text-grey">
+                                            {{ protocol.total|bytes }}
+                                        </td>
+                                        <td class="has-ws-no-wrap has-text-grey">
+                                            <p>
                                                 <span class="app-tooltip" data-tippy-content="{{ incoming_traffic }}">
                                                     <span class="icon is-medium">
                                                         <i class="fa-solid fa-arrow-right-to-bracket"></i>
                                                     </span>
-                                                    {{ protocol.in }}
+                                                    {{ protocol.in|bytes }}
                                                 </span>
                                             </p>
-                                            <p class="has-text-grey">
+                                            <p>
                                                 <span class="app-tooltip" data-tippy-content="{{ outgoing_traffic }}">
                                                     <span class="icon is-medium">
                                                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                                                     </span>
-                                                    {{ protocol.out }}
+                                                    {{ protocol.out|bytes }}
                                                 </span>
                                             </p>
-                                            <p class="has-text-grey">
+                                        </td>
+                                        <td class="has-ws-no-wrap has-text-grey">
                                                 <span class="app-tooltip" data-tippy-content="{{ request_count }}">
                                                     <span class="icon is-medium">
                                                         <i class="fa-solid fa-arrow-right-arrow-left"></i>
                                                     </span>
-                                                    {{ protocol.requests }}
+                                                    {{ protocol.requests|i18n_format }}
                                                 </span>
                                             </p>
                                         </td>
@@ -140,13 +140,13 @@
                                     {{ _client_stats|length|i18n_format }} {{ items_total }}
                                 </td>
                                 <td class="has-text-right">
-                                    {{ _total_stats.total }}
+                                    {{ _total_stats.total|bytes }}
                                 </td>
                                 {% for protocol in _total_stats.protocols %}
-                                    <td>
+                                    <td colspan="3">
                                         <ul class="horizontal-separated-list">
-                                            <li>{{ protocol.total }}</li>
-                                            <li>{{ protocol.share }}</li>
+                                            <li>{{ protocol.total|bytes }}</li>
+                                            <li>{{ protocol.share|i18n_format_percent }}</li>
                                         </ul>
                                     </td>
                                 {% endfor %}
