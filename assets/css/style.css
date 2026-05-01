@@ -304,14 +304,34 @@ a.dropdown-item:hover, a.dropdown-item.is-active { background-color: rgba(50,115
 .hero.is-primary .box               { box-shadow: 0 8px 32px rgba(0,0,0,.55) !important; }
 
 /* ── Tippy Tooltips ──────────────────────────────────────── */
-/* Default-Theme von tippy.js ist weiß/hellgrau — auf dunklem Bg ein Fremdkörper.
-   Hier auf Corporate-Blue-Palette umstellen (Card-BG + Border + helle Schrift). */
-.tippy-box                                              { background-color: #1c2e46 !important; color: #c8d8f0 !important; border: 1px solid #2c4060 !important; box-shadow: 0 4px 14px rgba(0,0,0,.45) !important; }
-.tippy-box > .tippy-content                             { color: #c8d8f0 !important; }
-.tippy-box[data-placement^="top"]    > .tippy-arrow::before { border-top-color: #1c2e46 !important; }
-.tippy-box[data-placement^="bottom"] > .tippy-arrow::before { border-bottom-color: #1c2e46 !important; }
-.tippy-box[data-placement^="left"]   > .tippy-arrow::before { border-left-color: #1c2e46 !important; }
-.tippy-box[data-placement^="right"]  > .tippy-arrow::before { border-right-color: #1c2e46 !important; }
+/* main.js setzt theme: 'light-border' als Default → alle Tooltips haben
+   data-theme="light-border". Vendor-Bundle (zeile 17, minified) liefert
+   dafür weiße Box + weiße Pfeile. Wir überstempeln auf Corporate-Blue.
+   Selektoren mit [data-theme~="light-border"] um die Vendor-Spezifität
+   sauber zu schlagen (insbesondere für die Arrow-Farben). */
+.tippy-box,
+.tippy-box[data-theme~="light-border"]                  { background-color: #1c2e46 !important; color: #c8d8f0 !important; border: 1px solid #2c4060 !important; box-shadow: 0 4px 14px rgba(0,0,0,.45) !important; }
+.tippy-box > .tippy-content,
+.tippy-box[data-theme~="light-border"] > .tippy-content { color: #c8d8f0 !important; }
+.tippy-box[data-theme~="light-border"] > .tippy-backdrop { background-color: #1c2e46 !important; }
+
+/* Arrow-Farben (CSS- und SVG-Variante) für alle Placements */
+.tippy-box[data-placement^="top"]    > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="top"]    > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="top"]    > .tippy-arrow::after { border-top-color: #1c2e46 !important; }
+.tippy-box[data-placement^="bottom"] > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="bottom"] > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="bottom"] > .tippy-arrow::after { border-bottom-color: #1c2e46 !important; }
+.tippy-box[data-placement^="left"]   > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="left"]   > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="left"]   > .tippy-arrow::after { border-left-color: #1c2e46 !important; }
+.tippy-box[data-placement^="right"]  > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="right"]  > .tippy-arrow::before,
+.tippy-box[data-theme~="light-border"][data-placement^="right"]  > .tippy-arrow::after { border-right-color: #1c2e46 !important; }
+
+/* Tooltip-Inhalt: <pre>/<code> (Zertifikate, Mail-Header) lesbar halten */
+.tippy-box pre, .tippy-box code     { background-color: #07111d !important; color: #82baf0 !important; border: none !important; }
+.tippy-box a                        { color: #7ab0f8 !important; }
 
 /* tippy "light-border"-Theme (von KeyHelp für Hinweis-/Warn-Tooltips genutzt,
    z. B. das Ausrufezeichen im Header unter der Useranzeige) */
