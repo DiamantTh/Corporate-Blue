@@ -290,6 +290,19 @@ a.dropdown-item:hover, a.dropdown-item.is-active { background-color: rgba(50,115
 .has-background-white-ter           { background-color: #1c2e46 !important; }
 .has-text-black, .has-text-dark     { color: #c8d8f0 !important; }
 
+/* ── Login / extern.twig ─────────────────────────────────── */
+/* layout/extern.twig nutzt .hero.is-primary.is-fullheight als Vollflächen-
+   Hintergrund. Bulmas .is-primary ist Türkis — auf Corporate-Blue-Verlauf. */
+.hero.is-primary                    { background: linear-gradient(135deg, #07111d 0%, #0e1e30 50%, #15253a 100%) !important; color: #c8d8f0 !important; }
+.hero.is-primary .title,
+.hero.is-primary .subtitle          { color: #dce8f8 !important; }
+.hero.is-primary .has-text-grey-lighter,
+.hero.is-primary .has-text-grey     { color: rgba(192,216,240,.55) !important; }
+.hero.is-primary a                  { color: #7ab0f8 !important; }
+.hero.is-primary a:hover            { color: #fff !important; }
+/* Login-Box etwas prominenter abheben */
+.hero.is-primary .box               { box-shadow: 0 8px 32px rgba(0,0,0,.55) !important; }
+
 /* ── Tippy Tooltips ──────────────────────────────────────── */
 /* Default-Theme von tippy.js ist weiß/hellgrau — auf dunklem Bg ein Fremdkörper.
    Hier auf Corporate-Blue-Palette umstellen (Card-BG + Border + helle Schrift). */
