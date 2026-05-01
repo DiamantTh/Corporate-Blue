@@ -1,4 +1,18 @@
-{% extends 'layout/extern.twig' %}
+{# =============================================================================
+ *  Login (Tailwind v4 / cb-* Komponenten)
+ *
+ *  Erste vollständig auf Tailwind migrierte Page. Erbt direkt von base.twig
+ *  (statt von extern.twig), damit der Bulma-Hero-Wrapper entfällt und das
+ *  Layout selbst Tailwind-nativ aufgebaut werden kann.
+ *
+ *  JS-Kompatibilität: Klassen .app-show-with-login-password,
+ *  .app-show-with-login-webauthn, .app-show-login-password/-webauthn,
+ *  .app-show-password, .app-button-with-loading-animation,
+ *  .app-password-annotation-caps-lock, .field-Wrapper für Show-Password,
+ *  IDs #form-login / #form-login-webauthn / #app-webauthn-login bleiben
+ *  unverändert — sonst bricht login.js / main.js / webauthn.js.
+ ============================================================================= #}
+{% extends 'layout/base.twig' %}
 
 
 {% block page_scripts %}
@@ -7,105 +21,142 @@
 {% endblock %}
 
 
-{% block content %}
-    {% import "macros/macros.twig" as macros %}
-    {% import "macros/forms.twig" as forms %}
+{% block body_content %}
+<main class="cb-root flex flex-col min-h-screen">
 
-    {% include 'components/browser_requirements.twig' %}
+    <section class="flex-1 flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-md">
 
-    <div class="app-show-with-login-password">
-        <form id="form-login" action="index.php" method="post">
-            <input type="hidden" name="submit" value="1">
-
-            {% if _open_page %}
-                <input type="hidden" name="open_page" value="{{ _open_page }}">
-            {% endif %}
-
-            {{ forms.input_wrapped({
-                'name': 'username',
-                'type': 'text',
-                'label': username,
-                'value': _username,
-                'autocomplete': 'username',
-                'is_autofocus': true,
-                'is_required': true,
-                'is_hide_asterisk': true,
-            }) }}
-
-            {{ forms.input_wrapped({
-                'name': 'password',
-                'type': 'password',
-                'label': password,
-                'autocomplete': 'current-password',
-                'is_required': true,
-                'is_hide_asterisk': true,
-                'addons': {
-                    'right': {
-                        'type': 'action',
-                        'label': show,
-                        'action': 'app-show-password'
-                    }
-                },
-            }) }}
-
-            <div id="password-annotations" class="has-text-danger has-margin-top-none">
-                <small>
-                    <p class="app-password-annotation-caps-lock">
-                        {{ password_annotation_caps_lock }}
-                    </p>
-                </small>
+            {# ── Logo ─────────────────────────────────────────────────── #}
+            <div class="mb-8 text-center">
+                {% if _white_label.logo_extern_url %}
+                    <img src="{{ _white_label.logo_extern_url }}&{{ _globals.cache_control }}"
+                         alt="logo" class="mx-auto" style="max-height: 8rem">
+                {% else %}
+                    <img src="theme/bulma/assets/img/dark/keyhelp{{ _app.is_pro ? '-pro' }}.svg?{{ _globals.cache_control }}"
+                         alt="logo" class="mx-auto h-16">
+                {% endif %}
             </div>
 
-            <div class="has-margin-top-large">
-                {{ forms.button({
-                    'label': login,
-                    'style': 'primary',
-                    'class': 'is-fullwidth app-button-with-loading-animation'
-                }) }}
+            {# ── Card ─────────────────────────────────────────────────── #}
+            <div class="cb-card cb-card-flush">
+                <div class="cb-card-body">
+
+                    {% include 'components/browser_requirements.twig' %}
+                    {% include 'components/events.twig' %}
+
+                    {# ── Login-Form (Passwort) ───────────────────────── #}
+                    <div class="app-show-with-login-password">
+                        <form id="form-login" action="index.php" method="post">
+                            <input type="hidden" name="submit" value="1">
+
+                            {% if _open_page %}
+                                <input type="hidden" name="open_page" value="{{ _open_page }}">
+                            {% endif %}
+
+                            <div class="cb-field field">
+                                <label class="cb-label" for="login-username">{{ username }}</label>
+                                <input class="cb-input"
+                                       type="text"
+                                       id="login-username"
+                                       name="username"
+                                       value="{{ _username }}"
+                                       autocomplete="username"
+                                       autofocus
+                                       required>
+                            </div>
+
+                            <div class="cb-field field">
+                                <label class="cb-label" for="login-password">{{ password }}</label>
+                                <div class="flex gap-2">
+                                    <input class="cb-input flex-1"
+                                           type="password"
+                                           id="login-password"
+                                           name="password"
+                                           autocomplete="current-password"
+                                           required>
+                                    <button type="button"
+                                            class="cb-btn cb-btn-ghost app-show-password whitespace-nowrap">
+                                        {{ show }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="password-annotations" class="-mt-2 mb-3 text-cb-danger text-xs">
+                                <p class="app-password-annotation-caps-lock">
+                                    {{ password_annotation_caps_lock }}
+                                </p>
+                            </div>
+
+                            <button type="submit"
+                                    class="cb-btn cb-btn-primary w-full justify-center app-button-with-loading-animation">
+                                <span>{{ login }}</span>
+                            </button>
+                        </form>
+
+                        <p class="text-center mt-4">
+                            <a href="?page=forgot_password" class="text-cb-accent hover:text-cb-accent-hover text-sm">
+                                {{ forgot_password }}
+                            </a>
+                        </p>
+
+                        {% if _app.is_demo %}
+                            <div class="mt-5">
+                                {% include 'components/demo_login_info.twig' %}
+                            </div>
+                        {% endif %}
+
+                        <p class="text-center mt-6">
+                            <a class="app-show-login-webauthn text-cb-accent hover:text-cb-accent-hover text-sm cursor-pointer">
+                                {{ login_with_web_auth }}
+                            </a>
+                        </p>
+                    </div>
+
+                    {# ── Login-Form (WebAuthn) ───────────────────────── #}
+                    <div class="app-show-with-login-webauthn" style="display: none">
+                        <form id="form-login-webauthn">
+                            <div class="cb-field field">
+                                <label class="cb-label" for="login-webauthn-username">{{ username }}</label>
+                                <input class="cb-input"
+                                       type="text"
+                                       id="login-webauthn-username"
+                                       name="webauthn_username"
+                                       value="{{ _webauthn_username }}"
+                                       autocomplete="username"
+                                       autofocus
+                                       required>
+                            </div>
+
+                            <button type="button"
+                                    id="app-webauthn-login"
+                                    class="cb-btn cb-btn-primary w-full justify-center mt-4">
+                                <i class="fa-solid fa-fingerprint"></i>
+                                <span>{{ login_with_web_auth }}</span>
+                            </button>
+                        </form>
+
+                        <p class="text-center mt-6">
+                            <a class="app-show-login-password text-cb-accent hover:text-cb-accent-hover text-sm cursor-pointer">
+                                {{ login_with_password }}
+                            </a>
+                        </p>
+                    </div>
+
+                </div>
             </div>
-        </form>
 
-        <p class="has-text-centered has-text-link has-margin-top-medium">
-            <a href="?page=forgot_password">{{ forgot_password }}</a>
-        </p>
+            {# ── Footer ───────────────────────────────────────────────── #}
+            <div class="text-center text-xs text-cb-text-subtle mt-6">
+                {% if _white_label.footer %}
+                    {{ _white_label.footer|raw }}
+                {% else %}
+                    {% include 'components/footer/copyright.twig' %}
+                {% endif %}
+            </div>
 
-        {% if _app.is_demo %}
-            {% include 'components/demo_login_info.twig' %}
-        {% endif %}
+        </div>
+    </section>
 
-        <p class="has-text-centered has-text-link has-margin-top-large">
-            <a class="app-show-login-webauthn" href="javascript:void(0)">{{ login_with_web_auth }}</a>
-        </p>
-
-    </div>
-
-    <div class="app-show-with-login-webauthn" style="display: none">
-        <form id="form-login-webauthn">
-            {{ forms.input_wrapped({
-                'name': 'webauthn_username',
-                'type': 'text',
-                'label': username,
-                'value': _webauthn_username,
-                'autocomplete': 'username',
-                'is_autofocus': true,
-                'is_required': true,
-                'is_hide_asterisk': true,
-            }) }}
-
-            <div class="has-margin-bottom-large"></div>
-
-            {{ forms.button({
-                'label': login_with_web_auth,
-                'icon': 'fa-solid fa-fingerprint',
-                'style': 'primary',
-                'class': 'is-fullwidth',
-                'type': 'button',
-                'id': 'app-webauthn-login'
-            }) }}
-        </form>
-
-        <p class="has-text-centered has-text-link has-margin-top-large">
-            <a class="app-show-login-password" href="javascript:void(0)">{{ login_with_password }}</a>
-        </p>
-    </div>
+</main>
 {% endblock %}

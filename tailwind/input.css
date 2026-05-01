@@ -10,7 +10,14 @@
  *  Quellen für content-Scan: alle Twig-Templates + JS-Files mit Klassen-Strings.
  * ============================================================================= */
 
-@import "tailwindcss";
+/* Coexistence-Modus: KEIN preflight, sonst zerlegt es das parallel geladene
+ * Bulma-Stylesheet. Wir importieren nur theme + utilities. Die Tailwind-
+ * Komponenten/Tokens leben dann harmonisch neben Bulma. Sobald die letzte
+ * Bulma-Page migriert ist, kann das auf "@import \"tailwindcss\";" gewechselt
+ * und der globale Base-Layer (siehe unten) entkoppelt werden. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @source "../templates/**/*.twig";
 @source "../assets/js/**/*.js";
@@ -70,32 +77,36 @@
 }
 
 /* =============================================================================
- *  Base-Layer — globale Defaults für die Seite
+ *  Base-Layer — Defaults für TW-only Pages.
+ *  WICHTIG: Solange Bulma parallel läuft, alles auf .cb-root scopen, damit
+ *  globale html/body-Regeln Bulma-Pages nicht überschreiben.
  * ============================================================================= */
 @layer base {
-    html, body {
+    .cb-root {
         background-color: var(--color-cb-bg);
         color: var(--color-cb-text);
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
     }
 
-    h1, h2, h3, h4, h5, h6 { color: var(--color-cb-heading); }
-    a { color: var(--color-cb-accent); text-decoration: none; }
-    a:hover { color: var(--color-cb-accent-hover); }
+    .cb-root h1, .cb-root h2, .cb-root h3,
+    .cb-root h4, .cb-root h5, .cb-root h6 { color: var(--color-cb-heading); }
+    .cb-root a { color: var(--color-cb-accent); text-decoration: none; }
+    .cb-root a:hover { color: var(--color-cb-accent-hover); }
 
-    *:focus-visible {
+    .cb-root *:focus-visible {
         outline: none;
         box-shadow: var(--ring-cb-focus);
         border-radius: var(--radius-cb-sm);
     }
 
-    /* native scrollbar — dezent indigo */
-    * { scrollbar-width: thin; scrollbar-color: var(--color-cb-border-strong) transparent; }
-    *::-webkit-scrollbar { width: 10px; height: 10px; }
-    *::-webkit-scrollbar-thumb { background: var(--color-cb-border-strong); border-radius: 999px; }
-    *::-webkit-scrollbar-thumb:hover { background: var(--color-cb-accent-active); }
+    /* native scrollbar — dezent indigo (nur innerhalb cb-root) */
+    .cb-root * { scrollbar-width: thin; scrollbar-color: var(--color-cb-border-strong) transparent; }
+    .cb-root *::-webkit-scrollbar { width: 10px; height: 10px; }
+    .cb-root *::-webkit-scrollbar-thumb { background: var(--color-cb-border-strong); border-radius: 999px; }
+    .cb-root *::-webkit-scrollbar-thumb:hover { background: var(--color-cb-accent-active); }
 }
 
 /* =============================================================================

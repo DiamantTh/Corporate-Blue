@@ -25,26 +25,9 @@
     <title>{{ _app.page_title }}</title>
     <link rel="stylesheet" href="/theme/bulma/assets/css/style{{ _app.theme.is_dark_mode ? '-dark' }}{{ _app.text_direction == 'rtl' ? '-rtl' }}.css?{{ _globals.cache_control }}">
 
-    {# ─── Tailwind (prefix: tw-, no preflight to keep Bulma intact) ─── #}
-    <script src="/theme/bulma/assets/vendor/tailwind/tailwind.min.js"></script>
-    <script>
-        tailwind.config = {
-            prefix: 'tw-',
-            corePlugins: { preflight: false },
-            theme: {
-                extend: {
-                    colors: {
-                        'corp': {
-                            '500': '#3273DC',
-                            '700': '#0f3d6e',
-                            '800': '#00305D',
-                            '900': '#00182e'
-                        }
-                    }
-                }
-            }
-        };
-    </script>
+    {# ─── Tailwind v4 (Cyan-Indigo Token-System, ohne Preflight) ─────── #}
+    {# Läuft parallel zu Bulma. cb-* Klassen + Utilities sind verfügbar. #}
+    <link rel="stylesheet" href="/theme/bulma/assets/css/tw.css?{{ _globals.cache_control }}">
 
     {# ─── Corporate Blue Overrides ─────────────────────────────────────── #}
     <style>

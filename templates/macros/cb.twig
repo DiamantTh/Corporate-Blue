@@ -1,0 +1,140 @@
+{# =============================================================================
+ *  Corporate Blue — UI Macros (Tailwind v4 / cb-* Komponenten)
+ *
+ *  Verwendung:
+ *      {% import "macros/cb.twig" as cb %}
+ *      {{ cb.btn({label: "Speichern", style: "primary"}) }}
+ *
+ *  Bewusst minimal-API gehalten — Macros nehmen ein options-Hash und liefern
+ *  semantisches HTML mit cb-Klassen. Pure Bulma-Macros bleiben in
+ *  macros/macros.twig + macros/forms.twig erhalten (Migration läuft graduell).
+ ============================================================================= #}
+
+
+{# ─── card ──────────────────────────────────────────────────────────────── #}
+{# opts: title, body (raw), footer (raw), flush(bool), class #}
+{% macro card(opts) %}
+    <div class="cb-card{{ opts.flush ? ' cb-card-flush' }}{{ opts.class ? ' ' ~ opts.class }}">
+        {% if opts.title %}
+            <div class="cb-card-header">
+                <span class="cb-title">{{ opts.title }}</span>
+            </div>
+        {% endif %}
+        {% if opts.body is defined %}
+            <div class="cb-card-body">{{ opts.body|raw }}</div>
+        {% endif %}
+        {% if opts.footer %}
+            <div class="cb-card-footer">{{ opts.footer|raw }}</div>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+
+{# ─── btn ───────────────────────────────────────────────────────────────── #}
+{# opts: label, style (primary|outline|ghost|danger), type, icon (FA), id,
+        class, name, value, disabled, fullwidth #}
+{% macro btn(opts) %}
+    {% set kind = opts.style|default('primary') %}
+    <button
+        type="{{ opts.type|default('submit') }}"
+        {% if opts.id %}id="{{ opts.id }}"{% endif %}
+        {% if opts.name %}name="{{ opts.name }}"{% endif %}
+        {% if opts.value is defined %}value="{{ opts.value }}"{% endif %}
+        {% if opts.disabled %}disabled{% endif %}
+        class="cb-btn cb-btn-{{ kind }}{{ opts.fullwidth ? ' w-full justify-center' }}{{ opts.class ? ' ' ~ opts.class }}"
+    >
+        {% if opts.icon %}<i class="{{ opts.icon }}"></i>{% endif %}
+        <span>{{ opts.label }}</span>
+    </button>
+{% endmacro %}
+
+
+{# ─── input ─────────────────────────────────────────────────────────────── #}
+{# opts: name, type (text|password|email|...), label, value, placeholder,
+        autocomplete, autofocus, required, readonly, disabled, id,
+        help (Hinweis darunter), error (Fehler darunter, danger-Stil) #}
+{% macro input(opts) %}
+    {% set type = opts.type|default('text') %}
+    {% set id = opts.id|default('cb-input-' ~ opts.name) %}
+    <div class="cb-field field">
+        {% if opts.label %}
+            <label class="cb-label" for="{{ id }}">
+                {{ opts.label }}{% if opts.required and not opts.hide_asterisk %} <span class="text-cb-danger">*</span>{% endif %}
+            </label>
+        {% endif %}
+        <input
+            class="cb-input"
+            type="{{ type }}"
+            id="{{ id }}"
+            name="{{ opts.name }}"
+            {% if opts.value is defined %}value="{{ opts.value }}"{% endif %}
+            {% if opts.placeholder %}placeholder="{{ opts.placeholder }}"{% endif %}
+            {% if opts.autocomplete %}autocomplete="{{ opts.autocomplete }}"{% endif %}
+            {% if opts.autofocus %}autofocus{% endif %}
+            {% if opts.required %}required{% endif %}
+            {% if opts.readonly %}readonly{% endif %}
+            {% if opts.disabled %}disabled{% endif %}
+        >
+        {% if opts.help %}<p class="text-cb-text-muted text-xs mt-1">{{ opts.help }}</p>{% endif %}
+        {% if opts.error %}<p class="text-cb-danger text-xs mt-1">{{ opts.error }}</p>{% endif %}
+    </div>
+{% endmacro %}
+
+
+{# ─── input_with_action ─────────────────────────────────────────────────── #}
+{# Wie input(), aber mit rechtem Action-Button (z. B. "show" für Passwort).
+   opts wie input(), zusätzlich: action_label, action_class. #}
+{% macro input_with_action(opts) %}
+    {% set type = opts.type|default('text') %}
+    {% set id = opts.id|default('cb-input-' ~ opts.name) %}
+    <div class="cb-field field">
+        {% if opts.label %}
+            <label class="cb-label" for="{{ id }}">
+                {{ opts.label }}{% if opts.required and not opts.hide_asterisk %} <span class="text-cb-danger">*</span>{% endif %}
+            </label>
+        {% endif %}
+        <div class="flex gap-2">
+            <input
+                class="cb-input flex-1"
+                type="{{ type }}"
+                id="{{ id }}"
+                name="{{ opts.name }}"
+                {% if opts.value is defined %}value="{{ opts.value }}"{% endif %}
+                {% if opts.autocomplete %}autocomplete="{{ opts.autocomplete }}"{% endif %}
+                {% if opts.autofocus %}autofocus{% endif %}
+                {% if opts.required %}required{% endif %}
+            >
+            <button type="button" class="cb-btn cb-btn-ghost {{ opts.action_class }}">
+                {{ opts.action_label }}
+            </button>
+        </div>
+    </div>
+{% endmacro %}
+
+
+{# ─── tag ───────────────────────────────────────────────────────────────── #}
+{# opts: label, style (success|warning|danger|info|neutral) #}
+{% macro tag(opts) %}
+    <span class="cb-tag cb-tag-{{ opts.style|default('neutral') }}">{{ opts.label }}</span>
+{% endmacro %}
+
+
+{# ─── notif ─────────────────────────────────────────────────────────────── #}
+{# opts: title, body (raw), style (success|warning|danger|info), icon (FA-Klasse) #}
+{% macro notif(opts) %}
+    {% set kind = opts.style|default('info') %}
+    <div class="cb-notif cb-notif-{{ kind }}">
+        {% if opts.icon %}<i class="cb-notif-icon {{ opts.icon }}"></i>{% endif %}
+        <div class="flex-1">
+            {% if opts.title %}<p class="cb-notif-title">{{ opts.title }}</p>{% endif %}
+            {% if opts.body is defined %}<p class="cb-notif-body">{{ opts.body|raw }}</p>{% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+
+{# ─── label ─────────────────────────────────────────────────────────────── #}
+{# Standalone-Label (nicht im Input-Macro). #}
+{% macro label(text, for) %}
+    <label class="cb-label"{% if for %} for="{{ for }}"{% endif %}>{{ text }}</label>
+{% endmacro %}
