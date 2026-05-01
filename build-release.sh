@@ -29,8 +29,9 @@ if [[ -z "${VERSION:-}" ]]; then
 fi
 
 PKG_NAME="corporate-blue"
-STAGE="dist/.stage/${PKG_NAME}"
-ARCHIVE="dist/${PKG_NAME}-v${VERSION}.tar.bz2"
+OUT_DIR="${OUT_DIR:-dist}"
+STAGE="${OUT_DIR}/.stage/${PKG_NAME}"
+ARCHIVE="${OUT_DIR}/${PKG_NAME}-v${VERSION}.tar.bz2"
 
 # --- Whitelist: alles, was KeyHelp tatsächlich braucht -----------------------
 #  Bewusst Whitelist statt Blacklist, damit _settings.json niemals
@@ -54,7 +55,7 @@ for f in _settings.json templates assets; do
 done
 
 # --- Stage aufbauen ----------------------------------------------------------
-rm -rf "dist/.stage"
+rm -rf "${OUT_DIR}/.stage"
 mkdir -p "$STAGE"
 for item in "${INCLUDE[@]}"; do
     if [[ -e "$item" ]]; then
@@ -75,12 +76,12 @@ find "$STAGE" -type f \( \
     \) -delete
 
 # --- Tarball schnüren --------------------------------------------------------
-mkdir -p dist
+mkdir -p "$OUT_DIR"
 rm -f "$ARCHIVE"
 tar --owner=0 --group=0 --numeric-owner \
-    -cjf "$ARCHIVE" -C "dist/.stage" "$PKG_NAME"
+    -cjf "$ARCHIVE" -C "${OUT_DIR}/.stage" "$PKG_NAME"
 
-rm -rf "dist/.stage"
+rm -rf "${OUT_DIR}/.stage"
 
 # --- Verifikation ------------------------------------------------------------
 echo
