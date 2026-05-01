@@ -1,39 +1,49 @@
-<div class="divider">{{ keyhelp_demo }}</div>
+{# =============================================================================
+ *  Demo-Login-Hinweise (Tailwind / cb-* Variante)
+ *  Original (Bulma) liegt in .archive/demo_login_info.twig.bulma.
+ ============================================================================= #}
+<div class="mt-6 pt-4 border-t border-cb-border-subtle">
 
-<div class="has-text-centered">
-    <p>
+    <p class="text-center text-xs uppercase tracking-wider text-cb-text-muted mb-3">
+        {{ keyhelp_demo }}
+    </p>
+
+    <p class="text-center text-sm text-cb-text mb-4">
         {{ demo_login_note }}
     </p>
 
-    <div class="columns has-margin-top-xsmall">
-        <div class="column">
-            <a href="javascript:void(0)" class="app-demo-login-link has-text-link has-text-weight-bold" data-area="admin">{{ admin_area }}</a>
-            <p class="has-margin-top-small">
-                {{ username }}: <b>admin</b><br>
-                {{ password }}: <b>admin</b>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="text-center">
+            <a href="javascript:void(0)"
+               class="app-demo-login-link text-cb-accent hover:text-cb-accent-hover font-semibold text-sm"
+               data-area="admin">{{ admin_area }}</a>
+            <p class="mt-2 text-xs text-cb-text-muted">
+                {{ username }}: <b class="text-cb-text">admin</b><br>
+                {{ password }}: <b class="text-cb-text">admin</b>
             </p>
         </div>
-        <div class="column has-equal-height">
-            <a href="javascript:void(0)" class="app-demo-login-link has-text-link has-text-weight-bold" data-area="client">{{ client_area }}</a>
-            <p class="has-margin-top-small">
-                {{ username }}: <b>client</b><br>
-                {{ password }}: <b>client</b>
+        <div class="text-center">
+            <a href="javascript:void(0)"
+               class="app-demo-login-link text-cb-accent hover:text-cb-accent-hover font-semibold text-sm"
+               data-area="client">{{ client_area }}</a>
+            <p class="mt-2 text-xs text-cb-text-muted">
+                {{ username }}: <b class="text-cb-text">client</b><br>
+                {{ password }}: <b class="text-cb-text">client</b>
             </p>
         </div>
     </div>
 
-    <div class="table-container has-margin-top-none">
-        <table class="table is-narrow is-borderless is-centered">
+    <table class="cb-table mt-4 text-xs">
+        <tbody>
             <tr>
-                <td><a href="https://demo.keyhelp.eu" class="has-text-link" rel="nofollow noopener noreferrer" target="_blank">https://demo.keyhelp.eu</a></td>
-                <td class="has-text-left">English</td>
+                <td><a href="https://demo.keyhelp.eu" class="text-cb-accent hover:text-cb-accent-hover" rel="nofollow noopener noreferrer" target="_blank">https://demo.keyhelp.eu</a></td>
+                <td>English</td>
             </tr>
             <tr>
-                <td><a href="https://demo.keyhelp.de" class="has-text-link" rel="nofollow noopener noreferrer" target="_blank">https://demo.keyhelp.de</a></td>
+                <td><a href="https://demo.keyhelp.de" class="text-cb-accent hover:text-cb-accent-hover" rel="nofollow noopener noreferrer" target="_blank">https://demo.keyhelp.de</a></td>
                 <td>German / Deutsch</td>
             </tr>
-        </table>
-    </div>
-</div>
+        </tbody>
+    </table>
 
-<hr>
+</div>

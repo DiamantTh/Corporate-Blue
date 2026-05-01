@@ -1,0 +1,27 @@
+{# Tailwind-Variante des Browser-Requirements-Hinweisblocks. #}
+<div class="text-center mb-4">
+    <!--[if lt IE 9]>
+        <div class="cb-notif cb-notif-danger">
+            <div class="flex-1">
+                <p class="cb-notif-title">You're using an outdated browser!</p>
+                <p class="cb-notif-body">Upgrade your browser if you want to use this application.</p>
+            </div>
+        </div>
+    <![endif]-->
+
+    <noscript>
+        <div class="cb-notif cb-notif-danger">
+            <div class="flex-1">
+                <p class="cb-notif-title">JavaScript is disabled!</p>
+                <p class="cb-notif-body">Please activate JavaScript in the settings of your browser or use a browser which supports JavaScript.</p>
+            </div>
+        </div>
+    </noscript>
+
+    <div id="app-cookies-disabled" class="cb-notif cb-notif-danger" style="display: none">
+        <div class="flex-1">
+            <p class="cb-notif-title">Cookies are disabled!</p>
+            <p class="cb-notif-body">This application requires cookies to store session informations. Please activate cookies in the settings of your browser.</p>
+        </div>
+    </div>
+</div>

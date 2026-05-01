@@ -2,10 +2,7 @@
 
 
 {% block content %}
-    {% import "macros/macros.twig" as macros %}
-    {% import "macros/forms.twig" as forms %}
-
-    {% include 'components/browser_requirements.twig' %}
+    {% include 'components/browser_requirements_tw.twig' %}
 
     <form action="?page=login_two_factor" method="post">
         <input type="hidden" name="submit" value="1">
@@ -15,23 +12,26 @@
             <input type="hidden" name="open_page" value="{{ _open_page }}">
         {% endif %}
 
-        {{ forms.input_wrapped({
-            'label': auth_code,
-            'help': auth_code_help,
-            'type': 'text',
-            'name': 'auth_code',
-            'is_autofocus': true,
-            'is_required': true,
-            'is_hide_asterisk': true,
-            'autocomplete': 'off',
-        }) }}
+        <div class="cb-field field">
+            <label class="cb-label" for="tf-code">{{ auth_code }}</label>
+            <input class="cb-input"
+                   type="text"
+                   id="tf-code"
+                   name="auth_code"
+                   autocomplete="off"
+                   inputmode="numeric"
+                   autofocus
+                   required>
+            {% if auth_code_help %}
+                <p class="text-xs text-cb-text-muted mt-1">{{ auth_code_help }}</p>
+            {% endif %}
+        </div>
 
-        <div class="has-margin-y-large">
-            {{ forms.button({
-                'label': verify,
-                'style': 'primary',
-                'class': 'is-fullwidth app-button-with-loading-animation'
-            }) }}
+        <div class="mt-5">
+            <button type="submit"
+                    class="cb-btn cb-btn-primary w-full justify-center app-button-with-loading-animation">
+                <span>{{ verify }}</span>
+            </button>
         </div>
     </form>
 {% endblock %}

@@ -1,42 +1,55 @@
+{# =============================================================================
+ *  Externes Layout (Tailwind v4 / cb-* Komponenten)
+ *
+ *  Wrapper für alle nicht-eingeloggten Seiten (Login, Forgot/Reset Password,
+ *  Two-Factor, Misc-Notice). Erbt von base.twig, stellt Logo + Card + Footer
+ *  bereit und liefert {% block content %} für die jeweilige Page.
+ *
+ *  Komplett Tailwind-only — base.twig lädt tw.css parallel zu Bulma,
+ *  hier wird nur cb-root verwendet.
+ ============================================================================= #}
 {% extends 'layout/base.twig' %}
 
 
 {% block body_content %}
-<main>
-    <section class="hero is-primary is-fullheight">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-centered">
-                    <div class="column is-6-tablet is-6-desktop is-4-widescreen is-4-fullhd">
-                        <div class="box">
-                            <figure class="has-margin-y-medium">
-                                {% if _white_label.logo_extern_url %}
-                                    <div class="has-text-centered">
-                                        <img src="{{ _white_label.logo_extern_url }}&{{ _globals.cache_control }}" style="max-height: 10rem" alt="logo">
-                                    </div>
-                                {% else %}
-                                    <img src="theme/bulma/assets/img/dark/keyhelp{{ _app.is_pro ? '-pro' }}.svg?{{ _globals.cache_control }}" alt="logo">
-                                {% endif %}
-                            </figure>
+<main class="cb-root flex flex-col min-h-screen">
 
-                            {% include 'components/events.twig' %}
+    <section class="flex-1 flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-md">
 
-                            <div class="has-margin-top-medium"></div>
+            {# ── Logo ─────────────────────────────────────────────────── #}
+            <div class="mb-8 text-center">
+                {% if _white_label.logo_extern_url %}
+                    <img src="{{ _white_label.logo_extern_url }}&{{ _globals.cache_control }}"
+                         alt="logo" class="mx-auto" style="max-height: 8rem">
+                {% else %}
+                    <img src="theme/bulma/assets/img/dark/keyhelp{{ _app.is_pro ? '-pro' }}.svg?{{ _globals.cache_control }}"
+                         alt="logo" class="mx-auto h-16">
+                {% endif %}
+            </div>
 
-                            {% block content %}{% endblock %}
-                        </div>
+            {# ── Card ─────────────────────────────────────────────────── #}
+            <div class="cb-card cb-card-flush">
+                <div class="cb-card-body">
 
-                        <div class="has-text-centered is-size-7 has-text-grey-lighter">
-                            {% if _white_label.footer %}
-                                {{ _white_label.footer|raw }}
-                            {% else %}
-                                {% include 'components/footer/copyright.twig' %}
-                            {% endif %}
-                        </div>
-                    </div>
+                    {% include 'components/events_tw.twig' %}
+
+                    {% block content %}{% endblock %}
+
                 </div>
             </div>
+
+            {# ── Footer ───────────────────────────────────────────────── #}
+            <div class="text-center text-xs text-cb-text-subtle mt-6">
+                {% if _white_label.footer %}
+                    {{ _white_label.footer|raw }}
+                {% else %}
+                    {% include 'components/footer/copyright.twig' %}
+                {% endif %}
+            </div>
+
         </div>
     </section>
+
 </main>
 {% endblock %}
