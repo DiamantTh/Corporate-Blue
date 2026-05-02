@@ -23,7 +23,9 @@
     {% endif %}
 
     <title>{{ _app.page_title }}</title>
-    <link rel="stylesheet" href="/theme/bulma/assets/css/style{{ _app.theme.is_dark_mode ? '-dark' }}{{ _app.text_direction == 'rtl' ? '-rtl' }}.css?{{ _globals.cache_control }}">
+    {# Corporate-Blue ist generell dunkel — wir laden IMMER den Dark-Skin als Bulma-Basis. #}
+    {# Auf den dunklen Bulma-Skin setzt der Cyan-Indigo-Reskin in tw.css auf. #}
+    <link rel="stylesheet" href="/theme/bulma/assets/css/style-dark{{ _app.text_direction == 'rtl' ? '-rtl' }}.css?{{ _globals.cache_control }}">
 
     {# ─── Tailwind v4 (Cyan-Indigo Token-System, ohne Preflight) ─────── #}
     {# Läuft parallel zu Bulma. cb-* Klassen + Bulma-Reskin in tw.css. #}
