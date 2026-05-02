@@ -15,7 +15,7 @@
 
 <div id="{{ _id|default('app-modal-id') }}" class="modal">
     <div class="modal-background"></div>
-    <div class="modal-card">
+    <div class="modal-card{{ _card_class is defined and _card_class ? ' ' ~ _card_class }}">
         <header class="modal-card-head">
             <p class="modal-card-title">{{ _title|default('Title') }}</p>
             <button class="delete app-modal-close" type="button"></button>

@@ -1576,6 +1576,21 @@
     body.default-mode .modal-card-body { padding: 1rem; overflow-y: auto; color: var(--color-cb-text); }
     body.default-mode .modal-close { position: absolute; top: 0.75rem; right: 0.75rem; }
 
+    /* Modal-Groessenvarianten */
+    body.default-mode .modal-card.is-large,
+    body.default-mode .modal-content.is-large { max-width: 1024px; }
+    body.default-mode .modal-card.is-xlarge,
+    body.default-mode .modal-content.is-xlarge { max-width: 1280px; }
+    body.default-mode .modal-card.is-fullscreen,
+    body.default-mode .modal-content.is-fullscreen { max-width: calc(100vw - 2rem); }
+
+    /* DKIM-Modal: monospace + horizontaler Scroll statt Truncation */
+    body.default-mode .modal-card.is-dkim .input[readonly] {
+        font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+        font-size: 0.825rem;
+        letter-spacing: 0.01em;
+    }
+
     /* --- Tabs ------------------------------------------------------------- */
     body.default-mode .tabs {
         overflow-x: auto;
