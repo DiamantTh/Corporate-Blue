@@ -1234,6 +1234,104 @@
         body.default-mode .columns:not(.is-mobile) > .column { width: 100%; flex: none; }
     }
 
+    /* Responsive Varianten (Bulma-Breakpoints):
+       mobile <=768, tablet >=769, desktop >=1024, widescreen >=1216, fullhd >=1408.
+       Ohne diese landen Konfiguration/Systemstatus & Co. in einer einzigen
+       Reihe (Template nutzt z. B. `is-6-tablet is-4-widescreen`). */
+    @media (min-width: 769px) {
+        body.default-mode .column.is-narrow-tablet { flex: none; width: unset; }
+        body.default-mode .column.is-full-tablet { flex: none; width: 100%; }
+        body.default-mode .column.is-half-tablet { flex: none; width: 50%; }
+        body.default-mode .column.is-one-third-tablet { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-two-thirds-tablet { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-one-quarter-tablet { flex: none; width: 25%; }
+        body.default-mode .column.is-three-quarters-tablet { flex: none; width: 75%; }
+        body.default-mode .column.is-1-tablet { flex: none; width: 8.3333%; }
+        body.default-mode .column.is-2-tablet { flex: none; width: 16.6666%; }
+        body.default-mode .column.is-3-tablet { flex: none; width: 25%; }
+        body.default-mode .column.is-4-tablet { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-5-tablet { flex: none; width: 41.6666%; }
+        body.default-mode .column.is-6-tablet { flex: none; width: 50%; }
+        body.default-mode .column.is-7-tablet { flex: none; width: 58.3333%; }
+        body.default-mode .column.is-8-tablet { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-9-tablet { flex: none; width: 75%; }
+        body.default-mode .column.is-10-tablet { flex: none; width: 83.3333%; }
+        body.default-mode .column.is-11-tablet { flex: none; width: 91.6666%; }
+        body.default-mode .column.is-12-tablet { flex: none; width: 100%; }
+    }
+    @media (min-width: 1024px) {
+        body.default-mode .column.is-narrow-desktop { flex: none; width: unset; }
+        body.default-mode .column.is-full-desktop { flex: none; width: 100%; }
+        body.default-mode .column.is-half-desktop { flex: none; width: 50%; }
+        body.default-mode .column.is-one-third-desktop { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-two-thirds-desktop { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-one-quarter-desktop { flex: none; width: 25%; }
+        body.default-mode .column.is-three-quarters-desktop { flex: none; width: 75%; }
+        body.default-mode .column.is-1-desktop { flex: none; width: 8.3333%; }
+        body.default-mode .column.is-2-desktop { flex: none; width: 16.6666%; }
+        body.default-mode .column.is-3-desktop { flex: none; width: 25%; }
+        body.default-mode .column.is-4-desktop { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-5-desktop { flex: none; width: 41.6666%; }
+        body.default-mode .column.is-6-desktop { flex: none; width: 50%; }
+        body.default-mode .column.is-7-desktop { flex: none; width: 58.3333%; }
+        body.default-mode .column.is-8-desktop { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-9-desktop { flex: none; width: 75%; }
+        body.default-mode .column.is-10-desktop { flex: none; width: 83.3333%; }
+        body.default-mode .column.is-11-desktop { flex: none; width: 91.6666%; }
+        body.default-mode .column.is-12-desktop { flex: none; width: 100%; }
+    }
+    @media (min-width: 1216px) {
+        body.default-mode .column.is-narrow-widescreen { flex: none; width: unset; }
+        body.default-mode .column.is-full-widescreen { flex: none; width: 100%; }
+        body.default-mode .column.is-half-widescreen { flex: none; width: 50%; }
+        body.default-mode .column.is-one-third-widescreen { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-two-thirds-widescreen { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-one-quarter-widescreen { flex: none; width: 25%; }
+        body.default-mode .column.is-three-quarters-widescreen { flex: none; width: 75%; }
+        body.default-mode .column.is-1-widescreen { flex: none; width: 8.3333%; }
+        body.default-mode .column.is-2-widescreen { flex: none; width: 16.6666%; }
+        body.default-mode .column.is-3-widescreen { flex: none; width: 25%; }
+        body.default-mode .column.is-4-widescreen { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-5-widescreen { flex: none; width: 41.6666%; }
+        body.default-mode .column.is-6-widescreen { flex: none; width: 50%; }
+        body.default-mode .column.is-7-widescreen { flex: none; width: 58.3333%; }
+        body.default-mode .column.is-8-widescreen { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-9-widescreen { flex: none; width: 75%; }
+        body.default-mode .column.is-10-widescreen { flex: none; width: 83.3333%; }
+        body.default-mode .column.is-11-widescreen { flex: none; width: 91.6666%; }
+        body.default-mode .column.is-12-widescreen { flex: none; width: 100%; }
+    }
+    @media (min-width: 1408px) {
+        body.default-mode .column.is-narrow-fullhd { flex: none; width: unset; }
+        body.default-mode .column.is-full-fullhd { flex: none; width: 100%; }
+        body.default-mode .column.is-half-fullhd { flex: none; width: 50%; }
+        body.default-mode .column.is-one-third-fullhd { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-two-thirds-fullhd { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-one-quarter-fullhd { flex: none; width: 25%; }
+        body.default-mode .column.is-three-quarters-fullhd { flex: none; width: 75%; }
+        body.default-mode .column.is-1-fullhd { flex: none; width: 8.3333%; }
+        body.default-mode .column.is-2-fullhd { flex: none; width: 16.6666%; }
+        body.default-mode .column.is-3-fullhd { flex: none; width: 25%; }
+        body.default-mode .column.is-4-fullhd { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-5-fullhd { flex: none; width: 41.6666%; }
+        body.default-mode .column.is-6-fullhd { flex: none; width: 50%; }
+        body.default-mode .column.is-7-fullhd { flex: none; width: 58.3333%; }
+        body.default-mode .column.is-8-fullhd { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-9-fullhd { flex: none; width: 75%; }
+        body.default-mode .column.is-10-fullhd { flex: none; width: 83.3333%; }
+        body.default-mode .column.is-11-fullhd { flex: none; width: 91.6666%; }
+        body.default-mode .column.is-12-fullhd { flex: none; width: 100%; }
+    }
+    /* Mobile-spezifische Overrides (selten genutzt, aber Bulma-konform) */
+    @media (max-width: 768px) {
+        body.default-mode .column.is-narrow-mobile { flex: none; width: unset; }
+        body.default-mode .column.is-full-mobile { flex: none; width: 100%; }
+        body.default-mode .column.is-half-mobile { flex: none; width: 50%; }
+        body.default-mode .column.is-one-third-mobile { flex: none; width: 33.3333%; }
+        body.default-mode .column.is-two-thirds-mobile { flex: none; width: 66.6666%; }
+        body.default-mode .column.is-one-quarter-mobile { flex: none; width: 25%; }
+    }
+
     /* --- Level (Flex-Bar) ------------------------------------------------- */
     body.default-mode .level {
         display: flex; align-items: center; justify-content: space-between;
