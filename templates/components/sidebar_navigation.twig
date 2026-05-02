@@ -1,14 +1,13 @@
-<nav id="sidebar-navigation" class="menu has-margin-left-xsmall">
+{# Sidebar-Navigation (Tailwind/cb-*) — JS-Anker bleiben:
+   .menu-label (Klick toggelt .app-is-collapsed in main.js Zeile ~41),
+   .menu-list (parent.find), .app-menu-arrow i, .app-menu-category. #}
+<nav id="sidebar-navigation">
     {% for category in navigation %}
-        <div class="app-menu-category has-margin-bottom-medium">
-            <p class="menu-label has-margin-bottom-small {{ category.is_collapsed ? 'app-is-collapsed' }}" data-category="{{ category.id }}">
-                <span class="icon is-medium">
-                    <i class="{{ category.icon }}"></i>
-                </span>
-
-                {{ category.label }}
-
-                <span class="app-menu-arrow icon is-medium is-pulled-right has-margin-right-medium">
+        <div class="app-menu-category">
+            <p class="menu-label {{ category.is_collapsed ? 'app-is-collapsed' }}" data-category="{{ category.id }}">
+                <span class="icon"><i class="{{ category.icon }}"></i></span>
+                <span>{{ category.label }}</span>
+                <span class="app-menu-arrow icon">
                     <i class="fa-solid fa-angle-{{ category.is_collapsed ? 'right' : 'down' }}"></i>
                 </span>
             </p>
@@ -16,12 +15,8 @@
                 {% for item in category.items %}
                     <li>
                         <a href="{{ item.url }}" {{ item.extern ? 'target="_blank" rel="nofollow noopener noreferrer"' }} {{ item.is_active ? 'class="is-active"' }}>
-                            <small>
-                                <span class="icon is-small">
-                                    <i class="fa-solid fa-angle-right"></i>
-                                </span>
-                            </small>
-                            {{ item.label }}
+                            <small><i class="fa-solid fa-angle-right"></i></small>
+                            <span>{{ item.label }}</span>
                         </a>
                     </li>
                 {% endfor %}

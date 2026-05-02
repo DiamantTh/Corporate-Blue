@@ -1,9 +1,9 @@
-<nav class="breadcrumb is-small has-margin-bottom-none" aria-label="breadcrumbs">
-    <ul>
+<nav class="cb-breadcrumb" aria-label="breadcrumbs">
+    <ol>
         {% for item in _app.breadcrumbs %}
-            <li {{ item.url is empty ? 'class="is-disabled"' }}>
+            <li {{ item.url is empty ? 'aria-disabled="true"' }}>
                 <a href="{{ item.url }}">{{ item.label }}</a>
             </li>
         {% endfor %}
-    </ul>
+    </ol>
 </nav>
