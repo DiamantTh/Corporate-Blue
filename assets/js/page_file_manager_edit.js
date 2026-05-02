@@ -126,7 +126,7 @@
 
             for (var keyMode in item['mode_files'])
             {
-                var src = '/theme/corporate-blue/assets/vendor/codemirror/mode/' + item['mode_files'][keyMode] + '.js?' + cacheBusting;
+                var src = '/theme/Corporate-Blue/assets/vendor/codemirror/mode/' + item['mode_files'][keyMode] + '.js?' + cacheBusting;
 
                 $.getScript(src, function () {
                     loaded++;
