@@ -5,8 +5,8 @@
         clock('#app-server-time', CLOCK_FORMAT_DATE_TIME_FULL);
     </script>
 
-    <script src="/theme/Corporate-Blue/assets/js/page_admin_dashboard.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/Corporate-Blue/assets/js/dashboard_notes.js?{{ _globals.cache_control }}"></script>
+    <script src="theme/Corporate-Blue/assets/js/page_admin_dashboard.js?{{ _globals.cache_control }}"></script>
+    <script src="theme/Corporate-Blue/assets/js/dashboard_notes.js?{{ _globals.cache_control }}"></script>
 {% endblock %}
 
 
@@ -55,7 +55,7 @@
                                 <th>{{ processor }}</th>
                                 <td>
                                     {% if _cpu_info.vendor_id %}
-                                        <img class="svg-vendor-logo has-margin-right-small" src="/theme/Corporate-Blue/assets/img/vendor/{{ _cpu_info.vendor_id }}.svg?{{ _globals.cache_control }}" alt="">
+                                        <img class="svg-vendor-logo has-margin-right-small" src="theme/Corporate-Blue/assets/img/vendor/{{ _cpu_info.vendor_id }}.svg?{{ _globals.cache_control }}" alt="">
                                     {% endif %}
                                     {{ _cpu_info.processor_label }}
                                 </td>
@@ -302,7 +302,7 @@
                                             {% if _white_label.is_control_panel and _white_label.favicon_url %}
                                                 <img class="svg-vendor-logo" src="{{ _white_label.favicon_url }}&{{ _globals.cache_control }}">
                                             {% else %}
-                                                <img class="svg-vendor-logo" src="/theme/Corporate-Blue/assets/img/{{ _app.theme.is_dark_mode ? 'dark/' }}keyhelp-logo.svg?{{ _globals.cache_control }}" alt="">
+                                                <img class="svg-vendor-logo" src="theme/Corporate-Blue/assets/img/{{ _app.theme.is_dark_mode ? 'dark/' }}keyhelp-logo.svg?{{ _globals.cache_control }}" alt="">
                                             {% endif %}
                                         </td>
                                         <td>
@@ -337,7 +337,7 @@
                                     {% else %}
                                         <th>{{ item.label }}</th>
                                         <td class="has-text-centered">
-                                            <img class="svg-vendor-logo" src="/theme/Corporate-Blue/assets/img/vendor/{{ item.img }}.svg?{{ _globals.cache_control }}" alt="">
+                                            <img class="svg-vendor-logo" src="theme/Corporate-Blue/assets/img/vendor/{{ item.img }}.svg?{{ _globals.cache_control }}" alt="">
                                         </td>
                                         <td>
                                             {% if item.ajax %}

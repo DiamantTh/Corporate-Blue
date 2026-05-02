@@ -29,7 +29,7 @@
         <script>
             var reloadCache = {{ _applications is empty ? 'true' : 'false' }};
         </script>
-        <script src="/theme/Corporate-Blue/assets/js/page_applications.js?{{ _globals.cache_control }}"></script>
+        <script src="theme/Corporate-Blue/assets/js/page_applications.js?{{ _globals.cache_control }}"></script>
     {% endif %}
 
     {% if _configure == 'system_time' %}
@@ -57,7 +57,7 @@
         </script>
     {% endif %}
 
-    <script src="/theme/Corporate-Blue/assets/js/page_configuration.js?{{ _globals.cache_control }}"></script>
+    <script src="theme/Corporate-Blue/assets/js/page_configuration.js?{{ _globals.cache_control }}"></script>
 {% endblock %}
 
 
