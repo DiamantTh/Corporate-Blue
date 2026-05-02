@@ -28,7 +28,7 @@
     - Theme color: #2b5797
 
 4) Favicon Generator Options
-    - Path: /theme/bulma/assets/favicon
+    - Path: /theme/corporate-blue/assets/favicon
     - The web site is already in production and many people already visited it. I want returning visitors to see my new favicon, not the old one.
         (There are also config files in the favicon folder, which contains the cache busting parameter)
     - Compression: Very high quality, very low compression factor

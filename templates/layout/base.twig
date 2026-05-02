@@ -9,16 +9,16 @@
     {% if _white_label.favicon_url %}
         <link type="image/x-icon" rel="shortcut icon" href="{{ _white_label.favicon_url }}&{{ _globals.cache_control }}">
     {% else %}
-        <link rel="apple-touch-icon" sizes="180x180" href="/theme/bulma/assets/img/favicon/apple-touch-icon.png?v=ngk7O7gqB9">
-        <link rel="icon" type="image/png" sizes="32x32" href="/theme/bulma/assets/img/favicon/favicon-32x32.png?v=ngk7O7gqB9">
-        <link rel="icon" type="image/png" sizes="16x16" href="/theme/bulma/assets/img/favicon/favicon-16x16.png?v=ngk7O7gqB9">
-        <link rel="manifest" href="/theme/bulma/assets/img/favicon/site.webmanifest?v=ngk7O7gqB9">
-        <link rel="mask-icon" href="/theme/bulma/assets/img/favicon/safari-pinned-tab.svg?v=ngk7O7gqB9" color="#2b5797">
-        <link rel="shortcut icon" href="/theme/bulma/assets/img/favicon/favicon.ico?v=ngk7O7gqB9">
+        <link rel="apple-touch-icon" sizes="180x180" href="/theme/corporate-blue/assets/img/favicon/apple-touch-icon.png?v=ngk7O7gqB9">
+        <link rel="icon" type="image/png" sizes="32x32" href="/theme/corporate-blue/assets/img/favicon/favicon-32x32.png?v=ngk7O7gqB9">
+        <link rel="icon" type="image/png" sizes="16x16" href="/theme/corporate-blue/assets/img/favicon/favicon-16x16.png?v=ngk7O7gqB9">
+        <link rel="manifest" href="/theme/corporate-blue/assets/img/favicon/site.webmanifest?v=ngk7O7gqB9">
+        <link rel="mask-icon" href="/theme/corporate-blue/assets/img/favicon/safari-pinned-tab.svg?v=ngk7O7gqB9" color="#2b5797">
+        <link rel="shortcut icon" href="/theme/corporate-blue/assets/img/favicon/favicon.ico?v=ngk7O7gqB9">
         <meta name="apple-mobile-web-app-title" content="KeyHelp">
         <meta name="application-name" content="KeyHelp">
         <meta name="msapplication-TileColor" content="#2b5797">
-        <meta name="msapplication-config" content="/theme/bulma/assets/img/favicon/browserconfig.xml?v=ngk7O7gqB9">
+        <meta name="msapplication-config" content="/theme/corporate-blue/assets/img/favicon/browserconfig.xml?v=ngk7O7gqB9">
         <meta name="theme-color" content="#ffffff">
     {% endif %}
 
@@ -26,7 +26,7 @@
 
     {# ─── Tailwind v4 (Cyan-Indigo Token-System) ──────────────────────── #}
     {# Bulma-Stylesheet entfernt; tw.css enthaelt cb-* + Bulma-Foundation. #}
-    <link rel="stylesheet" href="/theme/bulma/assets/css/tw.css?{{ _globals.cache_control }}">
+    <link rel="stylesheet" href="/theme/corporate-blue/assets/css/tw.css?{{ _globals.cache_control }}">
 
     {% block page_css %}{% endblock %}
 
@@ -43,16 +43,16 @@
         var hash = {{ js_hash|raw }};
         Object.freeze(hash);
     </script>
-    <script src="/theme/bulma/assets/vendor/jquery/jquery.min.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/vendor/perfect-scrollbar/perfect-scrollbar.min.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/vendor/echarts/echarts.min.js"></script>
-    <script src="/theme/bulma/assets/vendor/handlebars/handlebars.min.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/vendor/tippy/popper.min.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/vendor/tippy/tippy.min.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/vendor/select2/select2.min.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/vendor/select2/i18n/{{ _app.language }}.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/js/functions.js?{{ _globals.cache_control }}"></script>
-    <script src="/theme/bulma/assets/js/main.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/vendor/jquery/jquery.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/vendor/perfect-scrollbar/perfect-scrollbar.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/vendor/echarts/echarts.min.js"></script>
+    <script src="/theme/corporate-blue/assets/vendor/handlebars/handlebars.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/vendor/tippy/popper.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/vendor/tippy/tippy.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/vendor/select2/select2.min.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/vendor/select2/i18n/{{ _app.language }}.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/js/functions.js?{{ _globals.cache_control }}"></script>
+    <script src="/theme/corporate-blue/assets/js/main.js?{{ _globals.cache_control }}"></script>
 
     {% block page_scripts %}{% endblock %}
 
