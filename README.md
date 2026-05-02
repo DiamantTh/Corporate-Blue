@@ -1,113 +1,157 @@
 # Corporate Blue — KeyHelp Theme
 
-A dark, corporate-styled theme for [KeyHelp](https://www.keyhelp.de) control panel, based on the official Default Theme by Alexander Mahr / Keyweb AG.
+Ein corporate-blaues Light-Theme für das [KeyHelp](https://www.keyhelp.de)
+Control-Panel. Ursprünglich abgeleitet vom offiziellen Default-Theme von
+Alexander Mahr / Keyweb AG, inzwischen vollständig auf
+**Tailwind CSS v4** als Foundation umgebaut.
 
 ## Features
 
-- **Unified dark style** — permanently dark, no toggle; tuned for extended screen sessions
-- **Corporate Blue palette** — deep navy sidebar, midnight header, layered card system
-- **ECharts integration** — dashboard charts (CPU/RAM/Traffic) shipped locally, no CDN
-- **Tailwind CSS** (prefix `tw-`) — available alongside Bulma for new UI elements, no CDN
-- **Button system** — 8 variants with distinct dark-adjusted backgrounds (link/dark/danger/warning/success/info/primary/outlined)
-- **Tag system** — all Bulma tag variants re-colored for the dark palette
-- **No dark-mode toggle** — `has_dark_mode: false`; the theme is always dark
+- **Light-Mode-Theme** (`has_dark_mode: false`) — kein Toggle, klares
+  blaues Corporate-Schema durchgängig
+- **Tailwind v4 als alleinige Foundation** — Bulma-/Bootstrap-Abhängigkeiten
+  vollständig durch einen scoped Foundation-Layer (`body.default-mode`)
+  ersetzt, inklusive der responsiven Bulma-Column-Varianten
+  (`is-X-tablet/desktop/widescreen/fullhd`)
+- **Coexistence-Mode** — kein `@tailwind preflight`, damit KeyHelps
+  bestehendes Markup unberührt bleibt; nur `theme` + `utilities` Layer
+- **Lokale Vendor-Assets** — keine CDNs (ECharts, Chart.js, CodeMirror,
+  FontAwesome, jQuery, Select2, Tippy, Trumbowyg, Handlebars,
+  Perfect-Scrollbar, Bulma-Reste für Legacy-Markup, Tailwind-Build)
+- **Relative Asset-Pfade** — `theme_root` wird in `base.twig` gesetzt,
+  alles funktioniert unter `/theme/Corporate-Blue/` ohne Hardcoding
+- **DKIM-Modal & Modal-Größen** — `is-large` / `is-xlarge` /
+  `is-fullscreen` / `is-dkim` (monospace) als Tailwind-Layer-Klassen
+- **CapsLock-Detection** — dynamisch nur sichtbar wenn Caps aktiv
+  und Passwort-Feld fokussiert (Login + interne Pages)
+- **Logo- und Icon-Caps** — `.svg-vendor-logo`, `.svg-keydisc`,
+  `.svg-footer-icon` mit definierten Maximalgrößen
+- **FIDO2/WebAuthn + TOTP** — Login-Flow voll unterstützt
 
-## Color Palette
+## Farbpalette
 
-| Token | Hex | Usage |
-|---|---|---|
-| Sidebar | `#0a1928` | Navigation background |
-| Header | `#0e1e30` | Top bar, footer |
-| Page bg | `#15253a` | Main content area |
-| Card | `#1c2e46` | Card backgrounds |
-| Card header | `#172840` | Card header strip |
-| Border | `#2c4060` | Dividers, table borders, form borders |
-| Text primary | `#c8d8f0` | Body text |
-| Text muted | `#8ab0d0` | Labels, secondary info |
-| Accent blue | `#3273DC` | Links, active states, progress |
+| Token | Verwendung |
+|---|---|
+| Primary Blue `#3273DC` | Links, aktive States, Buttons |
+| Sidebar (hell, blau-grau) | Navigation |
+| Card (weiß / sehr helles Blau) | Karten-Hintergründe |
+| Text (dunkles Marineblau) | Body-Text |
+| Border (helles Blau-Grau) | Dividers, Tabellen, Formulare |
 
-## File Structure
+## Projekt-Struktur
 
 ```
-corporate-blue/
-├── _preview.html          # Standalone browser preview (no backend required)
-├── _settings.json         # Theme metadata (name, version, has_dark_mode)
+Corporate-Blue/
+├── _settings.json            # Theme-Metadaten (name, version, has_dark_mode)
+├── _preview.html             # Standalone-Browser-Preview ohne Backend
+├── _screenshot.png           # Theme-Screenshot für KeyHelp-Auswahl
+├── unicode_reference         # KeyHelp-Pflichtdatei
+├── build-release.sh          # Release-Tarball-Builder mit Whitelist
+├── package.json              # Tailwind v4 Build (npm)
+├── tailwind/
+│   └── input.css             # Tailwind-Quelle inkl. Foundation-Layer
+│                             # (Bulma-kompatible Selektoren scoped auf
+│                             #  body.default-mode)
 ├── assets/
 │   ├── css/
-│   │   ├── style.css          # Main stylesheet (Bulma + Corporate Blue overrides)
-│   │   ├── style-dark.css     # Dark CSS (kept for compatibility, same overrides)
-│   │   ├── style-rtl.css      # RTL variant
-│   │   └── style-dark-rtl.css # Dark RTL variant
-│   ├── img/
-│   │   ├── keyhelp.svg        # Standard logo (light background)
-│   │   └── dark/
-│   │       └── keyhelp.svg    # Dark logo (used always in this theme)
-│   ├── js/                    # Page-specific JS files
-│   └── vendor/
-│       ├── echarts/           # ECharts 5.x (local, no CDN)
-│       └── tailwind/          # Tailwind CSS 3.x (local, no CDN)
+│   │   ├── tw.css            # Tailwind-Build-Output (minified)
+│   │   ├── style.css         # KeyHelp-Pflichtdatei (Legacy-Reste)
+│   │   ├── style-dark.css    # Pflichtdatei (Kompatibilität)
+│   │   ├── style-rtl.css     # RTL-Variante
+│   │   └── style-dark-rtl.css
+│   ├── img/                  # Logos, Favicons, Vendor-SVGs
+│   ├── js/                   # Page-spezifisches JS (login.js, main.js,
+│   │                         #  dashboard_notes.js, page_*.js, …)
+│   ├── fonts/fontawesome/    # FontAwesome lokal
+│   └── vendor/               # Bulma-Reste, Chart.js, ECharts, CodeMirror,
+│                             # FontAwesome, Handlebars, jQuery,
+│                             # Perfect-Scrollbar, Select2, Tailwind,
+│                             # Tippy, Trumbowyg
 └── templates/
-    └── layout/
-        ├── base.twig          # Base layout (CSS/JS includes, inline overrides)
-        ├── intern.twig        # Authenticated admin/client layout
-        ├── extern.twig        # Login / external pages
-        └── popup.twig         # Popup windows
+    ├── layout/               # base, intern, extern, popup
+    ├── components/           # Cards, Navigation, Modals, Forms, Icons
+    ├── macros/               # Twig-Makros
+    └── views/                # Seitenspezifische Views (intern/extern)
 ```
 
-## Preview
+## Tailwind-Build
 
-Start a local preview server from the theme root:
+Tailwind v4 wird lokal gebaut, kein CDN, kein Watch-Server nötig:
+
+```bash
+npx --no-install tailwindcss -i ./tailwind/input.css \
+                             -o ./assets/css/tw.css --minify
+```
+
+Die Quelle `tailwind/input.css` enthält den **Foundation-Layer** —
+ein scoped Set Bulma-kompatibler Selektoren (`.columns`, `.column`,
+`.box`, `.button`, `.tag`, `.modal`, `.menu`, …), allesamt unter
+`body.default-mode { … }`, damit KeyHelps Twig-Templates ohne
+Markup-Änderung weiterlaufen.
+
+## Preview ohne Backend
 
 ```bash
 python3 -m http.server 8099
 ```
 
-Then open: [http://localhost:8099/_preview.html](http://localhost:8099/_preview.html)
-
-The preview includes:
-- Dashboard with KPI strip, server info table, Disk/Traffic charts, monitoring line chart
-- Client accounts table with pagination
-- Domain edit form with tabs (General / SSL / PHP / Redirects)
-- Service status + quick actions
-- Sub-pages: Domains list, E-Mail manager, DNS editor
+Dann [http://localhost:8099/_preview.html](http://localhost:8099/_preview.html)
+öffnen — zeigt Dashboard, Card-Layouts, Forms und Tabellen rein
+client-seitig.
 
 ## Installation
 
-Place the `corporate-blue/` folder in your KeyHelp themes directory:
-
 ```
-/home/keyhelp/www/keyhelp/theme/corporate-blue/
+/home/keyhelp/www/keyhelp/theme/Corporate-Blue/
 ```
 
-KeyHelp will detect it automatically via `_settings.json`.
+KeyHelp erkennt das Theme automatisch über `_settings.json`.
+**Schreibweise des Verzeichnisnamens beachten** — KeyHelp serviert
+Theme-Assets case-sensitive (`/theme/Corporate-Blue/...`).
 
 ## Release-Build
 
-Manuelles Release-Tarball (plattform-neutral, läuft lokal genauso wie
-in GitHub Actions oder Gitea Actions):
-
 ```bash
-./build-release.sh              # Version aus _settings.json
-./build-release.sh 1.0.1        # Version explizit
+OUT_DIR=out bash build-release.sh           # Version aus _settings.json
+OUT_DIR=out bash build-release.sh 1.1.3     # Version explizit
 ```
 
-Ergebnis liegt in `dist/corporate-blue-v<version>.tar.bz2`.
-Das Skript verwendet eine **Whitelist** (`_settings.json`, `_preview.html`,
-`_screenshot.png`, `unicode_reference`, `README.md`, `assets/`, `templates/`)
-und verifiziert am Ende, dass die Pflicht-Bestandteile (`_settings.json`,
-`templates/`, `assets/`) auch wirklich im Archiv liegen — damit so etwas wie
-ein Release ohne `_settings.json` nicht mehr passieren kann.
+Ergebnis: `out/corporate-blue-v<version>.tar.bz2`.
 
-## Based On
+Der Builder verwendet eine **Whitelist** (`_settings.json`,
+`_preview.html`, `_screenshot.png`, `unicode_reference`, `README.md`,
+`assets/`, `templates/`) und prüft am Ende, dass die KeyHelp-Pflicht-
+bestandteile (`_settings.json`, `templates/`, `assets/`) wirklich im
+Archiv liegen — Schutz gegen versehentlich zerschossene Releases.
 
-- **Default Theme** by Alexander Mahr / Keyweb AG — [keyhelp.de](https://www.keyhelp.de)
-- **Bulma** CSS framework
-- **Font Awesome** icons
+## Versionshistorie
 
-## Author
+- **1.1.3** — Responsive Bulma-Column-Varianten
+  (`is-X-tablet/desktop/widescreen/fullhd`) im Foundation-Layer;
+  Konfiguration & Systemstatus wrappen wieder korrekt
+- **1.1.2** — Logo-/Icon-Größen-Caps, Password-Annotation-Defaults,
+  dynamische CapsLock-Detection (Login + intern)
+- **1.1.1** — `theme_root`-Variable in `base.twig`, DKIM-Modal-Größe
+- **1.1.0** — Tailwind-v4-Foundation komplett, Bulma-Migration
+  abgeschlossen
+- **1.0.x** — initiale Veröffentlichung auf Bulma-Basis
 
-DiamantTh — based on the Default Theme by Alexander Mahr / Keyweb AG
+## Lizenz
+
+AGPL-3.0-or-later
+
+## Basierend auf
+
+- **Default-Theme** von Alexander Mahr / Keyweb AG —
+  [keyhelp.de](https://www.keyhelp.de)
+- **Tailwind CSS v4**
+- **FontAwesome**
+
+## Autor
+
+DiamantTh — basierend auf dem Default-Theme von
+Alexander Mahr / Keyweb AG
 
 ## Version
 
-`1.0.1` — Compatible with KeyHelp 25.x
+`1.1.3` — kompatibel mit KeyHelp 25.x
