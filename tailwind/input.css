@@ -1591,6 +1591,46 @@
         letter-spacing: 0.01em;
     }
 
+    /* --- Logo-/Icon-Groessen (uebernommen aus Default-Theme style.css) --- */
+    /* Ohne diese Caps laden SVGs in nativer Groesse (oft 512px+) und sprengen
+       das Dashboard. */
+    body.default-mode .svg-footer-icon {
+        display: inline;
+        width: 18px;
+        position: relative;
+        top: 3px;
+    }
+    body.default-mode .svg-keydisc { height: 2.5rem; }
+    body.default-mode .svg-vendor-logo {
+        max-height: 1.5rem;
+        max-width: 2.75rem;
+        vertical-align: middle;
+    }
+
+    /* --- Password-Annotation / Strength-Meter Defaults ------------------- */
+    /* Container + Strength-Meter sind initial versteckt; main.js blendet sie
+       per .show()/.hide() ein. Ohne diese Defaults wuerde z. B. die
+       CapsLock-Warnung permanent sichtbar sein. */
+    body.default-mode #password-annotations {
+        display: none;
+        margin-top: -1rem;
+    }
+    body.default-mode #password-strength-meter {
+        display: none;
+        margin-top: -0.5rem;
+        margin-bottom: 2rem;
+    }
+    body.default-mode #password-confirmation-missmatch { display: none; }
+    /* Einzel-Annotations sind initial versteckt; nur aktiv wenn JS sie
+       per .show(200) einblendet. */
+    body.default-mode .app-password-annotation-caps-lock,
+    body.default-mode .app-password-annotation-min-length,
+    body.default-mode .app-password-annotation-letter,
+    body.default-mode .app-password-annotation-lowercase,
+    body.default-mode .app-password-annotation-uppercase,
+    body.default-mode .app-password-annotation-digit,
+    body.default-mode .app-password-annotation-special { display: none; }
+
     /* --- Tabs ------------------------------------------------------------- */
     body.default-mode .tabs {
         overflow-x: auto;
