@@ -6,35 +6,10 @@
     <meta name="format-detection" content="telephone=no">
     <title>KeyHelp Theme Preview — Corporate Blue</title>
 
-    <!-- ① Bulma-based Theme CSS (KeyHelp default) -->
-    <link id="theme-stylesheet" rel="stylesheet" href="assets/css/style.css">
+    <!-- ① Tailwind CSS v4 (Corporate Blue + FontAwesome) -->
+    <link rel="stylesheet" href="assets/css/tw.css">
 
-    <!-- ② Tailwind CSS (parallel, für neue Elemente) -->
-    <script src="assets/vendor/tailwind/tailwind.min.js"></script>
-    <script>
-        // Tailwind config — Corporate Blue Palette & kein Purge im Browser-Modus
-        tailwind.config = {
-            prefix: 'tw-',
-            corePlugins: { preflight: false }, // kein Reset — Bulma bleibt unberührt
-            theme: {
-                extend: {
-                    colors: {
-                        corp: {
-                            900: '#00182e',
-                            800: '#00305D',
-                            700: '#0f3d6e',
-                            600: '#1a5091',
-                            500: '#3273DC',
-                            400: '#5a90e8',
-                            300: '#87b4f4',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- ③ Corporate Blue — Unified Dark Overrides -->
+    <!-- ② Corporate Blue — Unified Dark Overrides -->
     <style>
         /* ─── SIDEBAR ──────────────────────────────────────────── */
         #sidebar {
