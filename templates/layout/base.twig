@@ -32,6 +32,9 @@
 
     <title>{{ _app.page_title }}</title>
 
+    {# ─── FontAwesome 7 Free ─────────────────────────────────────────────── #}
+    <link rel="stylesheet" href="{{ theme_root }}/assets/css/fontawesome.css?{{ _globals.cache_control }}">
+
     {# ─── Tailwind v4 (Cyan-Indigo Token-System) ──────────────────────── #}
     {# Bulma-Stylesheet entfernt; tw.css enthaelt cb-* + Bulma-Foundation. #}
     <link rel="stylesheet" href="{{ theme_root }}/assets/css/tw.css?{{ _globals.cache_control }}">

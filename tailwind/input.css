@@ -22,43 +22,6 @@
 @source "../templates/**/*.twig";
 @source "../assets/js/**/*.js";
 
-/* =============================================================================
- *  FontAwesome 6 — @font-face Definitionen
- *  Icons werden überall in Templates + JS verwendet: fa-solid, fa-brands, etc.
- * ============================================================================= */
-@font-face {
-    font-family: 'Font Awesome 6 Free';
-    font-style: normal;
-    font-weight: 400;
-    font-display: block;
-    src: url('../fonts/fontawesome/fa-regular-400.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Font Awesome 6 Free';
-    font-style: normal;
-    font-weight: 900;
-    font-display: block;
-    src: url('../fonts/fontawesome/fa-solid-900.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Font Awesome 6 Brands';
-    font-style: normal;
-    font-weight: 400;
-    font-display: block;
-    src: url('../fonts/fontawesome/fa-brands-400.woff2') format('woff2');
-}
-
-/* v4 Compatibility */
-@font-face {
-    font-family: 'FontAwesome';
-    font-style: normal;
-    font-weight: 900;
-    font-display: block;
-    src: url('../fonts/fontawesome/fa-v4compatibility.woff2') format('woff2');
-}
-
 @theme {
     /* --- Hintergründe (dunkel, indigo-stichig) ----------------------------- */
     --color-cb-bg:            #0B0E14;
@@ -100,7 +63,6 @@
     --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
                  Roboto, Helvetica, Arial, sans-serif;
     --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --font-awesome: "Font Awesome 6 Free", "Font Awesome 6 Brands", "FontAwesome";
 
     --radius-cb-sm: 4px;
     --radius-cb:    6px;
@@ -120,43 +82,6 @@
  *  globale html/body-Regeln Bulma-Pages nicht überschreiben.
  * ============================================================================= */
 @layer base {
-    /* FontAwesome Icon Defaults */
-    i[class^="fa-"],
-    [class^="icon-"],
-    .icon i {
-        font-family: var(--font-awesome);
-        font-style: normal;
-        font-variant: normal;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    /* Solid variant (weight 900) */
-    .fa-solid {
-        font-weight: 900;
-        font-family: "Font Awesome 6 Free";
-    }
-
-    /* Regular variant (weight 400) */
-    .fa-regular {
-        font-weight: 400;
-        font-family: "Font Awesome 6 Free";
-    }
-
-    /* Brands variant (weight 400) */
-    .fa-brands {
-        font-weight: 400;
-        font-family: "Font Awesome 6 Brands";
-    }
-
-    /* v4 Compatibility */
-    [class^="fa-"],
-    [class*=" fa-"] {
-        font-family: "FontAwesome";
-        font-weight: normal;
-        font-style: normal;
-    }
-
     .cb-root {
         background-color: var(--color-cb-bg);
         color: var(--color-cb-text);

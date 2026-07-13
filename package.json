@@ -4,11 +4,14 @@
   "version": "1.1.4",
   "description": "Build-Toolchain für das Corporate-Blue KeyHelp-Theme (Tailwind v4).",
   "scripts": {
+    "build:fa": "sass assets/vendor/fontawesome/_fontawesome.scss assets/css/fontawesome.css --style=compressed --no-source-map",
     "build:css": "tailwindcss -i ./tailwind/input.css -o ./assets/css/tw.css --minify",
+    "build": "npm run build:fa && npm run build:css",
     "watch:css": "tailwindcss -i ./tailwind/input.css -o ./assets/css/tw.css --watch"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.0.0",
+    "sass": "^1.101.0",
     "tailwindcss": "^4.0.0"
   }
 }
