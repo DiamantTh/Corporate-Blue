@@ -1,7 +1,7 @@
 {
   "name": "corporate-blue-theme",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.4",
   "description": "Build-Toolchain für das Corporate-Blue KeyHelp-Theme (Tailwind v4).",
   "scripts": {
     "build:css": "tailwindcss -i ./tailwind/input.css -o ./assets/css/tw.css --minify",
