@@ -54,19 +54,15 @@ Corporate-Blue/
 │                             #  body.default-mode)
 ├── assets/
 │   ├── css/
-│   │   ├── tw.css            # Tailwind-Build-Output (minified)
-│   │   ├── style.css         # KeyHelp-Pflichtdatei (Legacy-Reste)
-│   │   ├── style-dark.css    # Pflichtdatei (Kompatibilität)
-│   │   ├── style-rtl.css     # RTL-Variante
-│   │   └── style-dark-rtl.css
+│   │   ├── fontawesome.css   # FontAwesome 7 Build-Output (minified, via sass)
+│   │   └── tw.css            # Tailwind-Build-Output (minified)
 │   ├── img/                  # Logos, Favicons, Vendor-SVGs
 │   ├── js/                   # Page-spezifisches JS (login.js, main.js,
 │   │                         #  dashboard_notes.js, page_*.js, …)
-│   ├── fonts/fontawesome/    # FontAwesome lokal
-│   └── vendor/               # Bulma-Reste, Chart.js, ECharts, CodeMirror,
-│                             # FontAwesome, Handlebars, jQuery,
-│                             # Perfect-Scrollbar, Select2, Tailwind,
-│                             # Tippy, Trumbowyg
+│   ├── fonts/fontawesome/    # FontAwesome-Webfonts (woff2)
+│   └── vendor/               # ECharts, CodeMirror, FontAwesome-SCSS,
+│                             # Handlebars, jQuery, Perfect-Scrollbar,
+│                             # Select2, Tailwind, Tippy, Trumbowyg
 └── templates/
     ├── layout/               # base, intern, extern, popup
     ├── components/           # Cards, Navigation, Modals, Forms, Icons
@@ -74,13 +70,19 @@ Corporate-Blue/
     └── views/                # Seitenspezifische Views (intern/extern)
 ```
 
-## Tailwind-Build
+## Build
 
-Tailwind v4 wird lokal gebaut, kein CDN, kein Watch-Server nötig:
+FontAwesome (SCSS → CSS) + Tailwind v4 in einem Schritt:
 
 ```bash
-npx --no-install tailwindcss -i ./tailwind/input.css \
-                             -o ./assets/css/tw.css --minify
+npm run build
+```
+
+Oder einzeln:
+
+```bash
+npm run build:fa    # assets/css/fontawesome.css
+npm run build:css   # assets/css/tw.css
 ```
 
 Die Quelle `tailwind/input.css` enthält den **Foundation-Layer** —

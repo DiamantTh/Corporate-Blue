@@ -4,7 +4,8 @@
  *  Token-System "Cyan-Indigo": warmer Indigo-Untergrund + Cyan als einziger
  *  Akzent. Status-Töne (Success/Warning/Danger) bewusst getrennt vom Akzent.
  *
- *  Build:  npm run build:css   (-> ./assets/css/tw.css)
+ *  Build:  npm run build      (-> FontAwesome + tw.css)
+ *          npm run build:css  (-> nur tw.css)
  *  Watch:  npm run watch:css
  *
  *  Quellen für content-Scan: alle Twig-Templates + JS-Files mit Klassen-Strings.

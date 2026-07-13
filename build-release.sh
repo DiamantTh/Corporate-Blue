@@ -54,21 +54,22 @@ for f in _settings.json templates assets; do
     fi
 done
 
-# --- Tailwind-CSS bauen (falls Toolchain vorhanden) --------------------------
-#  tw.css wird in assets/css/ erwartet. Wenn package.json vorhanden ist und
-#  npx funktioniert, frisch builden — andernfalls Existenz prüfen.
-if [[ -f "package.json" ]] && command -v npx >/dev/null 2>&1; then
-    echo "Tailwind: baue assets/css/tw.css ..."
+# --- CSS bauen (FontAwesome + Tailwind, falls Toolchain vorhanden) -----------
+#  fontawesome.css + tw.css werden in assets/css/ erwartet. Wenn package.json
+#  vorhanden ist, frisch builden — andernfalls Existenz prüfen.
+if [[ -f "package.json" ]] && command -v npm >/dev/null 2>&1; then
+    echo "CSS: baue assets/css/fontawesome.css + assets/css/tw.css ..."
     if [[ ! -d "node_modules" ]]; then
         npm install --silent --no-audit --no-fund
     fi
-    npx --no-install tailwindcss \
-        -i ./tailwind/input.css \
-        -o ./assets/css/tw.css \
-        --minify >/dev/null
+    npm run build --silent
+fi
+if [[ ! -f "assets/css/fontawesome.css" ]]; then
+    echo "FEHLER: assets/css/fontawesome.css fehlt — 'npm run build:fa' vor Release ausführen." >&2
+    exit 1
 fi
 if [[ ! -f "assets/css/tw.css" ]]; then
-    echo "FEHLER: assets/css/tw.css fehlt — Tailwind-Build vor Release ausführen." >&2
+    echo "FEHLER: assets/css/tw.css fehlt — 'npm run build:css' vor Release ausführen." >&2
     exit 1
 fi
 
